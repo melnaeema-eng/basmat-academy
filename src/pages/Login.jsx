@@ -1,3 +1,167 @@
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabase";
+
 export default function Login() {
-  return <h1> Login Page</h1>;
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setForm((previousForm) => ({
+      ...previousForm,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    setErrorMessage("");
+    setLoading(true);
+
+    try {
+      const { data, error } =
+        await supabase.auth.signInWithPassword({
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const user = data.user;
+
+      if (!user) {
+        throw new Error("تعذر قراءة بيانات المستخدم");
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      console.log("LOGIN USER:", user);
+      console.log("LOGIN PROFILE:", profile);
+      console.log("PROFILE ERROR:", profileError);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      const role = profile?.role?.trim().toLowerCase();
+
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+        return;
+      }
+
+      const destination =
+        location.state?.from?.pathname || "/";
+
+      navigate(destination, { replace: true });
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+
+      if (error.message === "Invalid login credentials") {
+        setErrorMessage(
+          "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+        );
+      } else {
+        setErrorMessage(
+          error.message || "حدث خطأ أثناء تسجيل الدخول"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div
+      dir="rtl"
+      className="min-h-screen bg-gray-50 flex items-center justify-center px-4"
+    >
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800">
+          تسجيل الدخول
+        </h1>
+
+        <p className="text-center text-gray-500 mt-2 mb-7">
+          أدخل بيانات حسابك
+        </p>
+
+        {errorMessage && (
+          <div className="mb-4 bg-red-100 text-red-700 rounded-lg p-3">
+            {errorMessage}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">
+              البريد الإلكتروني
+            </label>
+
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="example@email.com"
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">
+              كلمة المرور
+            </label>
+
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="أدخل كلمة المرور"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-bold disabled:opacity-60"
+          >
+            {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+          </button>
+        </form>
+
+        <p className="text-center text-gray-600 mt-6">
+          ليس لديك حساب؟{" "}
+          <Link
+            to="/register"
+            className="text-orange-600 font-bold hover:underline"
+          >
+            إنشاء حساب جديد
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }

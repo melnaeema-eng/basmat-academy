@@ -1,78 +1,175 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { supabase } from "../../services/supabase";
 
 export default function Dashboard() {
+  const [stats, setStats] = useState({
+    students: 0,
+    courses: 0,
+  });
 
-  const [courseCount, setCourseCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    loadCount();
+    fetchDashboardStats();
   }, []);
 
-  async function loadCount() {
-    const { count, error } = await supabase
-      .from("courses")
-      .select("*", { count: "exact", head: true });
+  async function fetchDashboardStats() {
+    try {
+      setLoading(true);
+      setErrorMessage("");
 
-    if (!error) {
-      setCourseCount(count);
+      const [studentsResult, coursesResult] = await Promise.all([
+        supabase
+          .from("students")
+          .select("*", { count: "exact", head: true }),
+
+        supabase
+          .from("courses")
+          .select("*", { count: "exact", head: true }),
+      ]);
+
+      if (studentsResult.error) {
+        throw studentsResult.error;
+      }
+
+      if (coursesResult.error) {
+        throw coursesResult.error;
+      }
+
+      setStats({
+        students: studentsResult.count ?? 0,
+        courses: coursesResult.count ?? 0,
+      });
+    } catch (error) {
+      console.error("Dashboard statistics error:", error);
+
+      setErrorMessage(
+        error.message || "حدث خطأ أثناء تحميل إحصائيات لوحة التحكم"
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div dir="rtl" className="p-6">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            لوحة التحكم
+          </h1>
 
-      <h1 className="text-4xl font-bold text-blue-700 mb-8">
-        لوحة التحكم
-      </h1>
-
-      <div className="grid md:grid-cols-3 gap-6">
-
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500">عدد الدورات</h2>
-
-          <p className="text-4xl font-bold mt-4">
-            {courseCount}
+          <p className="text-gray-500 mt-2">
+            نظرة عامة على بيانات الأكاديمية
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500">عدد الطلاب</h2>
-
-          <p className="text-4xl font-bold mt-4">
-            0
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500">عدد المدربين</h2>
-
-          <p className="text-4xl font-bold mt-4">
-              {courseCount}
-          </p>
-        </div>
-
+        <button
+          type="button"
+          onClick={fetchDashboardStats}
+          disabled={loading}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg disabled:opacity-60"
+        >
+          {loading ? "جاري التحديث..." : "تحديث"}
+        </button>
       </div>
 
-      <div className="mt-10 flex gap-4">
+      {errorMessage && (
+        <div className="mb-6 bg-red-100 text-red-700 rounded-lg p-4">
+          {errorMessage}
+        </div>
+      )}
 
-        <Link
-          to="/admin/add-course"
-          className="bg-orange-500 text-white px-6 py-3 rounded-lg"
-        >
-          ➕ إضافة دورة
-        </Link>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 font-medium">
+                إجمالي الطلاب
+              </p>
 
-        <Link
-          to="/admin/courses"
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg"
-        >
-          📚 إدارة الدورات
-        </Link>
+              <h2 className="text-4xl font-bold text-gray-800 mt-3">
+                {loading ? "..." : stats.students}
+              </h2>
+            </div>
 
+            <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center text-2xl">
+              👨‍🎓
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-5">
+            العدد الفعلي من جدول students
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 font-medium">
+                إجمالي الدورات
+              </p>
+
+              <h2 className="text-4xl font-bold text-gray-800 mt-3">
+                {loading ? "..." : stats.courses}
+              </h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center text-2xl">
+              📚
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-5">
+            العدد الفعلي من جدول courses
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 font-medium">
+                المدربون
+              </p>
+
+              <h2 className="text-4xl font-bold text-gray-800 mt-3">
+                0
+              </h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
+              👨‍🏫
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-5">
+            سيتم ربطه لاحقًا
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 font-medium">
+                التسجيلات
+              </p>
+
+              <h2 className="text-4xl font-bold text-gray-800 mt-3">
+                0
+              </h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-2xl">
+              📝
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-5">
+            سيتم ربطه عند إنشاء جدول التسجيلات
+          </p>
+        </div>
       </div>
-
     </div>
   );
 }
