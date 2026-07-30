@@ -112,6 +112,35 @@
     "registerError": "حدث خطأ أثناء إنشاء الحساب"
   }
 },
+"course": {
+  "free": "مجاني",
+  "details": "تفاصيل الدورة",
+  "currency": "ر.س",
+  "untitled": "دورة بدون عنوان"
+},
+"courseDetails": {
+  "loading": "جارٍ تحميل الدورة...",
+  "loadError": "حدث خطأ أثناء تحميل بيانات الدورة",
+  "notFound": "الدورة غير موجودة",
+  "notFoundDescription": "تعذر العثور على الدورة المطلوبة",
+  "backToCourses": "العودة إلى الدورات",
+  "instructor": "المدرب",
+  "level": "المستوى",
+  "duration": "المدة",
+  "lessons": "الدروس",
+  "lesson": "الدرس",
+  "lessonCount": "درس",
+  "aboutCourse": "عن الدورة",
+  "noDescription": "لا يوجد وصف متاح لهذه الدورة",
+  "notSpecified": "غير محدد",
+  "noVideo": "لم تتم إضافة فيديو لهذه الدورة بعد",
+  "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو",
+  "unsupportedVideo": "لا يمكن تشغيل رابط الفيديو داخل الصفحة",
+  "openVideo": "فتح الفيديو",
+  "freePreview": "معاينة مجانية",
+  "enrollNow": "التسجيل في الدورة",
+  "startCourse": "ابدأ الدورة"
+},
   "about": {
     "badge": "من نحن",
     "title": "أكاديمية بصمة النوابغ",

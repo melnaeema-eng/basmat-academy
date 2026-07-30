@@ -112,6 +112,35 @@
     "registerError": "An error occurred while creating the account"
   }
 },
+"course": {
+  "free": "Free",
+  "details": "Course Details",
+  "currency": "SAR",
+  "untitled": "Untitled Course"
+},
+"courseDetails": {
+  "loading": "Loading course...",
+  "loadError": "An error occurred while loading the course",
+  "notFound": "Course Not Found",
+  "notFoundDescription": "The requested course could not be found",
+  "backToCourses": "Back to Courses",
+  "instructor": "Instructor",
+  "level": "Level",
+  "duration": "Duration",
+  "lessons": "Lessons",
+  "lesson": "Lesson",
+  "lessonCount": "Lessons",
+  "aboutCourse": "About This Course",
+  "noDescription": "No description is available for this course",
+  "notSpecified": "Not specified",
+  "noVideo": "No video has been added to this course yet",
+  "videoNotSupported": "Your browser does not support video playback",
+  "unsupportedVideo": "This video link cannot be played inside the page",
+  "openVideo": "Open Video",
+  "freePreview": "Free Preview",
+  "enrollNow": "Enroll Now",
+  "startCourse": "Start Course"
+},
   "about": {
     "badge": "About Us",
     "title": "Basmat Alnawabigh Academy",
