@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../services/supabase";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   const [form, setForm] = useState({
     email: "",
@@ -30,11 +32,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data, error } =
-        await supabase.auth.signInWithPassword({
-          email: form.email.trim().toLowerCase(),
-          password: form.password,
-        });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      });
 
       if (error) {
         throw error;
@@ -43,7 +44,7 @@ export default function Login() {
       const user = data.user;
 
       if (!user) {
-        throw new Error("تعذر قراءة بيانات المستخدم");
+        throw new Error(t("login.userDataError"));
       }
 
       const { data: profile, error: profileError } = await supabase
@@ -67,21 +68,16 @@ export default function Login() {
         return;
       }
 
-      const destination =
-        location.state?.from?.pathname || "/";
+      const destination = location.state?.from?.pathname || "/";
 
       navigate(destination, { replace: true });
     } catch (error) {
       console.error("LOGIN ERROR:", error);
 
       if (error.message === "Invalid login credentials") {
-        setErrorMessage(
-          "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-        );
+        setErrorMessage(t("login.invalidCredentials"));
       } else {
-        setErrorMessage(
-          error.message || "حدث خطأ أثناء تسجيل الدخول"
-        );
+        setErrorMessage(error.message || t("login.loginError"));
       }
     } finally {
       setLoading(false);
@@ -90,16 +86,16 @@ export default function Login() {
 
   return (
     <div
-      dir="rtl"
+      dir={i18n.dir()}
       className="min-h-screen bg-gray-50 flex items-center justify-center px-4"
     >
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center text-gray-800">
-          تسجيل الدخول
+          {t("login.title")}
         </h1>
 
         <p className="text-center text-gray-500 mt-2 mb-7">
-          أدخل بيانات حسابك
+          {t("login.subtitle")}
         </p>
 
         {errorMessage && (
@@ -111,7 +107,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-2 font-medium text-gray-700">
-              البريد الإلكتروني
+              {t("login.email")}
             </label>
 
             <input
@@ -128,7 +124,7 @@ export default function Login() {
 
           <div>
             <label className="block mb-2 font-medium text-gray-700">
-              كلمة المرور
+              {t("login.password")}
             </label>
 
             <input
@@ -137,7 +133,7 @@ export default function Login() {
               value={form.password}
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="أدخل كلمة المرور"
+              placeholder={t("login.passwordPlaceholder")}
               autoComplete="current-password"
               required
             />
@@ -148,17 +144,17 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-bold disabled:opacity-60"
           >
-            {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+            {loading ? t("login.loading") : t("login.button")}
           </button>
         </form>
 
         <p className="text-center text-gray-600 mt-6">
-          ليس لديك حساب؟{" "}
+          {t("login.noAccount")} {" "}
           <Link
             to="/register"
             className="text-orange-600 font-bold hover:underline"
           >
-            إنشاء حساب جديد
+            {t("login.createAccount")}
           </Link>
         </p>
       </div>

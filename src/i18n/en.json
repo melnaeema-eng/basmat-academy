@@ -66,6 +66,52 @@
   "title": "Our Training Courses",
   "description": "Choose the right course and start developing your technical skills with practical content and specialized trainers."
 },
+"login": {
+  "title": "Login",
+  "subtitle": "Sign in to your account",
+  "email": "Email Address",
+  "password": "Password",
+  "passwordPlaceholder": "Enter your password",
+  "button": "Login",
+  "loading": "Signing in...",
+  "noAccount": "Don't have an account?",
+  "createAccount": "Create Account",
+  "invalidCredentials": "Invalid email or password",
+  "loginError": "An error occurred while signing in"
+},
+"register": {
+  "title": "Create Account",
+  "subtitle": "Register at Basmat Alnawabigh Academy",
+
+  "fullName": "Full Name",
+  "fullNamePlaceholder": "Enter your full name",
+
+  "email": "Email Address",
+
+  "password": "Password",
+  "passwordPlaceholder": "At least 6 characters",
+
+  "confirmPassword": "Confirm Password",
+  "confirmPasswordPlaceholder": "Re-enter your password",
+
+  "button": "Create Account",
+  "loading": "Creating account...",
+
+  "haveAccount": "Already have an account?",
+  "login": "Login",
+
+  "success": "Your account has been created successfully. Redirecting to the login page.",
+
+  "errors": {
+    "fullName": "Please enter your full name",
+    "email": "Please enter your email address",
+    "passwordLength": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "userNotCreated": "Unable to create the user",
+    "alreadyRegistered": "This email address is already registered",
+    "registerError": "An error occurred while creating the account"
+  }
+},
   "about": {
     "badge": "About Us",
     "title": "Basmat Alnawabigh Academy",

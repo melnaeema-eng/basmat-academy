@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../services/supabase";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [form, setForm] = useState({
     fullName: "",
@@ -32,22 +34,22 @@ export default function Register() {
     setErrorMessage("");
 
     if (!form.fullName.trim()) {
-      setErrorMessage("يرجى إدخال الاسم الكامل");
+      setErrorMessage(t("register.errors.fullName"));
       return;
     }
 
     if (!form.email.trim()) {
-      setErrorMessage("يرجى إدخال البريد الإلكتروني");
+      setErrorMessage(t("register.errors.email"));
       return;
     }
 
     if (form.password.length < 6) {
-      setErrorMessage("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+      setErrorMessage(t("register.errors.passwordLength"));
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setErrorMessage("كلمتا المرور غير متطابقتين");
+      setErrorMessage(t("register.errors.passwordMismatch"));
       return;
     }
 
@@ -73,12 +75,10 @@ export default function Register() {
       }
 
       if (!data.user) {
-        throw new Error("لم يتم إنشاء المستخدم");
+        throw new Error(t("register.errors.userNotCreated"));
       }
 
-      setMessage(
-        "تم إنشاء الحساب بنجاح. سيتم تحويلك إلى صفحة تسجيل الدخول."
-      );
+      setMessage(t("register.success"));
 
       setForm({
         fullName: "",
@@ -97,11 +97,9 @@ export default function Register() {
         error.message?.toLowerCase().includes("already registered") ||
         error.message?.toLowerCase().includes("already exists")
       ) {
-        setErrorMessage("هذا البريد الإلكتروني مسجل مسبقًا");
+        setErrorMessage(t("register.errors.alreadyRegistered"));
       } else {
-        setErrorMessage(
-          error.message || "حدث خطأ أثناء إنشاء الحساب"
-        );
+        setErrorMessage(error.message || t("register.errors.registerError"));
       }
     } finally {
       setLoading(false);
@@ -110,16 +108,16 @@ export default function Register() {
 
   return (
     <div
-      dir="rtl"
+      dir={i18n.dir()}
       className="min-h-screen bg-gray-100 flex items-center justify-center px-4"
     >
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          إنشاء حساب جديد
+          {t("register.title")}
         </h1>
 
         <p className="text-gray-500 text-center mb-6">
-          التسجيل في أكاديمية بصمة النوابغ
+          {t("register.subtitle")}
         </p>
 
         {errorMessage && (
@@ -137,7 +135,7 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-1 font-medium text-gray-700">
-              الاسم الكامل
+              {t("register.fullName")}
             </label>
 
             <input
@@ -146,7 +144,7 @@ export default function Register() {
               value={form.fullName}
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="اكتب الاسم الكامل"
+              placeholder={t("register.fullNamePlaceholder")}
               autoComplete="name"
               required
             />
@@ -154,7 +152,7 @@ export default function Register() {
 
           <div>
             <label className="block mb-1 font-medium text-gray-700">
-              البريد الإلكتروني
+              {t("register.email")}
             </label>
 
             <input
@@ -171,7 +169,7 @@ export default function Register() {
 
           <div>
             <label className="block mb-1 font-medium text-gray-700">
-              كلمة المرور
+              {t("register.password")}
             </label>
 
             <input
@@ -180,7 +178,7 @@ export default function Register() {
               value={form.password}
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="6 أحرف على الأقل"
+              placeholder={t("register.passwordPlaceholder")}
               autoComplete="new-password"
               required
             />
@@ -188,7 +186,7 @@ export default function Register() {
 
           <div>
             <label className="block mb-1 font-medium text-gray-700">
-              تأكيد كلمة المرور
+              {t("register.confirmPassword")}
             </label>
 
             <input
@@ -197,7 +195,7 @@ export default function Register() {
               value={form.confirmPassword}
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="أعد كتابة كلمة المرور"
+              placeholder={t("register.confirmPasswordPlaceholder")}
               autoComplete="new-password"
               required
             />
@@ -208,17 +206,17 @@ export default function Register() {
             disabled={loading}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-bold disabled:opacity-60"
           >
-            {loading ? "جاري إنشاء الحساب..." : "إنشاء الحساب"}
+            {loading ? t("register.loading") : t("register.button")}
           </button>
         </form>
 
         <p className="text-center mt-6 text-gray-600">
-          لديك حساب بالفعل؟{" "}
+          {t("register.haveAccount")} {" "}
           <Link
             to="/login"
             className="text-orange-600 font-bold hover:underline"
           >
-            تسجيل الدخول
+            {t("register.login")}
           </Link>
         </p>
       </div>
