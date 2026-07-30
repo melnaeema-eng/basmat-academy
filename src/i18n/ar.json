@@ -1,0 +1,29 @@
+{
+  "navbar": {
+      
+  "brand": "بصمة النوابغ",
+  "user": "المستخدم",
+  "logoutError": "تعذر تسجيل الخروج، حاول مرة أخرى.",
+
+  "home": "الرئيسية",
+  "courses": "الدورات",
+    "about": "من نحن",
+    "contact": "تواصل معنا",
+    "login": "دخول",
+    "register": "إنشاء حساب",
+    "myCourses": "دوراتي",
+    "certificates": "شهاداتي",
+    "profile": "الملف الشخصي",
+    "dashboard": "لوحة التحكم",
+    "manageCourses": "إدارة الدورات",
+    "manageStudents": "إدارة الطلاب",
+    "logout": "تسجيل الخروج",
+    "student": "طالب",
+    "admin": "مدير النظام",
+    "search": "بحث",
+    "menu": "القائمة",
+    "language": "اللغة",
+    "arabic": "العربية",
+    "english": "English"
+  }
+}

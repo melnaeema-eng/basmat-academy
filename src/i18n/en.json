@@ -1,0 +1,27 @@
+{
+  "navbar": {
+    "home": "Home",
+    "courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Create Account",
+    "myCourses": "My Courses",
+    "certificates": "Certificates",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "manageCourses": "Manage Courses",
+    "manageStudents": "Manage Students",
+    "logout": "Logout",
+    "student": "Student",
+    "admin": "System Admin",
+    "search": "Search",
+    "menu": "Menu",
+    "language": "Language",
+    "arabic": "العربية",
+    "english": "English",
+     "brand": "Basmat Alnawabigh",
+     "user": "User",
+     "logoutError": "Unable to log out. Please try again."
+  }
+}

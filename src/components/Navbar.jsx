@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FaSearch,
   FaUser,
@@ -15,16 +16,20 @@ import {
 
 import logo from "../assets/images/logo.png";
 import { supabase } from "../services/supabase";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const { t, i18n } = useTranslation();
 
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const isArabic = i18n.language?.startsWith("ar");
 
   useEffect(() => {
     getCurrentUser();
@@ -109,7 +114,7 @@ export default function Navbar() {
           data?.full_name ||
           currentUser.user_metadata?.full_name ||
           currentUser.email?.split("@")[0] ||
-          "المستخدم",
+          t("navbar.user"),
 
         email: data?.email || currentUser.email || "",
 
@@ -125,7 +130,7 @@ export default function Navbar() {
         full_name:
           currentUser.user_metadata?.full_name ||
           currentUser.email?.split("@")[0] ||
-          "المستخدم",
+          t("navbar.user"),
 
         email: currentUser.email || "",
 
@@ -150,7 +155,7 @@ export default function Navbar() {
       navigate("/", { replace: true });
     } catch (error) {
       console.error("خطأ أثناء تسجيل الخروج:", error.message);
-      alert("تعذر تسجيل الخروج، حاول مرة أخرى.");
+      alert(t("navbar.logoutError"));
     }
   }
 
@@ -158,7 +163,7 @@ export default function Navbar() {
     profile?.full_name ||
     user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
-    "المستخدم";
+    t("navbar.user");
 
   const firstLetter = displayName.trim().charAt(0).toUpperCase();
 
@@ -170,9 +175,8 @@ export default function Navbar() {
       : "text-slate-700 hover:text-orange-500 transition-colors";
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50" dir="rtl">
+    <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 md:px-6 min-h-20 flex items-center justify-between gap-4">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-3 shrink-0">
           <img
             src={logo}
@@ -182,7 +186,7 @@ export default function Navbar() {
 
           <div className="hidden sm:block">
             <h1 className="text-xl font-bold text-slate-900">
-              بصمة النوابغ
+              {t("navbar.brand")}
             </h1>
 
             <p className="text-xs text-gray-500">
@@ -191,30 +195,30 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center gap-8">
           <NavLink to="/" className={navLinkClass}>
-            الرئيسية
+            {t("navbar.home")}
           </NavLink>
 
           <NavLink to="/courses" className={navLinkClass}>
-            الدورات
+            {t("navbar.courses")}
           </NavLink>
 
           <NavLink to="/about" className={navLinkClass}>
-            من نحن
+            {t("navbar.about")}
           </NavLink>
 
           <NavLink to="/contact" className={navLinkClass}>
-            تواصل معنا
+            {t("navbar.contact")}
           </NavLink>
         </nav>
 
-        {/* Right Side */}
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+
           <button
             type="button"
-            aria-label="بحث"
+            aria-label={t("navbar.search")}
             className="text-xl text-slate-700 hover:text-orange-500 transition-colors"
           >
             <FaSearch />
@@ -227,14 +231,14 @@ export default function Navbar() {
                 className="hidden sm:flex items-center gap-2 text-slate-700 hover:text-orange-500 transition-colors"
               >
                 <FaUser />
-                دخول
+                {t("navbar.login")}
               </Link>
 
               <Link
                 to="/register"
                 className="hidden sm:inline-flex bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg transition-colors"
               >
-                إنشاء حساب
+                {t("navbar.register")}
               </Link>
             </>
           )}
@@ -250,13 +254,17 @@ export default function Navbar() {
                   {firstLetter}
                 </div>
 
-                <div className="hidden md:block text-right">
+                <div
+                  className={`hidden md:block ${
+                    isArabic ? "text-right" : "text-left"
+                  }`}
+                >
                   <p className="text-sm font-semibold text-slate-900">
                     {displayName}
                   </p>
 
                   <p className="text-xs text-gray-500">
-                    {isAdmin ? "مدير النظام" : "طالب"}
+                    {isAdmin ? t("navbar.admin") : t("navbar.student")}
                   </p>
                 </div>
 
@@ -268,7 +276,11 @@ export default function Navbar() {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute left-0 mt-3 w-64 bg-white border border-gray-100 shadow-xl rounded-xl overflow-hidden">
+                <div
+                  className={`absolute mt-3 w-64 bg-white border border-gray-100 shadow-xl rounded-xl overflow-hidden ${
+                    isArabic ? "left-0" : "right-0"
+                  }`}
+                >
                   <div className="px-4 py-4 border-b bg-slate-50">
                     <p className="font-semibold text-slate-900">
                       {displayName}
@@ -285,21 +297,21 @@ export default function Navbar() {
                         <DropdownLink
                           to="/admin/dashboard"
                           icon={<FaTachometerAlt />}
-                          label="لوحة التحكم"
+                          label={t("navbar.dashboard")}
                           onClick={() => setDropdownOpen(false)}
                         />
 
                         <DropdownLink
                           to="/admin/courses"
                           icon={<FaBookOpen />}
-                          label="إدارة الدورات"
+                          label={t("navbar.manageCourses")}
                           onClick={() => setDropdownOpen(false)}
                         />
 
                         <DropdownLink
                           to="/admin/students"
                           icon={<FaUsers />}
-                          label="إدارة الطلاب"
+                          label={t("navbar.manageStudents")}
                           onClick={() => setDropdownOpen(false)}
                         />
                       </>
@@ -308,21 +320,21 @@ export default function Navbar() {
                         <DropdownLink
                           to="/my-courses"
                           icon={<FaBookOpen />}
-                          label="دوراتي"
+                          label={t("navbar.myCourses")}
                           onClick={() => setDropdownOpen(false)}
                         />
 
                         <DropdownLink
                           to="/certificates"
                           icon={<FaCertificate />}
-                          label="شهاداتي"
+                          label={t("navbar.certificates")}
                           onClick={() => setDropdownOpen(false)}
                         />
 
                         <DropdownLink
                           to="/profile"
                           icon={<FaUserCircle />}
-                          label="الملف الشخصي"
+                          label={t("navbar.profile")}
                           onClick={() => setDropdownOpen(false)}
                         />
                       </>
@@ -336,7 +348,7 @@ export default function Navbar() {
                       className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <FaSignOutAlt />
-                      تسجيل الخروج
+                      {t("navbar.logout")}
                     </button>
                   </div>
                 </div>
@@ -346,7 +358,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            aria-label="القائمة"
+            aria-label={t("navbar.menu")}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             className="lg:hidden text-2xl text-slate-700 hover:text-orange-500"
           >
@@ -355,7 +367,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t bg-white px-4 py-4 shadow-md">
           <nav className="flex flex-col gap-4">
@@ -364,7 +375,7 @@ export default function Navbar() {
               className={navLinkClass}
               onClick={() => setMobileMenuOpen(false)}
             >
-              الرئيسية
+              {t("navbar.home")}
             </NavLink>
 
             <NavLink
@@ -372,7 +383,7 @@ export default function Navbar() {
               className={navLinkClass}
               onClick={() => setMobileMenuOpen(false)}
             >
-              الدورات
+              {t("navbar.courses")}
             </NavLink>
 
             <NavLink
@@ -380,7 +391,7 @@ export default function Navbar() {
               className={navLinkClass}
               onClick={() => setMobileMenuOpen(false)}
             >
-              من نحن
+              {t("navbar.about")}
             </NavLink>
 
             <NavLink
@@ -388,7 +399,7 @@ export default function Navbar() {
               className={navLinkClass}
               onClick={() => setMobileMenuOpen(false)}
             >
-              تواصل معنا
+              {t("navbar.contact")}
             </NavLink>
 
             {!user && (
@@ -399,7 +410,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 text-slate-700"
                 >
                   <FaUser />
-                  تسجيل الدخول
+                  {t("navbar.login")}
                 </Link>
 
                 <Link
@@ -407,7 +418,7 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-center bg-orange-500 text-white py-2 rounded-lg"
                 >
-                  إنشاء حساب
+                  {t("navbar.register")}
                 </Link>
               </div>
             )}
@@ -419,7 +430,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 text-red-600 pt-4 border-t"
               >
                 <FaSignOutAlt />
-                تسجيل الخروج
+                {t("navbar.logout")}
               </button>
             )}
           </nav>
