@@ -20,8 +20,74 @@
     "language": "Language",
     "arabic": "العربية",
     "english": "English",
-     "brand": "Basmat Alnawabigh",
-     "user": "User",
-     "logoutError": "Unable to log out. Please try again."
+    "brand": "Basmat Alnawabigh",
+    "user": "User",
+    "logoutError": "Unable to log out. Please try again."
+  },
+
+  "home": {
+    "hero": {
+      "title": "Learn the Skills of the Future",
+      "description": "Basmat Alnawabigh Academy is a professional platform for learning networking, cybersecurity, artificial intelligence, cloud computing, and data centers.",
+      "startNow": "Start Now",
+      "browseCourses": "Browse Courses",
+      "imageAlt": "Online learning"
+    },
+
+    "stats": {
+      "students": "Students",
+      "courses": "Training Courses",
+      "trainers": "Professional Trainers",
+      "certificates": "Professional Certificates"
+    },
+
+    "coursesSection": {
+      "title": "Latest Courses",
+      "loading": "Loading courses...",
+      "empty": "No courses are currently available.",
+      "loadError": "Unable to load courses. Please try again."
+    }
+  },
+  "contact": {
+  "badge": "Contact Us",
+  "title": "We'd Love to Hear From You",
+  "description": "If you have any questions or would like to enroll in one of our courses, feel free to contact us.",
+
+  "info": "Contact Information",
+  "sendMessage": "Send a Message",
+
+  "name": "Full Name",
+  "email": "Email Address",
+  "message": "Write your message here...",
+  "send": "Send Message"
+},
+"courses": {
+  "badge": "Learn and Grow",
+  "title": "Our Training Courses",
+  "description": "Choose the right course and start developing your technical skills with practical content and specialized trainers."
+},
+  "about": {
+    "badge": "About Us",
+    "title": "Basmat Alnawabigh Academy",
+    "description": "A specialized technology training platform in telecommunications, networking, cybersecurity, artificial intelligence, cloud computing, and data centers. We provide practical training that equips learners with the skills required in today's job market.",
+
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become a leading technology training platform in Saudi Arabia and the region."
+    },
+
+    "mission": {
+      "title": "Our Mission",
+      "description": "To provide practical, professional training that connects theoretical knowledge with real-world applications."
+    },
+
+    "values": {
+      "title": "Our Values",
+      "description": "Quality, professionalism, innovation, integrity, and continuous improvement."
+    },
+    "course": {
+  "free": "Free",
+  "details": "Details"
+}
   }
 }

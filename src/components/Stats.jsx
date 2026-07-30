@@ -1,17 +1,19 @@
+import { useTranslation } from "react-i18next";
+
 export default function Stats() {
+  const { t } = useTranslation();
+
   const stats = [
-    { number: "+1000", label: "طالب" },
-    { number: "+50", label: "دورة تدريبية" },
-    { number: "+25", label: "مدرب محترف" },
-    { number: "+15", label: "شهادة احترافية" },
+    { number: "+1000", label: t("home.stats.students") },
+    { number: "+50", label: t("home.stats.courses") },
+    { number: "+25", label: t("home.stats.trainers") },
+    { number: "+15", label: t("home.stats.certificates") },
   ];
 
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-6">
-
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-
           {stats.map((item, index) => (
             <div
               key={index}
@@ -26,9 +28,7 @@ export default function Stats() {
               </p>
             </div>
           ))}
-
         </div>
-
       </div>
     </section>
   );
