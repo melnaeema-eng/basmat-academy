@@ -46,13 +46,13 @@ export default function AppRouter() {
 
         {/* صفحات الإدارة المحمية */}
         <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
+  path="/admin"
+  element={
+    <ProtectedRoute >
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
           <Route
             path="dashboard"
             element={<Dashboard />}

@@ -139,25 +139,30 @@ export default function Navbar() {
     }
   }
 
-  async function handleLogout() {
-    try {
-      const { error } = await supabase.auth.signOut();
+ async function handleLogout() {
+  try {
+    setLoading(true);
 
-      if (error) {
-        throw error;
-      }
+    const { error } = await supabase.auth.signOut({
+      scope: "local",
+    });
 
-      setUser(null);
-      setProfile(null);
-      setDropdownOpen(false);
-      setMobileMenuOpen(false);
-
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error("خطأ أثناء تسجيل الخروج:", error.message);
-      alert(t("navbar.logoutError"));
+    if (error) {
+      throw error;
     }
+
+    setUser(null);
+    setProfile(null);
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+
+    window.location.replace("/login");
+  } catch (error) {
+    console.error("خطأ أثناء تسجيل الخروج:", error.message);
+    alert(t("navbar.logoutError"));
+    setLoading(false);
   }
+}
 
   const displayName =
     profile?.full_name ||

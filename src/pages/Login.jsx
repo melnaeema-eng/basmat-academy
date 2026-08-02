@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../services/supabase";
 
@@ -13,8 +17,113 @@ export default function Login() {
     password: "",
   });
 
+  const [checkingSession, setCheckingSession] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function redirectAuthenticatedUser(user) {
+      if (!user) {
+        if (isMounted) {
+          setCheckingSession(false);
+        }
+
+        return;
+      }
+
+      try {
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          throw error;
+        }
+
+        const role = profile?.role?.trim().toLowerCase();
+
+        if (!isMounted) return;
+
+        if (role === "admin") {
+          navigate("/admin/dashboard", {
+            replace: true,
+          });
+
+          return;
+        }
+
+        navigate("/", {
+          replace: true,
+        });
+      } catch (error) {
+        console.error(
+          "SESSION CHECK ERROR:",
+          error
+        );
+
+        if (isMounted) {
+          setCheckingSession(false);
+        }
+      }
+    }
+
+    async function checkExistingSession() {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error(
+          "GET SESSION ERROR:",
+          error
+        );
+
+        if (isMounted) {
+          setCheckingSession(false);
+        }
+
+        return;
+      }
+
+      await redirectAuthenticatedUser(
+        session?.user
+      );
+    }
+
+    checkExistingSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (
+          event === "SIGNED_IN" &&
+          session?.user
+        ) {
+          redirectAuthenticatedUser(
+            session.user
+          );
+        }
+
+        if (
+          event === "SIGNED_OUT" &&
+          isMounted
+        ) {
+          setCheckingSession(false);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -32,10 +141,13 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-      });
+      const { data, error } =
+        await supabase.auth.signInWithPassword({
+          email: form.email
+            .trim()
+            .toLowerCase(),
+          password: form.password,
+        });
 
       if (error) {
         throw error;
@@ -44,69 +156,108 @@ export default function Login() {
       const user = data.user;
 
       if (!user) {
-        throw new Error(t("login.userDataError"));
+        throw new Error(
+          t("login.userDataError")
+        );
       }
 
-      const { data: profile, error: profileError } = await supabase
+      const {
+        data: profile,
+        error: profileError,
+      } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", user.id)
         .maybeSingle();
 
-      console.log("LOGIN USER:", user);
-      console.log("LOGIN PROFILE:", profile);
-      console.log("PROFILE ERROR:", profileError);
-
       if (profileError) {
         throw profileError;
       }
 
-      const role = profile?.role?.trim().toLowerCase();
+      const role = profile?.role
+        ?.trim()
+        .toLowerCase();
 
       if (role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
+        navigate("/admin/dashboard", {
+          replace: true,
+        });
+
         return;
       }
 
-      const destination = location.state?.from?.pathname || "/";
+      const destination =
+        location.state?.from?.pathname ||
+        "/";
 
-      navigate(destination, { replace: true });
+      navigate(destination, {
+        replace: true,
+      });
     } catch (error) {
-      console.error("LOGIN ERROR:", error);
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
 
-      if (error.message === "Invalid login credentials") {
-        setErrorMessage(t("login.invalidCredentials"));
+      if (
+        error.message ===
+        "Invalid login credentials"
+      ) {
+        setErrorMessage(
+          t("login.invalidCredentials")
+        );
       } else {
-        setErrorMessage(error.message || t("login.loginError"));
+        setErrorMessage(
+          error.message ||
+            t("login.loginError")
+        );
       }
     } finally {
       setLoading(false);
     }
   }
 
+  if (checkingSession) {
+    return (
+      <div
+        dir={i18n.dir()}
+        className="flex min-h-screen items-center justify-center bg-gray-50"
+      >
+        <p className="text-gray-500">
+          {i18n.language === "ar"
+            ? "جارٍ التحقق من الجلسة..."
+            : "Checking session..."}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       dir={i18n.dir()}
-      className="min-h-screen bg-gray-50 flex items-center justify-center px-4"
+      className="flex min-h-screen items-center justify-center bg-gray-50 px-4"
     >
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+        <h1 className="text-center text-3xl font-bold text-gray-800">
           {t("login.title")}
         </h1>
 
-        <p className="text-center text-gray-500 mt-2 mb-7">
+        <p className="mb-7 mt-2 text-center text-gray-500">
           {t("login.subtitle")}
         </p>
 
         {errorMessage && (
-          <div className="mb-4 bg-red-100 text-red-700 rounded-lg p-3">
+          <div className="mb-4 rounded-lg bg-red-100 p-3 text-red-700">
             {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           <div>
-            <label className="block mb-2 font-medium text-gray-700">
+            <label className="mb-2 block font-medium text-gray-700">
               {t("login.email")}
             </label>
 
@@ -115,7 +266,7 @@ export default function Login() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
               placeholder="example@email.com"
               autoComplete="email"
               required
@@ -123,7 +274,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-gray-700">
+            <label className="mb-2 block font-medium text-gray-700">
               {t("login.password")}
             </label>
 
@@ -132,8 +283,10 @@ export default function Login() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder={t("login.passwordPlaceholder")}
+              className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder={t(
+                "login.passwordPlaceholder"
+              )}
               autoComplete="current-password"
               required
             />
@@ -142,17 +295,20 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-bold disabled:opacity-60"
+            className="w-full rounded-lg bg-orange-500 py-3 font-bold text-white hover:bg-orange-600 disabled:opacity-60"
           >
-            {loading ? t("login.loading") : t("login.button")}
+            {loading
+              ? t("login.loading")
+              : t("login.button")}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-6">
-          {t("login.noAccount")} {" "}
+        <p className="mt-6 text-center text-gray-600">
+          {t("login.noAccount")}{" "}
           <Link
             to="/register"
-            className="text-orange-600 font-bold hover:underline"
+            replace
+            className="font-bold text-orange-600 hover:underline"
           >
             {t("login.createAccount")}
           </Link>
