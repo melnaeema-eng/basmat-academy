@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "../services/supabase";
 
-const IDLE_TIME = 30 * 1000; // 30 ثانية للاختبار
+const IDLE_TIME = 5 * 60 * 1000 // 30 ثانية للاختبار
 
 export default function IdleLogout() {
   const timerRef = useRef(null);
