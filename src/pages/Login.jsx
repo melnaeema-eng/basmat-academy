@@ -43,7 +43,7 @@ export default function Login() {
         if (error) {
           throw error;
         }
-
+sessionStorage.removeItem("logged_out");
         const role = profile?.role?.trim().toLowerCase();
 
         if (!isMounted) return;

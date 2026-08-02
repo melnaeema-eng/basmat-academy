@@ -156,6 +156,9 @@ export default function Navbar() {
     setDropdownOpen(false);
     setMobileMenuOpen(false);
 
+    // علامة تمنع استعادة بيانات المستخدم من الصفحات القديمة
+    sessionStorage.setItem("logged_out", "true");
+
     window.location.replace("/login");
   } catch (error) {
     console.error("خطأ أثناء تسجيل الخروج:", error.message);
