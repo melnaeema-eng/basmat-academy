@@ -10,6 +10,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 import ProtectedRoute from "../components/ProtectedRoute";
+import IdleLogout from "../components/IdleLogout";
 
 // Admin
 import Dashboard from "../pages/admin/Dashboard";
@@ -23,8 +24,9 @@ import EditCourse from "../pages/admin/EditCourse";
 export default function AppRouter() {
   return (
     <BrowserRouter>
+      <IdleLogout />
+
       <Routes>
-        {/* صفحات الموقع */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -38,21 +40,19 @@ export default function AppRouter() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* تسجيل دخول الإدارة */}
         <Route
           path="/admin/login"
           element={<AdminLogin />}
         />
 
-        {/* صفحات الإدارة المحمية */}
         <Route
-  path="/admin"
-  element={
-    <ProtectedRoute >
-      <AdminLayout />
-    </ProtectedRoute>
-  }
->
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="dashboard"
             element={<Dashboard />}
@@ -79,7 +79,6 @@ export default function AppRouter() {
           />
         </Route>
 
-        {/* أي رابط غير موجود */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
