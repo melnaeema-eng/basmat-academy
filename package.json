@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.110.8",
     "framer-motion": "^12.42.2",
     "i18next": "^26.3.6",
+    "qrcode": "^1.5.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-i18next": "^17.0.11",

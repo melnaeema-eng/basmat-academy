@@ -12,6 +12,8 @@ import {
   FaSignOutAlt,
   FaTachometerAlt,
   FaUsers,
+  FaBell,
+  FaCreditCard,
 } from "react-icons/fa";
 
 import logo from "../assets/images/logo.png";
@@ -101,7 +103,7 @@ export default function Navbar() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, email, role")
+        .select("full_name, email, role, avatar_url")
         .eq("id", currentUser.id)
         .maybeSingle();
 
@@ -122,6 +124,7 @@ export default function Navbar() {
           data?.role ||
           currentUser.user_metadata?.role ||
           "student",
+        avatar_url: data?.avatar_url || "",
       });
     } catch (error) {
       console.error("خطأ في قراءة الملف الشخصي:", error.message);
@@ -135,6 +138,7 @@ export default function Navbar() {
         email: currentUser.email || "",
 
         role: currentUser.user_metadata?.role || "student",
+        avatar_url: "",
       });
     }
   }
@@ -258,8 +262,8 @@ export default function Navbar() {
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-slate-100 transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
-                  {firstLetter}
+                <div className="w-10 h-10 overflow-hidden rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+                  {profile?.avatar_url ? <img src={profile.avatar_url} alt={displayName} className="h-full w-full object-cover" /> : firstLetter}
                 </div>
 
                 <div
@@ -329,6 +333,20 @@ export default function Navbar() {
                           to="/my-courses"
                           icon={<FaBookOpen />}
                           label={t("navbar.myCourses")}
+                          onClick={() => setDropdownOpen(false)}
+                        />
+
+                        <DropdownLink
+                          to="/notifications"
+                          icon={<FaBell />}
+                          label="الإشعارات"
+                          onClick={() => setDropdownOpen(false)}
+                        />
+
+                        <DropdownLink
+                          to="/my-payments"
+                          icon={<FaCreditCard />}
+                          label="مدفوعاتي"
                           onClick={() => setDropdownOpen(false)}
                         />
 

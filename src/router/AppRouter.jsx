@@ -9,6 +9,15 @@ import CourseDetails from "../pages/CourseDetails";
 import MyCourses from "../pages/MyCourses";
 import LearnCourse from "../pages/LearnCourse";
 import Checkout from "../pages/Checkout";
+import MyPayments from "../pages/MyPayments";
+import Notifications from "../pages/Notifications";
+import Profile from "../pages/Profile";
+import Exams from "../pages/Exams";
+import ExamAttempt from "../pages/ExamAttempt";
+import Certificates from "../pages/Certificates";
+import CertificateView from "../pages/CertificateView";
+import VerifyCertificate from "../pages/VerifyCertificate";
+import CourseCompletion from "../pages/CourseCompletion";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
@@ -25,6 +34,9 @@ import ViewCourse from "../pages/admin/ViewCourse";
 import EditCourse from "../pages/admin/EditCourse";
 import Lessons from "../pages/admin/Lessons";
 import Payments from "../pages/admin/Payments";
+import Students from "../pages/admin/Students";
+import AdminExams from "../pages/admin/Exams";
+import AdminCertificates from "../pages/admin/Certificates";
 
 export default function AppRouter() {
   return (
@@ -45,6 +57,15 @@ export default function AppRouter() {
         <Route path="/my-courses" element={<MyCourses />} />
         <Route path="/learn/:courseId" element={<LearnCourse />} />
         <Route path="/checkout/:courseId" element={<Checkout />} />
+        <Route path="/my-payments" element={<MyPayments />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/exams/:courseId" element={<Exams />} />
+        <Route path="/exam/:examId" element={<ExamAttempt />} />
+        <Route path="/certificates" element={<Certificates />} />
+        <Route path="/certificates/:id" element={<CertificateView />} />
+        <Route path="/verify/:token" element={<VerifyCertificate />} />
+        <Route path="/completion/:courseId" element={<CourseCompletion />} />
 
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
@@ -95,6 +116,18 @@ export default function AppRouter() {
           <Route
             path="payments"
             element={<Payments />}
+          />
+          <Route
+            path="students"
+            element={<Students />}
+          />
+          <Route
+            path="courses/:courseId/exams"
+            element={<AdminExams />}
+          />
+          <Route
+            path="certificates"
+            element={<AdminCertificates />}
           />
         </Route>
 

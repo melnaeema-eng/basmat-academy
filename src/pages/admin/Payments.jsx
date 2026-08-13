@@ -60,8 +60,12 @@ export default function Payments() {
   }
 
   async function reject(payment) {
-    const note = prompt("سبب الرفض (اختياري):", "");
+    const note = prompt("سبب الرفض (إجباري):", "");
     if (note === null) return;
+    if (!note.trim()) {
+      alert("يجب كتابة سبب الرفض حتى يظهر للطالب.");
+      return;
+    }
     try {
       setBusyId(payment.id);
       await rejectBankPayment(payment.id, note);

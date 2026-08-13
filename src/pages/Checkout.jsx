@@ -49,6 +49,7 @@ export default function Checkout() {
   const [reference, setReference] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [pendingPayment, setPendingPayment] = useState(null);
+  const [rejectedPayment, setRejectedPayment] = useState(null);
   const [paypalError, setPaypalError] = useState("");
 
   const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
@@ -94,7 +95,9 @@ export default function Checkout() {
 
         const previous = await getMyPayments(currentUser.id, courseId);
         const pending = previous.find((p) => p.status === "pending" && p.method === "bank_transfer");
+        const rejected = previous.find((p) => p.status === "rejected" && p.method === "bank_transfer");
         setPendingPayment(pending || null);
+        setRejectedPayment(pending ? null : (rejected || null));
       } catch (e) {
         console.error("CHECKOUT LOAD ERROR:", e);
         setError(e.message || "تعذر تحميل صفحة الدفع");
@@ -170,6 +173,7 @@ export default function Checkout() {
         bankReference: reference,
       });
       setPendingPayment(payment);
+      setRejectedPayment(null);
       setReceipt(null);
       setReference("");
     } catch (e) {
@@ -222,6 +226,13 @@ export default function Checkout() {
                   </div>
                 ) : (
                   <>
+                    {rejectedPayment && (
+                      <div className="mb-5 rounded-xl border border-red-300 bg-red-50 p-5 text-red-900">
+                        <h2 className="font-bold">تم رفض الإيصال السابق</h2>
+                        <p className="mt-2 text-sm">السبب: {rejectedPayment.admin_note || "لم يتم تسجيل سبب الرفض"}</p>
+                        <p className="mt-2 text-sm font-semibold">يمكنك رفع إيصال جديد الآن، وسيبقى الإيصال السابق محفوظًا.</p>
+                      </div>
+                    )}
                     <div className="mb-5 rounded-xl bg-slate-50 p-5 text-sm leading-8">
                       <div><b>البنك:</b> {bankName}</div>
                       <div><b>اسم الحساب:</b> {accountName || "يُضاف في ملف .env"}</div>

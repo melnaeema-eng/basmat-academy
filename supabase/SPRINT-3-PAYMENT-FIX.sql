@@ -1,0 +1,3 @@
+alter table public.payments add column if not exists rejection_reason text, add column if not exists reviewed_at timestamptz, add column if not exists reviewed_by uuid references auth.users(id);
+do $$ declare r record; begin for r in select conname from pg_constraint where conrelid='public.payments'::regclass and contype='c' and pg_get_constraintdef(oid) ilike '%status%' loop execute format('alter table public.payments drop constraint if exists %I',r.conname); end loop; end $$;
+alter table public.payments add constraint payments_status_check check (status in ('pending','paid','failed','rejected','refunded'));

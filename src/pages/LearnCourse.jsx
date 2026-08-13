@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
+import { issueCertificateIfEligible } from '../services/certificateService';
 import { supabase } from '../services/supabase';
 import { getCurrentUser, getEnrollment } from '../services/enrollmentService';
 import {
@@ -99,6 +100,9 @@ export default function LearnCourse() {
       const nextProgress = lessons.length ? Math.round((next.size / lessons.length) * 100) : 0;
       await updateEnrollmentProgress(courseId, userId, nextProgress);
       setCompletedIds(next);
+      if (nextProgress === 100) {
+        try { await issueCertificateIfEligible(courseId); } catch { /* final exam may still be required */ }
+      }
     } catch (err) {
       alert(err.message || 'تعذر تحديث التقدم');
     }
@@ -134,6 +138,11 @@ export default function LearnCourse() {
               <div className="min-w-56">
                 <div className="mb-2 flex justify-between text-sm"><span>التقدم</span><span>{progress}%</span></div>
                 <div className="h-2 overflow-hidden rounded-full bg-gray-200"><div className="h-full bg-orange-500" style={{ width: `${progress}%` }} /></div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Link to={`/exams/${courseId}`} className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white">اختبارات الدورة</Link>
+                  <Link to={`/completion/${courseId}`} className="rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold text-white">حالة الإكمال</Link>
+                  {progress === 100 && <Link to="/certificates" className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white">الشهادات</Link>}
+                </div>
               </div>
             </div>
           </div>

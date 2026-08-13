@@ -117,6 +117,12 @@ export default function Courses() {
   📚 الدروس
 </Link>
 <Link
+  to={`/admin/courses/${course.id}/exams`}
+  className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded"
+>
+  📝 الاختبارات
+</Link>
+<Link
   to={`/admin/edit-course/${course.id}`}
   className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded"
 >

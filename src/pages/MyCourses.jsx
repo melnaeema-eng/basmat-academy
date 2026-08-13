@@ -50,11 +50,16 @@ export default function MyCourses() {
                     <h2 className="text-xl font-bold text-gray-900">{course.title_ar || course.title || course.title_en || "دورة"}</h2>
                     <p className="mt-3 text-sm text-gray-500">التقدم: {item.progress ?? 0}%</p>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200"><div className="h-full bg-orange-500" style={{ width: `${item.progress ?? 0}%` }} /></div>
-                    {(course.course_type || "recorded") === "recorded" ? (
-                      <Link to={`/learn/${course.id}`} className="mt-5 inline-block rounded-lg bg-blue-700 px-5 py-2 font-semibold text-white">ابدأ التعلم</Link>
-                    ) : (
-                      <Link to={`/courses/${course.id}`} className="mt-5 inline-block rounded-lg bg-blue-700 px-5 py-2 font-semibold text-white">فتح الدورة</Link>
-                    )}
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {(course.course_type || "recorded") === "recorded" ? (
+                        <Link to={`/learn/${course.id}`} className="inline-block rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">ابدأ التعلم</Link>
+                      ) : (
+                        <Link to={`/courses/${course.id}`} className="inline-block rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">فتح الدورة</Link>
+                      )}
+                      <Link to={`/exams/${course.id}`} className="inline-block rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white">الاختبارات</Link>
+                      <Link to={`/completion/${course.id}`} className="inline-block rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white">الإكمال</Link>
+                      {(item.progress ?? 0) === 100 && <Link to="/certificates" className="inline-block rounded-lg bg-green-600 px-4 py-2 font-semibold text-white">الشهادة</Link>}
+                    </div>
                   </div>
                 </article>
               );

@@ -43,10 +43,24 @@ export default function AdminLayout() {
           </Link>
 
           <Link
+            to="/admin/students"
+            className="block p-3 rounded hover:bg-slate-700"
+          >
+            👨‍🎓 إدارة الطلاب
+          </Link>
+
+          <Link
             to="/admin/payments"
             className="block p-3 rounded hover:bg-slate-700"
           >
             💳 المدفوعات
+          </Link>
+
+          <Link
+            to="/admin/certificates"
+            className="block p-3 rounded hover:bg-slate-700"
+          >
+            🏆 الشهادات
           </Link>
 
           <Link

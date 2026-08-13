@@ -1,0 +1,42 @@
+SPRINT 3 COMPLETE - INTEGRATION NOTES
+=====================================
+الملفات المضافة:
+- src/pages/admin/Students.jsx
+- src/pages/MyPayments.jsx
+- src/pages/Notifications.jsx
+- src/services/studentAdminService.js
+- src/services/paymentServiceComplete.js
+- src/services/notificationService.js
+- supabase/SPRINT-3-COMPLETE.sql
+
+المسارات المطلوب التأكد من وجودها في AppRouter.jsx:
+- /admin/students -> Students
+- /payments أو /my-payments -> MyPayments
+- /notifications -> Notifications
+
+في صفحة Admin الخاصة بمراجعة الدفعات:
+استورد:
+  import { approvePayment, rejectPayment } from '../../services/paymentServiceComplete';
+
+عند القبول:
+  await approvePayment(payment)
+
+عند الرفض:
+  const reason = prompt('اكتب سبب الرفض')
+  if (!reason?.trim()) return
+  await rejectPayment(payment, reason)
+
+في صفحة Checkout الحالية:
+إذا كان آخر payment حالته rejected:
+- اعرض rejection_reason
+- لا تمنع رفع إيصال جديد
+- عند رفع إيصال جديد أنشئ سجل payments جديد status=pending
+- لا تعدّل أو تحذف السجل القديم
+
+معيار النجاح:
+1) /admin/students لا يرجع 404.
+2) Admin يرفض دفعًا مع سبب إلزامي.
+3) الطالب يرى إشعار رفض وسبب الرفض.
+4) الطالب يستطيع إعادة رفع إيصال جديد.
+5) قبول الدفع ينشئ/يفعّل enrollment ويصل إشعار قبول.
+6) تاريخ محاولات الدفع يبقى محفوظًا.
