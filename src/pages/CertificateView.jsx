@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom';
 import QRCode from 'qrcode';
 import {getCertificate} from '../services/certificateService';
 import logo from '../assets/images/logo.png';
+import './certificate-print.css';
 
 export default function CertificateView(){
  const {id}=useParams();const [c,setC]=useState(null),[qr,setQr]=useState(''),[error,setError]=useState('');
@@ -10,10 +11,10 @@ export default function CertificateView(){
  if(error)return <div className="p-10 text-center text-red-700">{error}</div>;if(!c)return <div className="p-10 text-center">جاري التحميل...</div>;
  const active=(c.status||'active')==='active';
  return <main className="min-h-screen bg-slate-100 p-6 print:bg-white print:p-0" dir="rtl">
-  <div className="mx-auto max-w-[1120px] bg-white p-3 shadow-2xl print:shadow-none">
-   <div className="relative min-h-[720px] overflow-hidden border-[3px] border-amber-500 p-2">
+  <div id="certificate-print" className="mx-auto max-w-[1120px] bg-white p-3 shadow-2xl print:shadow-none">
+   <div className="certificate-frame relative min-h-[720px] overflow-hidden border-[3px] border-amber-500 p-2">
     <div className="absolute inset-3 border border-slate-800 pointer-events-none"/>
-    <div className="relative flex min-h-[690px] flex-col items-center justify-between px-10 py-8 text-center">
+    <div className="certificate-content relative flex min-h-[690px] flex-col items-center justify-between px-10 py-8 text-center">
      <div>
       <img src={logo} alt="Basmat Alnawabigh" className="mx-auto h-24 w-auto object-contain"/>
       <div className="mt-2 text-sm font-bold tracking-[.25em] text-slate-700">BASMAT ALNAWABIGH ACADEMY</div>
@@ -41,6 +42,6 @@ export default function CertificateView(){
     </div>
    </div>
   </div>
-  <div className="mx-auto mt-5 flex max-w-[1120px] justify-center gap-3 print:hidden"><button onClick={()=>window.print()} className="rounded-lg bg-amber-600 px-6 py-3 font-bold text-white">طباعة / حفظ PDF</button><button onClick={()=>history.back()} className="rounded-lg bg-slate-200 px-6 py-3">رجوع</button></div>
+  <div className="certificate-no-print mx-auto mt-5 flex max-w-[1120px] justify-center gap-3 print:hidden"><button onClick={()=>window.print()} className="rounded-lg bg-amber-600 px-6 py-3 font-bold text-white">طباعة / حفظ PDF</button><button onClick={()=>history.back()} className="rounded-lg bg-slate-200 px-6 py-3">رجوع</button></div>
  </main>
 }

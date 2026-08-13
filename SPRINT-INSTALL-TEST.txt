@@ -1,38 +1,37 @@
-SPRINT 4 — LUXURY CERTIFICATE + QR VERIFY
-========================================
-يشمل:
-- شعار الأكاديمية من src/assets/images/logo.png
-- تصميم شهادة فاخر
-- QR محلي داخل المتصفح
-- صفحة تحقق عامة /verify/:token
-- رقم شهادة + تاريخ + مدرب
-- Active / Revoked
-- إلغاء/إعادة تفعيل من Admin
+SPRINT 4 — CERTIFICATE A4 LANDSCAPE PRINT FIX
+=============================================
+المشكلة:
+الشهادة كانت أكبر من مساحة الطباعة الفعلية، لذلك المتصفح يقسمها على ورقتين.
 
-1) PowerShell:
+الإصلاح:
+- A4 Landscape إجباري.
+- 297mm × 210mm.
+- صفحة واحدة فقط.
+- إخفاء أزرار الشاشة أثناء الطباعة.
+- منع page-break داخل الشهادة.
+- الحفاظ على الشعار وQR والألوان.
+
+لا يوجد SQL.
+
+التثبيت:
 cd C:\projects\basmat-academy
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-4-CERTIFICATE-UPGRADE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 
-2) تثبيت QR package:
-npm install qrcode
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-4-CERTIFICATE-A4-LANDSCAPE-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 
-3) Supabase SQL Editor:
-شغّل supabase\SPRINT-4-CERTIFICATE-UPGRADE.sql
-
-4) npm run dev
+npm run dev
 
 الاختبار:
-- الطالب > شهاداتي > عرض الشهادة.
-- يجب ظهور الشعار والتصميم وQR.
-- امسح QR بالموبايل (عند النشر على الدومين سيشير للدومين العام؛ localhost يعمل فقط على نفس الجهاز).
-- صفحة /verify/<token> يجب أن تعرض اسم الطالب، الدورة، الرقم، التاريخ، والحالة.
-- Admin > الشهادات > إلغاء.
-- أعد فتح رابط QR: يجب أن يظهر "الشهادة ملغاة".
-- أعد التفعيل واختبر مرة أخرى.
-- طباعة / حفظ PDF وتأكد أن عناصر الأزرار لا تظهر في الطباعة.
+1. افتح شهادة.
+2. اضغط طباعة / حفظ PDF.
+3. اختر Paper size = A4.
+4. Layout = Landscape.
+5. Scale = Default أو 100%.
+6. Margins = None.
+7. فعّل Background graphics إذا أردت كل تفاصيل التصميم.
+8. Preview يجب أن يظهر 1 page فقط.
 
 بعد النجاح:
 npm run build
 git add .
-git commit -m "Upgrade certificates with luxury design QR verification"
+git commit -m "Fix certificate A4 landscape single page printing"
 git push
