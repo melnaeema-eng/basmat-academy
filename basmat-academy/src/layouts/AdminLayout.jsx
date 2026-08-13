@@ -43,13 +43,6 @@ export default function AdminLayout() {
           </Link>
 
           <Link
-            to="/admin/payments"
-            className="block p-3 rounded hover:bg-slate-700"
-          >
-            💳 المدفوعات
-          </Link>
-
-          <Link
             to="/"
             className="block p-3 rounded hover:bg-slate-700"
           >

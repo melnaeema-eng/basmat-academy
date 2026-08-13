@@ -6,14 +6,13 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Courses from "../pages/Courses";
 import CourseDetails from "../pages/CourseDetails";
-import MyCourses from "../pages/MyCourses";
-import LearnCourse from "../pages/LearnCourse";
-import Checkout from "../pages/Checkout";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 import ProtectedRoute from "../components/ProtectedRoute";
 import IdleLogout from "../components/IdleLogout";
+import StudentProtectedRoute from "../components/StudentProtectedRoute";
+import MyCourses from "../pages/MyCourses";
 
 // Admin
 import Dashboard from "../pages/admin/Dashboard";
@@ -23,8 +22,6 @@ import AdminLayout from "../layouts/AdminLayout";
 import AdminLogin from "../pages/admin/Login";
 import ViewCourse from "../pages/admin/ViewCourse";
 import EditCourse from "../pages/admin/EditCourse";
-import Lessons from "../pages/admin/Lessons";
-import Payments from "../pages/admin/Payments";
 
 export default function AppRouter() {
   return (
@@ -42,9 +39,14 @@ export default function AppRouter() {
           element={<CourseDetails />}
         />
 
-        <Route path="/my-courses" element={<MyCourses />} />
-        <Route path="/learn/:courseId" element={<LearnCourse />} />
-        <Route path="/checkout/:courseId" element={<Checkout />} />
+        <Route
+          path="/my-courses"
+          element={
+            <StudentProtectedRoute>
+              <MyCourses />
+            </StudentProtectedRoute>
+          }
+        />
 
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
@@ -85,16 +87,6 @@ export default function AppRouter() {
           <Route
             path="edit-course/:id"
             element={<EditCourse />}
-          />
-
-          <Route
-            path="courses/:courseId/lessons"
-            element={<Lessons />}
-          />
-
-          <Route
-            path="payments"
-            element={<Payments />}
           />
         </Route>
 

@@ -1,0 +1,28 @@
+Basmat Alnawabigh Academy - Sprint 1: Student Enrollment
+========================================================
+
+1) Supabase
+Run this file in Supabase SQL Editor:
+  supabase/SPRINT-1-enrollments.sql
+
+Note: The enrollments table and student policies were already created before this package.
+This SQL adds Admin SELECT access so the dashboard can count all enrollments.
+
+2) Windows PowerShell
+From the project folder run:
+  npm install
+  npm run dev
+
+3) Sprint 1 test
+- Login with a student account.
+- Open any course.
+- Click Enroll / Start Course.
+- Confirm success message appears.
+- Click the button again: it must open My Courses instead of creating a duplicate.
+- Open /my-courses and confirm the course appears with progress 0%.
+- Login as Admin and confirm Dashboard registration count reflects enrollments.
+
+4) After successful test
+  git add .
+  git commit -m "Sprint 1: student enrollment and my courses"
+  git push

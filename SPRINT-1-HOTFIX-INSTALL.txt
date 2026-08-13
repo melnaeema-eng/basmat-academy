@@ -1,0 +1,18 @@
+Basmat Alnawabigh Academy - Sprint 1 Hotfix
+
+1) Close the running dev server (Ctrl+C).
+2) From PowerShell:
+   cd C:\projects\basmat-academy
+3) Extract:
+   Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-1-HOTFIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+4) Start:
+   npm run dev
+
+No SQL is required for this hotfix.
+Expected test:
+- Sign in as a student.
+- Open a free course.
+- Click Start Course.
+- Enrollment is inserted into public.enrollments.
+- Browser navigates to /my-courses.
+- The course appears in My Courses.

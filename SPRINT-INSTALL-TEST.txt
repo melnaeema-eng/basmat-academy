@@ -1,0 +1,76 @@
+Basmat Alnawabigh Academy
+SPRINT 1 - HOTFIX 401
+=========================
+
+PURPOSE
+-------
+Fix HTTP 401 generated on course pages when there is no active Supabase login session.
+The enrollment service now checks the local session first instead of calling auth.getUser() for anonymous visitors.
+
+SQL
+---
+No new SQL is required for this hotfix.
+Do NOT recreate or drop the enrollments table.
+
+INSTALL - POWERSHELL
+--------------------
+1) Stop the development server with Ctrl + C.
+
+2) Open PowerShell and run:
+
+cd C:\projects\basmat-academy
+
+3) Extract the downloaded ZIP directly over the existing project:
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-1-401-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+4) Verify the modified file exists:
+
+Test-Path .\src\services\enrollmentService.js
+
+Expected result:
+True
+
+5) Start the project:
+
+npm run dev
+
+TEST A - VISITOR NOT LOGGED IN
+------------------------------
+1) Sign out if currently logged in.
+2) Open a course details page.
+3) Open F12 > Console / Network.
+4) Refresh the page.
+Expected:
+- No 401 caused by supabase.auth.getUser().
+- Course page loads normally.
+5) Click the enrollment/start button.
+Expected:
+- You are redirected to /login.
+
+TEST B - LOGGED-IN STUDENT
+--------------------------
+1) Sign in with a student account.
+2) Open a course.
+3) Click the enrollment/start button.
+Expected:
+- A row is created in public.enrollments.
+- Success message appears.
+- Repeating enrollment does not create a duplicate.
+- /my-courses shows the enrolled course.
+
+IF 401 STILL APPEARS
+--------------------
+Open F12 > Network.
+Click the request showing 401.
+Send these three items:
+1) Request URL
+2) Request Method
+3) Response body / Preview
+Do not send your Supabase key or Authorization token.
+
+GITHUB - ONLY AFTER SUCCESSFUL TEST
+-----------------------------------
+git add .
+git commit -m "Sprint 1 - Fix Supabase 401 session check"
+git push

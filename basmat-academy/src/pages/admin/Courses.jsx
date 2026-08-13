@@ -55,7 +55,6 @@ export default function Courses() {
             <th>التصنيف</th>
             <th>السعر</th>
             <th>المستوى</th>
-            <th>النوع</th>
             <th>الحالة</th>
             <th>الإجراءات</th>
           </tr>
@@ -94,8 +93,6 @@ export default function Courses() {
 
               <td>{course.level}</td>
 
-              <td>{course.course_type === "live" ? "Live" : course.course_type === "hybrid" ? "Hybrid" : "Recorded"}</td>
-
               <td>
                 <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
                   {course.status || "Published"}
@@ -109,12 +106,6 @@ export default function Courses() {
   className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
 >
   👁 عرض
-</Link>
-<Link
-  to={`/admin/courses/${course.id}/lessons`}
-  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
->
-  📚 الدروس
 </Link>
 <Link
   to={`/admin/edit-course/${course.id}`}

@@ -1,0 +1,70 @@
+SPRINT 2 - VIDEO MP4 FIX
+Basmat Alnawabigh Academy
+
+GOAL
+- Add direct MP4 upload from Admin Lessons page.
+- Upload to Supabase Storage bucket: course-videos.
+- Save generated public URL into lessons.video_url.
+- Student player uses the existing HTML5 video player.
+
+1) STOP DEV SERVER
+Press Ctrl + C in PowerShell.
+
+2) EXTRACT PATCH
+cd C:\projects\basmat-academy
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-2-VIDEO-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3) VERIFY FILES
+Test-Path .\src\pages\admin\Lessons.jsx
+Test-Path .\src\services\lessonService.js
+Test-Path .\supabase\SPRINT-2-VIDEO-FIX.sql
+All should return True.
+
+4) RUN SQL
+Supabase > SQL Editor > New Query
+Open and copy:
+C:\projects\basmat-academy\supabase\SPRINT-2-VIDEO-FIX.sql
+Click Run.
+Expected: Success. No rows returned.
+
+5) START APP
+npm run dev
+
+6) ADMIN TEST
+- Login as Admin.
+- Open Admin > Courses.
+- Open Lessons for a Recorded course.
+- Add new lesson.
+- Select lesson type: Video.
+- Choose an MP4 file under 50MB.
+- Click "رفع MP4".
+- Wait until success message appears.
+- Confirm video URL field is filled automatically.
+- Click "إضافة الدرس".
+
+7) STORAGE TEST
+Supabase > Storage > course-videos
+You should see a folder named with the course UUID and the uploaded MP4 inside it.
+
+8) STUDENT TEST
+- Login with a student enrolled in the course.
+- Open My Courses > Start Learning.
+- Open the uploaded video lesson.
+- Video should play in the built-in player.
+- Click "تم إكمال الدرس" and confirm progress changes.
+
+9) EXPECTED RESULT
+PASS when:
+- MP4 uploads without RLS error.
+- Video URL is saved automatically.
+- Lesson saves successfully.
+- Student can play the uploaded MP4.
+
+NOTE
+The current Storage bucket limit shown in Supabase is 50MB. Files above that limit will be rejected. Large course videos should later use a larger/object-video delivery strategy or an external streaming platform.
+
+10) GITHUB AFTER SUCCESS
+cd C:\projects\basmat-academy
+git add .
+git commit -m "Sprint 2 - MP4 lesson upload"
+git push

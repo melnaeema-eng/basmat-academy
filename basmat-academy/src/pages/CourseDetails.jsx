@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
-import { enrollInCourse, getCurrentUser, getEnrollment } from "../services/enrollmentService";
+import { enrollInCourse, getEnrollment } from "../services/enrollmentService";
 
 function getYouTubeEmbedUrl(url) {
   if (!url) return null;
@@ -60,8 +60,8 @@ function isDirectVideo(url) {
 
 export default function CourseDetails() {
   const { id } = useParams();
-  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -69,9 +69,10 @@ export default function CourseDetails() {
   const [selectedLessonId, setSelectedLessonId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
   const [enrollment, setEnrollment] = useState(null);
   const [enrolling, setEnrolling] = useState(false);
-  const [enrollMessage, setEnrollMessage] = useState("");
+  const [enrollmentMessage, setEnrollmentMessage] = useState("");
 
   const isArabic = i18n.language?.startsWith("ar");
 
@@ -101,7 +102,26 @@ export default function CourseDetails() {
 
         setSelectedVideo(firstVideo);
 
-        setLessons([]);
+        /*
+          هذا الجزء يجلب دروس الدورة إذا كان جدول lessons موجودًا.
+          إذا لم تنشئ الجدول بعد، ستظل صفحة الدورة تعمل بصورة طبيعية.
+        */
+        const { data: lessonsData, error: lessonsError } = await supabase
+          .from("lessons")
+          .select("*")
+          .eq("course_id", id)
+          .order("order_number", { ascending: true });
+
+        if (!lessonsError && lessonsData) {
+          setLessons(lessonsData);
+
+          if (!firstVideo && lessonsData.length > 0) {
+            setSelectedVideo(lessonsData[0].video_url || "");
+            setSelectedLessonId(lessonsData[0].id);
+          }
+        } else {
+          setLessons([]);
+        }
       } catch (error) {
         console.error("COURSE DETAILS ERROR:", error);
         setErrorMessage(t("courseDetails.loadError"));
@@ -112,52 +132,6 @@ export default function CourseDetails() {
 
     loadCourse();
   }, [id, t]);
-
-  useEffect(() => {
-    async function checkEnrollment() {
-      try {
-        const user = await getCurrentUser();
-        if (!user) return;
-        const existing = await getEnrollment(id, user.id);
-        setEnrollment(existing);
-      } catch (error) {
-        console.error("ENROLLMENT CHECK ERROR:", error);
-      }
-    }
-    checkEnrollment();
-  }, [id]);
-
-  async function handleEnroll() {
-    setEnrollMessage("");
-    try {
-      setEnrolling(true);
-      const user = await getCurrentUser();
-      if (!user) {
-        navigate("/login", { state: { from: `/courses/${id}` } });
-        return;
-      }
-      if (enrollment) {
-        navigate("/my-courses");
-        return;
-      }
-
-      // Paid courses must go through checkout. Enrollment is created only
-      // after a confirmed payment (PayPal) or admin-approved bank transfer.
-      if (Number(course?.price || 0) > 0) {
-        navigate(`/checkout/${id}`);
-        return;
-      }
-
-      const created = await enrollInCourse(id, user.id);
-      setEnrollment(created);
-      setEnrollMessage(isArabic ? "تم التسجيل في الدورة بنجاح" : "Successfully enrolled in the course");
-    } catch (error) {
-      console.error("ENROLL COURSE ERROR:", error);
-      setEnrollMessage(error.message || (isArabic ? "تعذر التسجيل في الدورة" : "Could not enroll in the course"));
-    } finally {
-      setEnrolling(false);
-    }
-  }
 
   const title = useMemo(() => {
     if (!course) return "";
@@ -200,6 +174,65 @@ export default function CourseDetails() {
   }, [course, isArabic, t]);
 
   const youtubeEmbedUrl = getYouTubeEmbedUrl(selectedVideo);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadEnrollment() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!mounted) return;
+      setCurrentUser(user || null);
+
+      if (user) {
+        try {
+          const existing = await getEnrollment(user.id, id);
+          if (mounted) setEnrollment(existing);
+        } catch (error) {
+          console.error("ENROLLMENT CHECK ERROR:", error);
+        }
+      }
+    }
+
+    loadEnrollment();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
+
+  async function handleEnroll() {
+    setEnrollmentMessage("");
+
+    if (!currentUser) {
+      navigate("/login", { state: { from: `/courses/${id}` } });
+      return;
+    }
+
+    if (enrollment) {
+      navigate("/my-courses");
+      return;
+    }
+
+    try {
+      setEnrolling(true);
+      const created = await enrollInCourse(currentUser.id, id);
+      setEnrollment(created);
+      setEnrollmentMessage(isArabic ? "تم التسجيل في الدورة بنجاح" : "Successfully enrolled in the course");
+    } catch (error) {
+      console.error("ENROLLMENT ERROR:", error);
+      if (error.code === "23505") {
+        const existing = await getEnrollment(currentUser.id, id);
+        setEnrollment(existing);
+        setEnrollmentMessage(isArabic ? "أنت مسجل في هذه الدورة بالفعل" : "You are already enrolled in this course");
+      } else {
+        setEnrollmentMessage(isArabic ? "تعذر إكمال التسجيل" : "Could not complete enrollment");
+      }
+    } finally {
+      setEnrolling(false);
+    }
+  }
 
   function selectLesson(lesson) {
     setSelectedVideo(lesson.video_url || "");
@@ -480,26 +513,32 @@ export default function CourseDetails() {
                   </div>
                 </div>
 
+                {enrollmentMessage && (
+                  <div className="mt-5 rounded-xl bg-green-50 p-3 text-sm font-medium text-green-700">
+                    {enrollmentMessage}
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={handleEnroll}
                   disabled={enrolling}
-                  className="mt-6 w-full rounded-xl bg-orange-500 px-5 py-3 font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={`mt-6 w-full rounded-xl px-5 py-3 font-bold text-white transition disabled:opacity-60 ${
+                    enrollment
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-orange-500 hover:bg-orange-600"
+                  }`}
                 >
                   {enrolling
                     ? (isArabic ? "جاري التسجيل..." : "Enrolling...")
                     : enrollment
-                      ? (isArabic ? "اذهب إلى دوراتي" : "Go to My Courses")
-                      : Number(course.price) > 0
-                        ? t("courseDetails.enrollNow")
-                        : t("courseDetails.startCourse")}
+                      ? (isArabic ? "مسجل بالفعل — افتح دوراتي" : "Enrolled — Open My Courses")
+                      : !currentUser
+                        ? (isArabic ? "سجل الدخول للتسجيل" : "Login to Enroll")
+                        : Number(course.price) > 0
+                          ? t("courseDetails.enrollNow")
+                          : t("courseDetails.startCourse")}
                 </button>
-
-                {enrollMessage && (
-                  <p className="mt-3 text-center text-sm font-semibold text-gray-700">
-                    {enrollMessage}
-                  </p>
-                )}
               </div>
             </div>
           </aside>

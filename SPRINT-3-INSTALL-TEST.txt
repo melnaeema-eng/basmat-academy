@@ -1,0 +1,245 @@
+============================================================
+BASMAT ALNAWABIGH ACADEMY
+SPRINT 3 - PAYMENTS & CHECKOUT
+============================================================
+
+SPRINT GOAL
+-----------
+1) Free course (price = 0): enroll immediately.
+2) Paid course (price > 0): NEVER enroll directly; go to Checkout.
+3) Al Rajhi bank transfer: student uploads receipt -> Admin reviews -> approval creates enrollment.
+4) PayPal: secure server-side create/capture flow is included and stays inactive until Sandbox credentials are added.
+5) STC Pay / Al Rajhi online gateway: structure is reserved, but no fake gateway is enabled in this Sprint.
+
+IMPORTANT
+---------
+- Run the SQL before testing payments.
+- Bank-transfer receipts use a PRIVATE bucket named payment-receipts.
+- PayPal Secret must NEVER be placed in React/.env. It belongs only in Supabase Secrets.
+
+============================================================
+A) INSTALL THE ZIP
+============================================================
+
+1. Stop Vite if running:
+   Ctrl + C
+
+2. In PowerShell:
+
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-3.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3. Confirm files:
+
+Test-Path .\src\pages\Checkout.jsx
+Test-Path .\src\pages\admin\Payments.jsx
+Test-Path .\src\services\paymentService.js
+Test-Path .\supabase\SPRINT-3.sql
+Test-Path .\supabase\functions\create-paypal-order\index.ts
+Test-Path .\supabase\functions\capture-paypal-order\index.ts
+
+All should return True.
+
+============================================================
+B) RUN SUPABASE SQL
+============================================================
+
+Open:
+C:\projects\basmat-academy\supabase\SPRINT-3.sql
+
+Copy ALL content into:
+Supabase -> SQL Editor -> New Query -> Run
+
+Expected:
+Success. No rows returned
+
+This creates:
+- payments table
+- payment-receipts private Storage bucket
+- RLS policies
+- secure free-course enrollment rule
+- approve_bank_payment RPC
+- reject_bank_payment RPC
+
+============================================================
+C) ADD AL RAJHI BANK DETAILS
+============================================================
+
+Open the existing project .env file and ADD these lines.
+Do not remove your existing Supabase variables.
+
+VITE_BANK_NAME=مصرف الراجحي
+VITE_BANK_ACCOUNT_NAME=PUT_COMPANY_ACCOUNT_NAME_HERE
+VITE_BANK_IBAN=SAxxxxxxxxxxxxxxxxxxxxxx
+VITE_BANK_ACCOUNT_NUMBER=PUT_ACCOUNT_NUMBER_HERE
+
+Save the file.
+
+IMPORTANT:
+Use your real company account/IBAN. The Sprint does not contain invented bank information.
+
+Restart Vite after changing .env:
+
+npm run dev
+
+============================================================
+D) TEST 1 - FREE COURSE
+============================================================
+
+1. Admin: create/edit a course with price = 0.
+2. Log in as a student.
+3. Open the course.
+4. Click Start Course / ابدأ الدورة.
+
+EXPECTED:
+- No Checkout page.
+- Enrollment is created directly.
+- Course appears in /my-courses.
+
+============================================================
+E) TEST 2 - PAID COURSE / BANK TRANSFER
+============================================================
+
+1. Admin: create/edit a course with price, e.g. 100.
+2. Log in as a student.
+3. Open the paid course.
+4. Click Enroll / التسجيل.
+
+EXPECTED:
+- Browser opens /checkout/<course-id>.
+- Student is NOT enrolled yet.
+
+5. Select: تحويل بنكي - الراجحي.
+6. Confirm bank details and exact amount.
+7. Upload a JPG/PNG/WEBP/PDF receipt (max 10 MB).
+8. Optional: enter bank transaction reference.
+9. Click إرسال الإيصال للمراجعة.
+
+EXPECTED:
+- Message: payment request received / pending admin review.
+- Student still does NOT have the course yet.
+
+============================================================
+F) TEST 3 - ADMIN PAYMENT APPROVAL
+============================================================
+
+1. Login as Admin.
+2. Open:
+   http://localhost:5173/admin/payments
+   Or click "المدفوعات" in Admin sidebar.
+3. Find pending bank transfer.
+4. Click "الإيصال" and verify it.
+5. Click "موافقة".
+
+EXPECTED:
+- payment.status becomes paid.
+- Enrollment is created for that student/course.
+- Student sees course in /my-courses after refresh.
+
+REJECTION TEST:
+- Submit another transfer request.
+- Admin -> Payments -> رفض.
+- Status becomes rejected.
+- No enrollment is created.
+
+============================================================
+G) PAYPAL - READY BUT REQUIRES SANDBOX CREDENTIALS
+============================================================
+
+Until PayPal credentials are configured, Checkout shows that PayPal setup is pending.
+Bank transfer remains fully testable.
+
+When you obtain PayPal Sandbox credentials:
+
+1. Add ONLY the public Client ID to your project .env:
+
+VITE_PAYPAL_CLIENT_ID=YOUR_PAYPAL_SANDBOX_CLIENT_ID
+
+2. Keep Client Secret ONLY in Supabase Secrets.
+Never put the Secret in VITE_ variables.
+
+3. From PowerShell in the project folder, if Supabase CLI is not available:
+
+npm install -D supabase
+
+4. Login/link Supabase (one-time):
+
+npx supabase login
+npx supabase link --project-ref pxbtwjuerndgmppicumr
+
+5. Set PayPal secrets:
+
+npx supabase secrets set PAYPAL_CLIENT_ID=YOUR_SANDBOX_CLIENT_ID
+npx supabase secrets set PAYPAL_CLIENT_SECRET=YOUR_SANDBOX_SECRET
+npx supabase secrets set PAYPAL_ENV=sandbox
+
+6. Deploy secure Edge Functions:
+
+npx supabase functions deploy create-paypal-order
+npx supabase functions deploy capture-paypal-order
+
+7. Restart Vite:
+
+npm run dev
+
+PAYPAL TEST EXPECTED:
+- Paid course -> Checkout -> PayPal.
+- PayPal Sandbox button appears.
+- Server creates order from the course price in Supabase (not from browser price).
+- Server captures/validates the payment.
+- Only after COMPLETED capture, enrollment is created.
+
+For LIVE later:
+- Replace Sandbox credentials with Live credentials.
+- Set PAYPAL_ENV=live.
+- Test again before production.
+
+============================================================
+H) SECURITY CHECKS IN THIS SPRINT
+============================================================
+
+- Student cannot self-enroll in a paid course through the normal enrollments INSERT policy.
+- Paid bank transfer does not create enrollment until Admin approval.
+- Receipt bucket is private.
+- Admin opens receipts through short-lived signed URLs.
+- PayPal amount is fetched from courses on the server.
+- PayPal amount/currency/status are checked after capture before enrollment.
+- PayPal Secret stays in Supabase Secrets only.
+
+============================================================
+I) BUILD TEST ON WINDOWS
+============================================================
+
+npm install
+npm run build
+
+Expected:
+Build completes without errors.
+
+Then dev mode:
+
+npm run dev
+
+============================================================
+J) GITHUB AFTER ALL TESTS PASS
+============================================================
+
+git add .
+git commit -m "Sprint 3 - Payments and Checkout"
+git push
+
+============================================================
+SPRINT 3 SUCCESS CRITERIA
+============================================================
+
+[PASS] Free course enrolls immediately.
+[PASS] Paid course redirects to Checkout.
+[PASS] Bank receipt can be uploaded.
+[PASS] Admin can view receipt.
+[PASS] Admin approval creates enrollment.
+[PASS] Rejection does not create enrollment.
+[PASS] PayPal remains disabled safely until credentials exist.
+[PASS] With Sandbox credentials deployed, PayPal capture creates enrollment only after verified payment.
+
+DO NOT START THE NEXT SPRINT UNTIL THE ABOVE TESTS PASS.

@@ -1,0 +1,12 @@
+# Add these to your existing .env file. Do NOT delete existing Supabase values.
+
+VITE_BANK_NAME=مصرف الراجحي
+VITE_BANK_ACCOUNT_NAME=PUT_COMPANY_ACCOUNT_NAME_HERE
+VITE_BANK_IBAN=SAxxxxxxxxxxxxxxxxxxxxxx
+VITE_BANK_ACCOUNT_NUMBER=PUT_ACCOUNT_NUMBER_HERE
+
+# PayPal public Sandbox Client ID only (when available):
+# VITE_PAYPAL_CLIENT_ID=YOUR_PAYPAL_SANDBOX_CLIENT_ID
+
+# NEVER put PAYPAL_CLIENT_SECRET in .env or any VITE_ variable.
+# Secret belongs in Supabase Secrets only.

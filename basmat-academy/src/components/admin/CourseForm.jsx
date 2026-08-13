@@ -12,7 +12,6 @@ const emptyCourse = {
   status: "Published",
   image: "",
   featured: false,
-  course_type: "recorded",
 };
 
 export default function CourseForm({
@@ -37,7 +36,6 @@ export default function CourseForm({
         status: initialData.status || "Published",
         image: initialData.image || "",
         featured: initialData.featured || false,
-        course_type: initialData.course_type || "recorded",
       });
     }
   }, [initialData]);
@@ -160,17 +158,6 @@ function handleSubmit(e) {
             onChange={handleChange}
             className="border rounded-lg p-3"
           />
-
-          <select
-            name="course_type"
-            value={course.course_type}
-            onChange={handleChange}
-            className="border rounded-lg p-3"
-          >
-            <option value="recorded">مسجلة - Recorded</option>
-            <option value="live">مباشرة - Live</option>
-            <option value="hybrid">هجينة - Hybrid</option>
-          </select>
 
           <select
             name="status"
