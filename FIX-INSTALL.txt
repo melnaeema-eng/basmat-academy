@@ -1,23 +1,25 @@
-SPRINT 8 — STUDENTDETAILS IMPORT FIX
-====================================
-Fixes:
-AppRouter.jsx: StudentDetails is not defined
-
-Cause:
-The route was added, but the import line was missing.
+SPRINT 11 — ADMIN SCROLL FIX
+============================
+Fixes missing vertical scrolling in the Admin dashboard/pages.
 
 NO SQL.
-NO other files changed.
+Only AdminLayout.jsx is changed.
 
 Install:
 cd C:\projects\basmat-academy
 
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-8-STUDENTDETAILS-IMPORT-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-11-ADMIN-SCROLL-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 
 npm run dev
 
+Test:
+- /admin/dashboard
+- /admin/students
+- /admin/payments
+- /admin/refunds
+- /admin/email-outbox
+
 Expected:
-- No "StudentDetails is not defined"
-- Home loads
-- /admin/students loads
-- Opening a student goes to /admin/students/<id>
+- Main Admin content scrolls vertically.
+- Sidebar can also scroll if menu is taller than the screen.
+- Mobile behavior remains normal.

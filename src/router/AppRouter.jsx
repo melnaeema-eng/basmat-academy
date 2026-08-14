@@ -35,6 +35,9 @@ import InstructorDashboard from "../pages/InstructorDashboard";
 import CourseQA from "../pages/CourseQA";
 import Search from "../pages/Search";
 import CourseAnnouncements from "../pages/CourseAnnouncements";
+import Cart from "../pages/Cart";
+import PurchaseHistory from "../pages/PurchaseHistory";
+import Refunds from "../pages/Refunds";
 
 // Admin
 import Dashboard from "../pages/admin/Dashboard";
@@ -58,6 +61,8 @@ import AdminCoupons from "../pages/admin/Coupons";
 import AdminAdvancedAnalytics from "../pages/admin/AdvancedAnalytics";
 import AdminAnnouncements from "../pages/admin/Announcements";
 import AdminSystemHealth from "../pages/admin/SystemHealth";
+import AdminRefunds from "../pages/admin/Refunds";
+import AdminEmailOutbox from "../pages/admin/EmailOutbox";
 
 export default function AppRouter() {
   return (
@@ -70,6 +75,9 @@ export default function AppRouter() {
         <Route path="/register" element={<Register />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/purchases" element={<PurchaseHistory />} />
+        <Route path="/refunds" element={<Refunds />} />
 
         <Route
           path="/courses/:id"
@@ -173,6 +181,8 @@ export default function AppRouter() {
           <Route path="advanced-analytics" element={<AdminAdvancedAnalytics />} />
           <Route path="announcements" element={<AdminAnnouncements />} />
           <Route path="system-health" element={<AdminSystemHealth />} />
+          <Route path="refunds" element={<AdminRefunds />} />
+          <Route path="email-outbox" element={<AdminEmailOutbox />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

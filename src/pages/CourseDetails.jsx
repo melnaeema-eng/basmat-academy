@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
 import { enrollInCourse, getCurrentUser, getEnrollment } from "../services/enrollmentService";
 import { getCourseReviews, getMyReview, isCourseWishlisted, saveMyReview, toggleWishlist } from "../services/marketplaceService";
+import { addToCart } from "../services/commerceService";
 
 export default function CourseDetails() {
   const { id } = useParams();
@@ -51,6 +52,9 @@ export default function CourseDetails() {
       const created=await enrollInCourse(id,user.id);setEnrollment(created);navigate(`/learn/${id}`);
     }catch(e){alert(e.message)}finally{setBusy(false)}
   }
+  async function cart(){
+    try{setBusy(true);const user=await getCurrentUser();if(!user){navigate("/login",{state:{from:`/courses/${id}`}});return}await addToCart(id);navigate("/cart")}catch(e){alert(e.message)}finally{setBusy(false)}
+  }
   async function wishlist(){
     try{setBusy(true);setWishlisted(await toggleWishlist(id))}catch(e){if(e.message==="LOGIN_REQUIRED")navigate("/login",{state:{from:`/courses/${id}`}});else alert(e.message)}finally{setBusy(false)}
   }
@@ -82,6 +86,7 @@ export default function CourseDetails() {
             <div className="p-5">
               <div className="text-3xl font-extrabold text-[#08284d]">{Number(course.price)>0?<span dir="ltr">{course.price} SAR</span>:t("common.free")}</div>
               <button onClick={enroll} disabled={busy} className="academy-btn-primary mt-4 w-full">{enrollment?(ar?"اذهب إلى دوراتي":"Go to My Courses"):Number(course.price)>0?(ar?"اشترِ الدورة":"Buy Course"):(ar?"سجل مجانًا":"Enroll for Free")}</button>
+              {Number(course.price)>0&&!enrollment&&<button onClick={cart} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 font-bold text-orange-700 hover:bg-orange-100">🛒 {ar?"أضف للسلة":"Add to Cart"}</button>}
               <button onClick={wishlist} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-bold hover:bg-slate-50">{wishlisted?<FaHeart className="text-red-500"/>:<FaRegHeart/>}{wishlisted?(ar?"في قائمة الرغبات":"Wishlisted"):(ar?"أضف لقائمة الرغبات":"Add to Wishlist")}</button>
               <div className="mt-5 space-y-3 border-t pt-5 text-sm text-slate-600">
                 <div className="flex items-center gap-2"><FaPlayCircle className="text-[#f97316]"/>{lessons.length} {ar?"درس":"lessons"}</div>

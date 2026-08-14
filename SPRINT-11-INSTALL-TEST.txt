@@ -1,0 +1,184 @@
+SPRINT 11 — COMMERCE & PRODUCTION CLOSURE
+==========================================
+FINAL FUNCTIONAL SPRINT before production.
+
+INCLUDED
+--------
+1. Shopping Cart
+   /cart
+   Paid course page now has Add to Cart.
+   IMPORTANT: the existing payment architecture is course-based, so Sprint 11 keeps one secure checkout/payment per course instead of faking one combined payment.
+
+2. Purchase History + Invoices
+   /purchases
+   Automatic invoice/order record after a payment becomes PAID.
+   Existing paid payments are backfilled safely.
+   Invoice numbers: BNA-YYYY-XXXXXX.
+   Print / Save PDF through browser print.
+
+3. Refund Workflow
+   Student: /refunds
+   Admin: /admin/refunds
+   Student requests refund only for PAID purchase.
+   Admin: approve / reject / mark processed.
+   IMPORTANT: "processed" means the admin has actually refunded money in the bank/payment provider. Sprint 11 does NOT pretend to reverse external money automatically.
+
+4. Email Notifications
+   Database email outbox queues payment/refund transactional emails.
+   Admin: /admin/email-outbox
+   Edge Function: process-email-outbox
+   Uses Resend API.
+   Email is not enabled until RESEND_API_KEY and ACADEMY_FROM_EMAIL are configured and the function is deployed.
+
+5. SEO
+   Base description, robots and OpenGraph site metadata.
+   PageMeta reusable component added.
+
+6. Production Security
+   RLS on all Sprint 11 commerce tables.
+   anon access revoked on private commerce tables.
+   Refund/order writes go through controlled RPC/policies.
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-s11" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-11-COMMERCE-PRODUCTION-CLOSURE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+SUPABASE SQL
+------------
+Supabase > SQL Editor:
+Run ONLY:
+C:\projects\basmat-academy\supabase\SPRINT-11.sql
+
+Expected:
+Success. No rows returned
+
+START
+-----
+npm run dev
+
+SMOKE TEST
+----------
+/
+ /courses
+ /cart
+ /student
+ /purchases
+ /refunds
+ /admin/dashboard
+ /admin/payments
+ /admin/refunds
+ /admin/email-outbox
+ /admin/system-health
+
+CART TEST
+---------
+1. Open a paid course.
+2. Add to Cart.
+3. /cart must show course and total.
+4. Remove and add again.
+5. Click purchase button.
+Expected: existing secure course checkout opens.
+
+INVOICE TEST
+------------
+1. Approve a bank payment OR use an already-paid purchase.
+2. Student > /purchases.
+Expected:
+- Invoice number.
+- Course.
+- Paid total.
+- Print/Save PDF works.
+
+REFUND TEST
+-----------
+1. Student > /refunds.
+2. Request refund for a paid purchase.
+3. Admin > Refunds.
+4. Approve.
+5. AFTER actual bank/provider refund, click "تم الاسترداد فعليًا".
+Expected:
+- Request status processed.
+- Order status refunded.
+
+EMAIL SETUP — REQUIRED ONLY IF YOU WANT REAL EMAIL NOW
+-------------------------------------------------------
+You need a verified sending domain/email in Resend.
+
+From project folder:
+
+npx supabase login
+npx supabase link --project-ref pxbtwjuerndgmppicumr
+
+Set secrets:
+npx supabase secrets set RESEND_API_KEY="YOUR_RESEND_API_KEY"
+npx supabase secrets set ACADEMY_FROM_EMAIL="Basmat Academy <academy@YOUR-VERIFIED-DOMAIN>"
+
+Deploy:
+npx supabase functions deploy process-email-outbox
+
+Then:
+Admin > Email Notifications > Send Pending Emails
+
+Expected:
+- pending becomes sent.
+- failed displays provider error.
+
+SECURITY CHECK
+--------------
+1. Logged-out user cannot read:
+   orders / order_items / refunds / email_outbox.
+2. Student sees only own purchases/refunds.
+3. Student cannot approve refunds.
+4. Only Admin sees Email Outbox.
+5. Existing payments/certificates/student management remain unchanged.
+
+FULL REGRESSION
+---------------
+Required before production:
+- Register/Login/Profile
+- Courses/Search/Wishlist/Reviews
+- Free enrollment
+- Bank transfer approve/reject/resubmit
+- PayPal existing flow
+- Coupons
+- My Courses/MP4/Resume
+- Notes/Bookmarks
+- Q&A/Announcements
+- Exams/Timer/Review
+- Certificates/QR
+- Instructor Dashboard
+- Live Sessions/Learning Paths
+- Admin Students
+- Analytics/System Health
+- Mobile menu/Website/Logout
+- Arabic/English
+
+FINAL BUILD
+-----------
+npm run build
+
+ONLY IF BUILD SUCCEEDS:
+git add .
+git commit -m "Sprint 11 commerce production closure cart invoices refunds email security"
+git push
+
+ROLLBACK SOURCE
+---------------
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s11" ".\src" -Recurse -Force
+npm run dev
+
+NOTE
+----
+SQL is additive. Do not delete Sprint 11 tables after real orders/refunds exist.
+
+VALIDATION BEFORE PACKAGING
+---------------------------
+Local relative imports checked: 0 missing.
+No new frontend npm dependency added.

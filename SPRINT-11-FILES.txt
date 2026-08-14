@@ -1,0 +1,15 @@
+SPRINT-11-INSTALL-TEST.txt
+index.html
+supabase/SPRINT-11.sql
+src/pages/CourseDetails.jsx
+src/pages/Refunds.jsx
+src/pages/Cart.jsx
+src/pages/StudentDashboard.jsx
+src/pages/PurchaseHistory.jsx
+src/components/PageMeta.jsx
+src/services/commerceService.js
+src/layouts/AdminLayout.jsx
+src/router/AppRouter.jsx
+src/pages/admin/EmailOutbox.jsx
+src/pages/admin/Refunds.jsx
+supabase/functions/process-email-outbox/index.ts

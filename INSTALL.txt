@@ -1,0 +1,36 @@
+SPRINT 11 — CANCEL / REFUND RPC FIX V2
+======================================
+
+1) Extract:
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-11-CANCEL-REFUND-RPC-FIX-V2.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+2) Supabase > SQL Editor:
+Run ONLY:
+supabase\SPRINT-11-CANCEL-REFUND-RPC-FIX-V2.sql
+
+Expected:
+Success. No rows returned
+
+3) Restart:
+npm run dev
+
+TEST FREE:
+- Student > My Courses
+- Free course > Cancel Enrollment
+Expected:
+  disappears from My Courses.
+  No HTTP 400.
+  repeated cancellation is safe.
+
+TEST PAID:
+- Refund request -> Admin approve.
+- After actual money refund -> Admin "تم الاسترداد فعليًا".
+Expected:
+  refund = processed
+  payment = refunded
+  enrollment = cancelled
+  course disappears from My Courses.
+
+This SQL also repairs earlier refund_requests that are already processed.

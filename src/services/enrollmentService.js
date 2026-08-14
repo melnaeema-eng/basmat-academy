@@ -45,7 +45,29 @@ export async function getMyEnrollments(userId) {
     .from("enrollments")
     .select("id, status, progress, enrolled_at, course_id, courses(*)")
     .eq("user_id", userId)
+    .or("status.is.null,status.neq.cancelled")
     .order("enrolled_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
+}
+
+export async function cancelMyFreeEnrollment(courseId) {
+  const { data, error } = await supabase.rpc("cancel_my_free_enrollment", {
+    p_course_id: courseId,
+  });
+
+  if (error) throw error;
+
+  if (!data?.success) {
+    const reason = data?.reason || "cancel_failed";
+    const messages = {
+      not_enrolled: "لا يوجد تسجيل في هذه الدورة",
+      certified: "لا يمكن إلغاء دورة صدرت لها شهادة",
+      paid_course: "الدورة المدفوعة يتم إلغاؤها من خلال طلب الاسترداد",
+      login_required: "يجب تسجيل الدخول أولاً",
+    };
+    throw new Error(messages[reason] || data?.message || "تعذر إلغاء التسجيل");
+  }
+
+  return data;
 }
