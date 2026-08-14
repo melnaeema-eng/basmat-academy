@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import LearningTools from '../components/LearningTools';
-import ResumeVideo from '../components/ResumeVideo';
 import { issueCertificateIfEligible } from '../services/certificateService';
 import { supabase } from '../services/supabase';
 import { getCurrentUser, getEnrollment } from '../services/enrollmentService';
@@ -155,7 +154,6 @@ export default function LearnCourse() {
                   )}
                   <Link to={`/completion/${courseId}`} className="rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold text-white">حالة الإكمال</Link>
                   <Link to={`/qa/${courseId}`} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-[#08284d]">Q&A</Link>
-                  <Link to={`/announcements/${courseId}`} className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700">الإعلانات</Link>
                   {progress === 100 && <Link to="/certificates" className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white">الشهادات</Link>}
                 </div>
               </div>
@@ -197,7 +195,7 @@ export default function LearnCourse() {
                       {getYouTubeEmbedUrl(selectedLesson.video_url) ? (
                         <iframe className="aspect-video w-full" src={getYouTubeEmbedUrl(selectedLesson.video_url)} title={selectedLesson.title} allowFullScreen />
                       ) : (
-                        <ResumeVideo className="aspect-video w-full" src={selectedLesson.video_url} courseId={courseId} lessonId={selectedLesson.id} onEnded={() => { if (!completedIds.has(selectedLesson.id)) toggleCompleted(); }} />
+                        <video className="aspect-video w-full" controls src={selectedLesson.video_url} onEnded={() => { if (!completedIds.has(selectedLesson.id)) toggleCompleted(); }} />
                       )}
                     </div>
                   )}

@@ -1,0 +1,181 @@
+SPRINT 10 — FINAL PRODUCTION READINESS + UDEMY POLISH
+=====================================================
+
+BASELINE
+--------
+Sprint 9 stable.
+
+INCLUDED
+--------
+1) GLOBAL SEARCH
+   - Navbar search icon now opens /search.
+   - Search courses, instructors and learning paths.
+
+2) CROSS-DEVICE VIDEO RESUME
+   - MP4 learning position is stored in Supabase.
+   - Returning to the lesson resumes from the saved second.
+   - Saves every ~10 seconds and on pause.
+   - On video completion, position resets and normal lesson-completion logic remains.
+
+3) COURSE ANNOUNCEMENTS
+   Admin:
+   /admin/announcements
+   Student:
+   /announcements/<course-id>
+   - Admin/instructor announcements.
+   - Enrolled students can read them from Learning.
+
+4) ERROR BOUNDARY
+   - Prevents a React crash from producing a completely white page.
+   - Shows a controlled recovery screen with Reload.
+
+5) SYSTEM HEALTH / FINAL QA
+   /admin/system-health
+   - Critical database object checks.
+   - Student/course/enrollment/payment/certificate counts.
+   - Pending payments.
+   - Disabled/archived students.
+
+DATABASE
+--------
+Run:
+supabase\SPRINT-10.sql
+
+It adds:
+- lesson_watch_state
+- course_announcements
+- academy_global_search RPC
+- admin_system_health RPC
+
+It does NOT change the stable payment/exam/certificate/student-management flows.
+
+INSTALL
+-------
+1) Ctrl+C
+
+2) PowerShell:
+cd C:\projects\basmat-academy
+
+3) Backup:
+Copy-Item ".\src" ".\src-before-s10" -Recurse -Force
+
+4) Extract:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-10-FINAL-PRODUCTION-READINESS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+5) Supabase > SQL Editor:
+Run:
+C:\projects\basmat-academy\supabase\SPRINT-10.sql
+
+Expected:
+Success. No rows returned
+
+6) Start:
+npm run dev
+
+FIRST SMOKE TEST
+----------------
+/
+ /courses
+ /search
+ /student
+ /admin/dashboard
+ /admin/students
+ /admin/system-health
+
+SEARCH TEST
+-----------
+- Click search icon in Navbar.
+- Search a course title.
+- Search an instructor.
+- Search a learning path.
+- Open each result.
+
+VIDEO RESUME TEST
+-----------------
+1. Student opens an MP4 lesson.
+2. Watch to e.g. 00:45.
+3. Pause and leave.
+4. Re-open lesson.
+Expected: resumes around 00:45.
+5. Complete video.
+Expected: lesson-completion behavior remains unchanged.
+
+ANNOUNCEMENTS TEST
+------------------
+1. Admin > Announcements.
+2. Publish announcement for a course.
+3. Enrolled student opens Learn Course > Announcements.
+Expected: announcement appears.
+4. Student not enrolled in the course must not get access through RLS.
+
+SYSTEM HEALTH TEST
+------------------
+Admin > System Health.
+Expected:
+- Critical objects all show ✓.
+- Counts load.
+- Pending payments / disabled / archived metrics load.
+
+ERROR BOUNDARY TEST
+-------------------
+Normal operation should never show it.
+Its purpose is to prevent a future component crash from becoming a blank white page.
+
+FULL REGRESSION
+---------------
+Admin:
+- Dashboard
+- Courses / Add / Edit
+- Lessons
+- Exams
+- Students full management
+- Payments approve/reject
+- Certificates
+- Instructors
+- Live Sessions
+- Learning Paths
+- Reports
+- Coupons
+- Advanced Analytics
+- Announcements
+- System Health
+- Mobile website button
+- Mobile logout
+
+Student:
+- Register/Login
+- Profile
+- Search
+- Course enrollment
+- Bank transfer
+- PayPal existing flow
+- Coupon bank-transfer flow
+- Notifications
+- My Courses
+- MP4 video
+- Resume video
+- Notes/bookmarks
+- Q&A
+- Announcements
+- Exams/timer/review
+- Certificates + QR
+- Certified course no-retake
+- Wishlist/reviews
+- Live sessions
+- Arabic/English
+- Mobile
+
+FINAL WINDOWS BUILD
+-------------------
+npm run build
+
+ONLY AFTER SUCCESS:
+git add .
+git commit -m "Sprint 10 final production readiness search resume announcements health"
+git push
+
+ROLLBACK
+--------
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s10" ".\src" -Recurse -Force
+npm run dev

@@ -252,7 +252,6 @@ export default function Navbar() {
           <button
             type="button"
             aria-label={t("navbar.search")}
-            onClick={()=>navigate("/search")}
             className="text-xl text-slate-700 hover:text-orange-500 transition-colors"
           >
             <FaSearch />

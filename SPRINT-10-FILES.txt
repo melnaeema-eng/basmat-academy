@@ -1,0 +1,14 @@
+SPRINT-10-INSTALL-TEST.txt
+supabase/SPRINT-10.sql
+src/main.jsx
+src/pages/Search.jsx
+src/pages/CourseAnnouncements.jsx
+src/pages/LearnCourse.jsx
+src/components/ResumeVideo.jsx
+src/components/Navbar.jsx
+src/components/AppErrorBoundary.jsx
+src/services/finalProductionService.js
+src/layouts/AdminLayout.jsx
+src/router/AppRouter.jsx
+src/pages/admin/SystemHealth.jsx
+src/pages/admin/Announcements.jsx

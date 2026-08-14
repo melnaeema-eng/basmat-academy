@@ -33,8 +33,6 @@ import IdleLogout from "../components/IdleLogout";
 import ProtectedInstructorRoute from "../components/ProtectedInstructorRoute";
 import InstructorDashboard from "../pages/InstructorDashboard";
 import CourseQA from "../pages/CourseQA";
-import Search from "../pages/Search";
-import CourseAnnouncements from "../pages/CourseAnnouncements";
 
 // Admin
 import Dashboard from "../pages/admin/Dashboard";
@@ -56,8 +54,6 @@ import AdminLearningPaths from "../pages/admin/LearningPaths";
 import AdminReports from "../pages/admin/Reports";
 import AdminCoupons from "../pages/admin/Coupons";
 import AdminAdvancedAnalytics from "../pages/admin/AdvancedAnalytics";
-import AdminAnnouncements from "../pages/admin/Announcements";
-import AdminSystemHealth from "../pages/admin/SystemHealth";
 
 export default function AppRouter() {
   return (
@@ -69,7 +65,6 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/courses" element={<Courses />} />
-        <Route path="/search" element={<Search />} />
 
         <Route
           path="/courses/:id"
@@ -83,7 +78,6 @@ export default function AppRouter() {
         <Route path="/paths/:id" element={<LearningPathDetails />} />
         <Route path="/live-sessions" element={<LiveSessions />} />
         <Route path="/qa/:courseId" element={<CourseQA />} />
-        <Route path="/announcements/:courseId" element={<CourseAnnouncements />} />
         <Route path="/instructor/dashboard" element={<ProtectedInstructorRoute><InstructorDashboard /></ProtectedInstructorRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/my-courses" element={<MyCourses />} />
@@ -171,8 +165,6 @@ export default function AppRouter() {
           <Route path="reports" element={<AdminReports />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="advanced-analytics" element={<AdminAdvancedAnalytics />} />
-          <Route path="announcements" element={<AdminAnnouncements />} />
-          <Route path="system-health" element={<AdminSystemHealth />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
