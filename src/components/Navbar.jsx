@@ -187,13 +187,13 @@ export default function Navbar() {
       : "text-slate-700 hover:text-orange-500 transition-colors";
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 min-h-20 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur">
+      <div className="academy-container flex min-h-20 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 shrink-0">
           <img
             src={logo}
             alt="Basmat Alnawabigh"
-            className="w-14 h-14 object-contain"
+            className="h-12 w-12 object-contain md:h-14 md:w-14"
           />
 
           <div className="hidden sm:block">
@@ -207,7 +207,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden items-center gap-7 lg:flex">
           <NavLink to="/" className={navLinkClass}>
             {t("navbar.home")}
           </NavLink>

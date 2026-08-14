@@ -68,7 +68,8 @@ export default function LearnCourse() {
 
         const lessonData = await getLessonsByCourse(courseId);
         setLessons(lessonData);
-        setSelectedId(lessonData[0]?.id ?? null);
+        const saved = localStorage.getItem(`academy:last-lesson:${courseId}`);
+        setSelectedId(lessonData.some(x=>x.id===saved) ? saved : (lessonData[0]?.id ?? null));
 
         const progressData = await getLessonProgress(user.id, courseId);
         setCompletedIds(new Set(progressData.map((item) => item.lesson_id)));
@@ -83,6 +84,8 @@ export default function LearnCourse() {
   }, [courseId]);
 
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedId) ?? lessons[0] ?? null;
+  const selectedIndex = lessons.findIndex((lesson) => lesson.id === selectedLesson?.id);
+  function selectLesson(id){ setSelectedId(id); localStorage.setItem(`academy:last-lesson:${courseId}`, id); window.scrollTo({top:0,behavior:'smooth'}); }
   const progress = useMemo(() => {
     if (!lessons.length) return 0;
     return Math.round((completedIds.size / lessons.length) * 100);
@@ -127,17 +130,17 @@ export default function LearnCourse() {
 
   return (
     <MainLayout>
-      <main dir="rtl" className="min-h-screen bg-gray-50 px-4 py-8 md:px-8">
+      <main dir="rtl" className="min-h-screen bg-[#f6f8fb] px-3 py-5 md:px-6 md:py-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="academy-card mb-5 p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{course?.title || 'الدورة'}</h1>
+                <h1 className="academy-title text-2xl md:text-3xl">{course?.title || 'الدورة'}</h1>
                 <p className="mt-1 text-gray-500">الدورة المسجلة</p>
               </div>
               <div className="min-w-56">
                 <div className="mb-2 flex justify-between text-sm"><span>التقدم</span><span>{progress}%</span></div>
-                <div className="h-2 overflow-hidden rounded-full bg-gray-200"><div className="h-full bg-orange-500" style={{ width: `${progress}%` }} /></div>
+                <div className="academy-progress"><span style={{ width: `${progress}%` }} /></div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Link to={`/exams/${courseId}`} className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white">اختبارات الدورة</Link>
                   <Link to={`/completion/${courseId}`} className="rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold text-white">حالة الإكمال</Link>
@@ -149,15 +152,15 @@ export default function LearnCourse() {
 
           {error && <div className="mb-6 rounded-xl bg-red-100 p-4 text-red-700">{error}</div>}
 
-          <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-            <aside className="rounded-2xl bg-white p-4 shadow-sm">
+          <div className="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+            <aside className="academy-card h-fit p-4 lg:sticky lg:top-24">
               <h2 className="mb-4 text-xl font-bold">الدروس</h2>
               {lessons.length === 0 && <p className="text-sm text-gray-500">لا توجد دروس منشورة بعد.</p>}
               <div className="space-y-2">
                 {lessons.map((lesson, index) => {
                   const done = completedIds.has(lesson.id);
                   return (
-                    <button key={lesson.id} onClick={() => setSelectedId(lesson.id)} className={`w-full rounded-xl border p-3 text-right ${selectedLesson?.id === lesson.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 bg-white'}`}>
+                    <button key={lesson.id} onClick={() => selectLesson(lesson.id)} className={`w-full rounded-xl border p-3 text-right ${selectedLesson?.id === lesson.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 bg-white'}`}>
                       <div className="flex items-center justify-between gap-3">
                         <span className="font-semibold">{index + 1}. {lesson.title}</span>
                         <span>{done ? '✅' : '○'}</span>
@@ -169,7 +172,7 @@ export default function LearnCourse() {
               </div>
             </aside>
 
-            <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <section className="academy-card overflow-hidden p-4 md:p-6">
               {!selectedLesson ? (
                 <p>اختر درسًا للبدء.</p>
               ) : (
@@ -178,7 +181,7 @@ export default function LearnCourse() {
                   {selectedLesson.description && <p className="mt-3 text-gray-600">{selectedLesson.description}</p>}
 
                   {selectedLesson.lesson_type === 'video' && selectedLesson.video_url && (
-                    <div className="mt-6 overflow-hidden rounded-xl bg-black">
+                    <div className="mt-5 overflow-hidden rounded-2xl bg-black shadow-xl">
                       {getYouTubeEmbedUrl(selectedLesson.video_url) ? (
                         <iframe className="aspect-video w-full" src={getYouTubeEmbedUrl(selectedLesson.video_url)} title={selectedLesson.title} allowFullScreen />
                       ) : (
@@ -195,6 +198,7 @@ export default function LearnCourse() {
                     <a className="mt-6 inline-block rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white" href={selectedLesson.file_url} target="_blank" rel="noreferrer">فتح ملف الدرس</a>
                   )}
 
+                  <div className="mt-6 flex items-center justify-between gap-3 border-t pt-5"><button disabled={selectedIndex<=0} onClick={()=>selectLesson(lessons[selectedIndex-1]?.id)} className="rounded-xl border px-4 py-2 font-bold disabled:opacity-30">السابق</button><span className="text-sm text-slate-500">{selectedIndex+1} / {lessons.length}</span><button disabled={selectedIndex<0||selectedIndex>=lessons.length-1} onClick={()=>selectLesson(lessons[selectedIndex+1]?.id)} className="rounded-xl bg-[#071d49] px-4 py-2 font-bold text-white disabled:opacity-30">التالي</button></div>
                   <div className="mt-8 border-t pt-5">
                     <button onClick={toggleCompleted} className={`rounded-lg px-6 py-3 font-semibold text-white ${completedIds.has(selectedLesson.id) ? 'bg-gray-600' : 'bg-green-600'}`}>
                       {completedIds.has(selectedLesson.id) ? 'إلغاء اكتمال الدرس' : 'تم إكمال الدرس'}

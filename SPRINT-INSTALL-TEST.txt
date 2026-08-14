@@ -1,37 +1,38 @@
-SPRINT 4 — CERTIFICATE A4 LANDSCAPE PRINT FIX
-=============================================
-المشكلة:
-الشهادة كانت أكبر من مساحة الطباعة الفعلية، لذلك المتصفح يقسمها على ورقتين.
+SPRINT 5 — ACADEMY UI/UX & LEARNING EXPERIENCE
+==============================================
+هذا Sprint بصري/تجربة استخدام ولا يحتاج SQL.
+يحافظ على وظائف Sprint 4 الحالية.
 
-الإصلاح:
-- A4 Landscape إجباري.
-- 297mm × 210mm.
-- صفحة واحدة فقط.
-- إخفاء أزرار الشاشة أثناء الطباعة.
-- منع page-break داخل الشهادة.
-- الحفاظ على الشعار وQR والألوان.
-
-لا يوجد SQL.
+يشمل:
+- Design System موحد: Navy + Orange + Green accents وخلفيات محايدة.
+- خط Cairo عربي موحد.
+- Cards / Buttons / Inputs / spacing موحدة.
+- صور الدورات 16:9 وobject-cover.
+- Hero جديد بهوية الأكاديمية.
+- Course Cards احترافية ومتجاوبة.
+- Navbar أكثر هدوءاً وتناسقاً.
+- Admin Layout حديث ومتجاوب.
+- Learning Player: قائمة دروس + فيديو 16:9 + السابق/التالي + progress + حفظ آخر درس محلياً.
 
 التثبيت:
+Ctrl+C
 cd C:\projects\basmat-academy
-
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-4-CERTIFICATE-A4-LANDSCAPE-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
-
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-5-UIUX-LEARNING.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 npm run dev
 
 الاختبار:
-1. افتح شهادة.
-2. اضغط طباعة / حفظ PDF.
-3. اختر Paper size = A4.
-4. Layout = Landscape.
-5. Scale = Default أو 100%.
-6. Margins = None.
-7. فعّل Background graphics إذا أردت كل تفاصيل التصميم.
-8. Preview يجب أن يظهر 1 page فقط.
+1) Home: الهوية والصورة والأزرار متناسقة Desktop/Mobile.
+2) Courses: كل الصور 16:9 والبطاقات بنفس الارتفاع تقريباً.
+3) Navbar: Desktop + Mobile + قائمة الطالب تعمل.
+4) Admin: sidebar Desktop وشريط مناسب Mobile؛ كل الروابط القديمة تعمل.
+5) Learning: افتح دورة مسجلة؛ الفيديو ظاهر؛ السابق/التالي يعمل؛ تم إكمال الدرس يعمل؛ Progress يتغير.
+6) اخرج من صفحة التعلم وارجع: آخر درس فتحته يجب أن يعود تلقائياً.
+7) Regression: Profile / Exams / Certificates / Notifications / Payments / Students.
+8) npm run build
 
 بعد النجاح:
-npm run build
 git add .
-git commit -m "Fix certificate A4 landscape single page printing"
+git commit -m "Sprint 5 academy UI UX and learning experience"
 git push
+
+ملاحظة: لا تشغّل أي SQL لهذا Sprint.
