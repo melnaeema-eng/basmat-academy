@@ -1,155 +1,282 @@
-SPRINT 6 — UDEMY EXPERIENCE + MOBILE FIXES
-==========================================
-GOAL
-----
-Make the academy experience closer to a mature course marketplace while preserving
-the stable Sprint 5.4 payment, enrollment, exams and certificates.
+SPRINT 7 — ACADEMY PROFESSIONAL PLATFORM
+========================================
+Baseline: Sprint 6 (stable)
 
-INCLUDED
---------
-1. Admin mobile logout button is visible in the mobile header.
-2. Course Details rebuilt in marketplace/Udemy style:
-   - Course headline + instructor + level
-   - Rating summary
-   - Price/enroll card
-   - Wishlist
-   - Course curriculum
-   - Instructor block
-   - Student reviews
-   - Enrolled student can submit/update one review
-3. Wishlist page.
-4. Student Learning Dashboard /student:
-   Continue Learning + My Courses + Alerts + Payments + Certificates + Wishlist.
-5. Course Catalog sorting:
-   Newest / Price Low-High / Price High-Low.
-6. Learning player improvements:
-   - Keeps last lesson
-   - Previous / Next
-   - Progress
-   - Direct MP4 marks complete when video reaches the end
-   - Lesson attachment panel when a file URL exists.
-7. Mobile/Desktop preserved.
+MAIN FEATURES
+-------------
+1) ADMIN MOBILE
+   - Clear "Back to Website" icon in the mobile Admin header.
+   - Logout icon remains visible.
+   - Desktop sidebar still has Website + Logout.
 
-DATABASE
---------
-This Sprint DOES include one SQL file:
-supabase\SPRINT-6.sql
+2) INSTRUCTOR PROFILES
+   Admin:
+   /admin/instructors
+   - Add / Edit / Delete instructor.
+   - Professional title, bio, specialties, photo URL, LinkedIn, website.
+   - Link an instructor profile to a course from Add/Edit Course.
 
-It ONLY creates:
-- course_wishlist
-- course_reviews
-- public review RPC
+   Public:
+   /instructors
+   /instructors/:id
+   - Instructor profile + linked courses.
 
-It does NOT modify payments, profiles, enrollments, exams or certificates.
+3) LEARNING PATHS
+   Admin:
+   /admin/learning-paths
+   - Create a learning path.
+   - Add multiple existing courses in an ordered path.
+   - Publish / Draft.
+
+   Public:
+   /paths
+   /paths/:id
+
+4) LIVE COURSES / HYBRID
+   Admin:
+   /admin/live-sessions
+   - Course
+   - Zoom / Teams / Google Meet / Other
+   - Start / End time
+   - Meeting URL
+   - Scheduled / Completed / Cancelled
+   - Notes
+
+   Student:
+   /live-sessions
+   - Only sessions for courses the logged-in student is enrolled in.
+   - Upcoming and previous sessions.
+   - Join Session button.
+
+5) COURSE PREVIEW
+   Admin already has "Free Preview" checkbox in Lessons.
+   Sprint 7 now uses it on Course Details.
+   - Preview lesson opens video/file before enrollment.
+   - Non-preview media URLs are NOT returned by the public curriculum RPC.
+
+6) CHECKOUT UX
+   - Professional bank transfer / PayPal layout.
+   - Correct LTR display for IBAN, account number and amount.
+   - Rejected receipt message retained.
+   - mada / Cards / STC Pay shown as "ready for gateway activation",
+     NOT as a fake working payment method.
+
+7) ADMIN REPORTS
+   /admin/reports
+   - Students
+   - Courses
+   - Exams
+   - Certificates
+   - Paid amount
+   - Pending amount
+   - Top courses by enrollment
+   - Recent certificates/payments
+   - CSV export
+
+8) HOME / NAVIGATION
+   - Learning Paths and Instructors added to navigation.
+   - Home can show published Paths/Instructors once Admin creates them.
+   - Student menu includes Live Sessions.
+
+DATABASE CHANGES
+----------------
+Sprint 7 is additive.
+
+It creates:
+- public.instructors
+- public.learning_paths
+- public.learning_path_courses
+- public.live_sessions
+- courses.instructor_id
+- safe public curriculum RPC
+
+It DOES NOT delete or rebuild:
+- profiles
+- payments
+- enrollments
+- lessons
+- exams
+- certificates
+- notifications
+- reviews
+- wishlist
+
+PRE-INSTALL BACKUP
+------------------
+1) Stop server:
+Ctrl + C
+
+2) PowerShell:
+cd C:\projects\basmat-academy
+
+3) Backup current Sprint 6 source:
+Copy-Item ".\src" ".\src-before-s7" -Recurse -Force
 
 INSTALL
 -------
-1) Stop dev server:
-Ctrl + C
+4) Extract:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-7-ACADEMY-PROFESSIONAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 
-2) Backup current stable source:
-cd C:\projects\basmat-academy
-Copy-Item ".\src" ".\src-before-s6" -Recurse -Force
-
-3) Extract:
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-6-UDEMY-EXPERIENCE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
-
-4) Supabase > SQL Editor:
+5) Supabase > SQL Editor:
 Run ONLY:
-C:\projects\basmat-academy\supabase\SPRINT-6.sql
+C:\projects\basmat-academy\supabase\SPRINT-7.sql
 
-5) Start:
+Expected:
+Success. No rows returned
+
+6) Optional DB verification:
+Run:
+C:\projects\basmat-academy\supabase\SPRINT-7-VERIFY.sql
+
+7) Start:
 npm run dev
 
-SMOKE TEST FIRST
-----------------
-Open in this order:
+FIRST SMOKE TEST — DO THIS BEFORE ENTERING DATA
+-----------------------------------------------
+Open:
 /
  /courses
- /courses/<COURSE-ID>
- /login
  /admin/dashboard
+ /admin/courses
+ /student
 
-If one is blank, STOP. Do not continue.
+If any page is blank:
+STOP.
+Use source rollback at the end of this file.
 
-TEST COURSE MARKETPLACE
------------------------
-1. Open a course.
-2. Course detail page must show:
-   image / price / instructor / curriculum / rating / wishlist.
-3. Guest presses Wishlist -> login.
-4. Student presses Wishlist -> heart state changes.
-5. /wishlist shows the saved course.
-
-TEST REVIEWS
-------------
-1. Login as student already enrolled in a course.
-2. Open that course.
-3. Review form must appear.
-4. Submit 1–5 stars + text.
-5. Refresh: review remains.
-6. Submit again: same review updates, no duplicate.
-
-TEST STUDENT DASHBOARD
-----------------------
-Open:
-/student
-
-Expected:
-- My courses total
-- Unread alerts
-- Payments count
-- Certificates count
-- Continue Learning cards
-
-TEST LEARNING
--------------
-- Open recorded course.
-- Last lesson restore still works.
-- Previous / Next works.
-- MP4 video reaching the end marks lesson complete.
-- Existing manual "complete lesson" still works.
-- Attachments open if a file is attached.
-
-TEST ADMIN MOBILE
+MOBILE ADMIN TEST
 -----------------
-Open Admin from a mobile-sized browser.
-Expected:
-- Logout icon is visible in Admin header.
-- It logs out correctly.
-- Desktop sidebar logout remains available.
+Open Admin using mobile width.
 
-REGRESSION
-----------
-Do NOT close Sprint unless these still work:
-- Register/Login
+Expected in Admin header:
+- Language
+- Globe icon = Back to Website
+- Logout icon
+
+Tap Globe:
+Expected: opens /
+Tap Logout:
+Expected: logs out.
+
+INSTRUCTOR TEST
+---------------
+1) Admin > Instructors.
+2) Add instructor:
+   Name, title, specialties, bio.
+3) Admin > Courses > Edit a course.
+4) Select Linked Instructor Profile.
+5) Save.
+6) Public course page:
+   Instructor name links to profile.
+7) Open /instructors and instructor details.
+
+LEARNING PATH TEST
+------------------
+1) Admin > Learning Paths.
+2) Create "Telecom Professional Path".
+3) Select 2 or more courses.
+4) Save.
+5) Open /paths.
+6) Open the path.
+Expected:
+- Courses appear in selected order.
+- Each course opens Course Details.
+
+LIVE SESSION TEST
+-----------------
+1) Use a student enrolled in a Live or Hybrid course.
+2) Admin > Live Sessions.
+3) Add:
+   - Course
+   - Provider = Zoom / Teams / Meet
+   - Future date/time
+   - Valid meeting URL
+4) Student > /live-sessions.
+Expected:
+- Session appears.
+- Join Session opens the meeting URL.
+5) Student NOT enrolled in that course must not receive the session.
+
+COURSE PREVIEW TEST
+-------------------
+1) Admin > Course > Lessons.
+2) Choose a video lesson with MP4/video_url.
+3) Enable Free Preview.
+4) Public/guest opens Course Details.
+5) Click Preview.
+Expected:
+- Preview modal opens video.
+6) A lesson NOT marked Preview:
+Expected:
+- Curriculum title visible.
+- No Preview button/media link.
+
+CHECKOUT REGRESSION
+-------------------
+Use a paid course:
+- Bank data order correct.
+- IBAN remains LTR.
+- Amount is SAR and LTR.
+- Existing rejected receipt allows a new upload.
+- Existing Admin approval/rejection continues to work.
+- PayPal behavior unchanged.
+- mada/Cards/STC Pay is informational until Merchant Gateway is activated.
+
+REPORTS TEST
+------------
+Admin > Reports:
+- Metrics load.
+- Top Courses load if enrollments exist.
+- Recent payments load.
+- Export CSV downloads a file.
+
+SPRINT 6 REGRESSION — MUST STILL PASS
+-------------------------------------
+- Register
+- Login
+- Student profiles
+- Admin Students
 - Free enrollment
-- Paid checkout + receipt
-- Admin approve/reject payment
-- Notifications
-- Admin students
+- Paid bank transfer
+- Payment notifications
+- Wishlist
+- Reviews
+- My Courses
+- Learning MP4
+- Lesson completion
 - Exams
-- Certificate + QR verification
-- Profile
-- Arabic/English
+- Certificates
+- Certificate QR verify
+- Arabic / English
 - Mobile
 
 FINAL WINDOWS BUILD
 -------------------
 npm run build
 
-GITHUB AFTER SUCCESS ONLY
--------------------------
+Do NOT push if build fails.
+
+GITHUB AFTER ALL TESTS PASS
+---------------------------
 git add .
-git commit -m "Sprint 6 Udemy experience wishlist reviews dashboard mobile fixes"
+git commit -m "Sprint 7 academy professional platform live instructors paths reports"
 git push
 
-ROLLBACK SOURCE
+SOURCE ROLLBACK
 ---------------
-If UI fails:
+If the UI fails before you enter Sprint 7 data:
+
 Remove-Item ".\src" -Recurse -Force
-Copy-Item ".\src-before-s6" ".\src" -Recurse -Force
+Copy-Item ".\src-before-s7" ".\src" -Recurse -Force
 npm run dev
 
-Note: The SQL tables may remain safely even after source rollback because they are additive
-and do not change existing academy tables.
+The new Sprint 7 DB tables are additive and can remain unused.
+
+VALIDATION COMPLETED BEFORE PACKAGING
+-------------------------------------
+- JSX/JS syntax parsed using the Babel engine bundled with Jiti.
+- All local relative imports checked: none missing.
+- All react-icons used by Sprint 7 checked against installed declarations.
+- Translation JSON parsed successfully.
+- No new npm dependency added.
+- SQL is additive and does not replace existing Academy tables.

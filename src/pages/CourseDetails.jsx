@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaHeart, FaRegHeart, FaStar, FaPlayCircle, FaCheckCircle, FaGlobe, FaSignal, FaClock } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar, FaPlayCircle, FaCheckCircle, FaGlobe, FaSignal, FaClock, FaTimes } from "react-icons/fa";
 import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
 import { enrollInCourse, getCurrentUser, getEnrollment } from "../services/enrollmentService";
@@ -14,7 +14,7 @@ export default function CourseDetails() {
   const ar = i18n.language?.startsWith("ar");
   const [course,setCourse]=useState(null),[lessons,setLessons]=useState([]),[reviews,setReviews]=useState([]);
   const [enrollment,setEnrollment]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState("");
-  const [wishlisted,setWishlisted]=useState(false),[busy,setBusy]=useState(false);
+  const [wishlisted,setWishlisted]=useState(false),[busy,setBusy]=useState(false),[preview,setPreview]=useState(null);
   const [myReview,setMyReview]=useState(null),[rating,setRating]=useState(5),[reviewText,setReviewText]=useState("");
 
   async function load(){
@@ -22,7 +22,7 @@ export default function CourseDetails() {
       setLoading(true);setError("");
       const [{data:c,error:ce},{data:l,error:le},reviewRows] = await Promise.all([
         supabase.from("courses").select("*").eq("id",id).single(),
-        supabase.from("lessons").select("id,title,description,duration,lesson_type,is_preview,is_published,order_number").eq("course_id",id).eq("is_published",true).order("order_number"),
+        supabase.rpc("get_course_curriculum_public",{p_course_id:id}),
         getCourseReviews(id),
       ]);
       if(ce)throw ce;if(le)throw le;
@@ -71,7 +71,7 @@ export default function CourseDetails() {
           <p className="mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg">{description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4 text-sm">
             <span className="flex items-center gap-1 text-amber-300"><FaStar/> <b>{average?average.toFixed(1):"New"}</b> <span className="text-slate-300">({reviews.length})</span></span>
-            {course.instructor&&<span>{ar?"المدرب":"Instructor"}: <b>{course.instructor}</b></span>}
+            {course.instructor&&<span>{ar?"المدرب":"Instructor"}: {course.instructor_id?<Link to={`/instructors/${course.instructor_id}`} className="font-bold underline decoration-orange-400 underline-offset-4">{course.instructor}</Link>:<b>{course.instructor}</b>}</span>}
             <span className="flex items-center gap-1"><FaSignal/>{course.level||"All levels"}</span>
             <span className="flex items-center gap-1"><FaGlobe/>{ar?"العربية / الإنجليزية":"Arabic / English"}</span>
           </div>
@@ -106,14 +106,14 @@ export default function CourseDetails() {
 
         <section className="academy-card overflow-hidden">
           <div className="border-b p-5"><h2 className="academy-title text-2xl">{ar?"محتوى الدورة":"Course content"}</h2><p className="mt-1 text-sm text-slate-500">{lessons.length} {ar?"درس":"lessons"}</p></div>
-          <div className="divide-y">{lessons.map((l,i)=><div key={l.id} className="flex items-center justify-between gap-4 p-4"><div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><div className="min-w-0"><div className="truncate font-bold text-[#08284d]">{l.title}</div>{l.description&&<div className="mt-1 line-clamp-1 text-xs text-slate-500">{l.description}</div>}</div></div><div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">{l.is_preview&&<span className="rounded-full bg-orange-50 px-2 py-1 font-bold text-orange-700">{ar?"معاينة":"Preview"}</span>}{l.duration&&<span dir="ltr">{l.duration}</span>}</div></div>)}
+          <div className="divide-y">{lessons.map((l,i)=><div key={l.id} className="flex items-center justify-between gap-4 p-4"><div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><div className="min-w-0"><div className="truncate font-bold text-[#08284d]">{l.title}</div>{l.description&&<div className="mt-1 line-clamp-1 text-xs text-slate-500">{l.description}</div>}</div></div><div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">{l.is_preview&&<button onClick={()=>setPreview(l)} className="rounded-full bg-orange-50 px-2 py-1 font-bold text-orange-700 hover:bg-orange-100">{ar?"معاينة":"Preview"}</button>}{l.duration&&<span dir="ltr">{l.duration}</span>}</div></div>)}
             {!lessons.length&&<div className="p-8 text-center text-slate-500">{ar?"سيتم إضافة محتوى الدورة قريبًا.":"Course content will be added soon."}</div>}
           </div>
         </section>
 
         <section className="academy-card p-6">
           <h2 className="academy-title text-2xl">{ar?"عن المدرب":"Instructor"}</h2>
-          <div className="mt-5 flex items-center gap-4"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#08284d] text-xl font-extrabold text-white">{(course.instructor||"B").charAt(0).toUpperCase()}</div><div><h3 className="text-lg font-extrabold text-[#08284d]">{course.instructor||"Basmat Alnawabigh Academy"}</h3><p className="mt-1 text-sm text-slate-500">{ar?"مدرب متخصص وخبرة عملية في مجال الدورة.":"Specialist instructor with practical field experience."}</p></div></div>
+          <div className="mt-5 flex items-center gap-4"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#08284d] text-xl font-extrabold text-white">{(course.instructor||"B").charAt(0).toUpperCase()}</div><div><h3 className="text-lg font-extrabold text-[#08284d]">{course.instructor_id?<Link to={`/instructors/${course.instructor_id}`} className="hover:text-orange-600">{course.instructor||"Basmat Alnawabigh Academy"}</Link>:(course.instructor||"Basmat Alnawabigh Academy")}</h3><p className="mt-1 text-sm text-slate-500">{ar?"مدرب متخصص وخبرة عملية في مجال الدورة.":"Specialist instructor with practical field experience."}</p></div></div>
         </section>
 
         <section className="academy-card p-6">
@@ -124,5 +124,6 @@ export default function CourseDetails() {
       </div>
       <div className="hidden lg:block"/>
     </div>
+  {preview&&<div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" onClick={()=>setPreview(null)}><div className="w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl" onClick={e=>e.stopPropagation()}><div className="flex items-center justify-between border-b p-4"><h3 className="font-extrabold text-[#08284d]">{preview.title}</h3><button onClick={()=>setPreview(null)} className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100"><FaTimes/></button></div>{preview.video_url?<video controls autoPlay className="aspect-video w-full bg-black" src={preview.video_url}/>:preview.file_url?<div className="p-8 text-center"><a href={preview.file_url} target="_blank" rel="noreferrer" className="academy-btn-primary">{ar?"فتح ملف المعاينة":"Open Preview File"}</a></div>:<div className="p-8 text-center text-slate-500">{preview.description|| (ar?"لا يوجد محتوى معاينة لهذا الدرس.":"No preview content for this lesson.")}</div>}</div></div>}
   </main></MainLayout>
 }

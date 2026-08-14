@@ -20,6 +20,11 @@ import VerifyCertificate from "../pages/VerifyCertificate";
 import CourseCompletion from "../pages/CourseCompletion";
 import Wishlist from "../pages/Wishlist";
 import StudentDashboard from "../pages/StudentDashboard";
+import Instructors from "../pages/Instructors";
+import InstructorDetails from "../pages/InstructorDetails";
+import LearningPaths from "../pages/LearningPaths";
+import LearningPathDetails from "../pages/LearningPathDetails";
+import LiveSessions from "../pages/LiveSessions";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
@@ -39,6 +44,10 @@ import Payments from "../pages/admin/Payments";
 import Students from "../pages/admin/Students";
 import AdminExams from "../pages/admin/Exams";
 import AdminCertificates from "../pages/admin/Certificates";
+import AdminInstructors from "../pages/admin/Instructors";
+import AdminLiveSessions from "../pages/admin/LiveSessions";
+import AdminLearningPaths from "../pages/admin/LearningPaths";
+import AdminReports from "../pages/admin/Reports";
 
 export default function AppRouter() {
   return (
@@ -57,6 +66,11 @@ export default function AppRouter() {
         />
 
         <Route path="/student" element={<StudentDashboard />} />
+        <Route path="/instructors" element={<Instructors />} />
+        <Route path="/instructors/:id" element={<InstructorDetails />} />
+        <Route path="/paths" element={<LearningPaths />} />
+        <Route path="/paths/:id" element={<LearningPathDetails />} />
+        <Route path="/live-sessions" element={<LiveSessions />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/my-courses" element={<MyCourses />} />
         <Route path="/learn/:courseId" element={<LearnCourse />} />
@@ -133,6 +147,10 @@ export default function AppRouter() {
             path="certificates"
             element={<AdminCertificates />}
           />
+          <Route path="instructors" element={<AdminInstructors />} />
+          <Route path="live-sessions" element={<AdminLiveSessions />} />
+          <Route path="learning-paths" element={<AdminLearningPaths />} />
+          <Route path="reports" element={<AdminReports />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

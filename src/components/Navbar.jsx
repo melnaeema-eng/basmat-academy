@@ -15,6 +15,9 @@ import {
   FaBell,
   FaCreditCard,
   FaHeart,
+  FaVideo,
+  FaRoute,
+  FaChalkboardTeacher,
 } from "react-icons/fa";
 
 import logo from "../assets/images/logo.png";
@@ -217,6 +220,14 @@ export default function Navbar() {
             {t("navbar.courses")}
           </NavLink>
 
+          <NavLink to="/paths" className={navLinkClass}>
+            {isArabic ? "المسارات" : "Learning Paths"}
+          </NavLink>
+
+          <NavLink to="/instructors" className={navLinkClass}>
+            {isArabic ? "المدربون" : "Instructors"}
+          </NavLink>
+
           <NavLink to="/about" className={navLinkClass}>
             {t("navbar.about")}
           </NavLink>
@@ -350,6 +361,13 @@ export default function Navbar() {
                           onClick={() => setDropdownOpen(false)}
                         />
 
+                        <DropdownLink
+                          to="/live-sessions"
+                          icon={<FaVideo />}
+                          label={isArabic ? "الجلسات المباشرة" : "Live Sessions"}
+                          onClick={() => setDropdownOpen(false)}
+                        />
+
 
                         <DropdownLink
                           to="/notifications"
@@ -428,6 +446,22 @@ export default function Navbar() {
             </NavLink>
 
             <NavLink
+              to="/paths"
+              className={navLinkClass}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {isArabic ? "المسارات التعليمية" : "Learning Paths"}
+            </NavLink>
+
+            <NavLink
+              to="/instructors"
+              className={navLinkClass}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {isArabic ? "المدربون" : "Instructors"}
+            </NavLink>
+
+            <NavLink
               to="/about"
               className={navLinkClass}
               onClick={() => setMobileMenuOpen(false)}
@@ -461,6 +495,23 @@ export default function Navbar() {
                 >
                   {t("navbar.register")}
                 </Link>
+              </div>
+            )}
+
+            {user && !isAdmin && (
+              <div className="flex flex-col gap-3 border-t pt-4">
+                <NavLink to="/student" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
+                  <span className="flex items-center gap-2"><FaTachometerAlt />{isArabic ? "لوحة التعلم" : "Learning Dashboard"}</span>
+                </NavLink>
+                <NavLink to="/my-courses" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
+                  <span className="flex items-center gap-2"><FaBookOpen />{t("navbar.myCourses")}</span>
+                </NavLink>
+                <NavLink to="/live-sessions" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
+                  <span className="flex items-center gap-2"><FaVideo />{isArabic ? "الجلسات المباشرة" : "Live Sessions"}</span>
+                </NavLink>
+                <NavLink to="/wishlist" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
+                  <span className="flex items-center gap-2"><FaHeart />{isArabic ? "قائمة الرغبات" : "Wishlist"}</span>
+                </NavLink>
               </div>
             )}
 
