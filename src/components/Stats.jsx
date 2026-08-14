@@ -1,35 +1,9 @@
 import { useTranslation } from "react-i18next";
-
 export default function Stats() {
-  const { t } = useTranslation();
-
-  const stats = [
-    { number: "+1000", label: t("home.stats.students") },
-    { number: "+50", label: t("home.stats.courses") },
-    { number: "+25", label: t("home.stats.trainers") },
-    { number: "+15", label: t("home.stats.certificates") },
-  ];
-
-  return (
-    <section className="bg-white py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((item, index) => (
-            <div
-              key={index}
-              className="text-center bg-gray-50 rounded-2xl shadow-md p-8 hover:shadow-xl transition"
-            >
-              <h2 className="text-5xl font-bold text-orange-500">
-                {item.number}
-              </h2>
-
-              <p className="mt-4 text-gray-700 text-lg">
-                {item.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  const { i18n } = useTranslation();
+  const ar = i18n.language?.startsWith("ar");
+  const stats = ar
+    ? [["اتصالات وتقنية", "مسارات تقنية"], ["هندسة وELV", "مسارات هندسية"], ["جودة وتخطيط", "مسارات مهنية"], ["QR", "شهادات قابلة للتحقق"]]
+    : [["Telecom & IT", "Technical Paths"], ["Engineering & ELV", "Engineering Paths"], ["Quality & Planning", "Professional Paths"], ["QR", "Verifiable Certificates"]];
+  return <section className="border-y border-slate-200 bg-white py-7"><div className="academy-container grid grid-cols-2 gap-5 text-center md:grid-cols-4">{stats.map(([a,b])=><div key={b}><div className="text-xl font-extrabold text-[#08284d] md:text-2xl">{a}</div><div className="mt-1 text-sm text-slate-500">{b}</div></div>)}</div></section>;
 }

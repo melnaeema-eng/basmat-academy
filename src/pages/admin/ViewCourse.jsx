@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { getCourseById } from "../../services/adminCourseService";
 import { supabase } from "../../services/supabase";
 
 export default function ViewCourse() {
+  const { i18n } = useTranslation();
   const { id } = useParams();
 
   const [course, setCourse] = useState(null);
@@ -82,10 +84,10 @@ export default function ViewCourse() {
         : "Recorded";
 
   return (
-    <div dir="rtl" className="space-y-6">
+    <div dir={i18n.language?.startsWith("ar") ? "rtl" : "ltr"} className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-blue-700">
+          <h1 className="text-3xl font-bold text-[#08284d]">
             {course.title}
           </h1>
           <p className="mt-1 text-gray-500">
@@ -165,14 +167,14 @@ export default function ViewCourse() {
             <StatCard title="التسجيلات" value={stats.enrollments} icon="👨‍🎓" />
           </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="academy-card p-6">
             <h2 className="mb-3 text-xl font-bold">وصف الدورة</h2>
             <p className="whitespace-pre-line leading-8 text-gray-700">
               {course.description || "لا يوجد وصف للدورة."}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="academy-card p-6">
             <h2 className="mb-4 text-xl font-bold">إدارة محتوى الدورة</h2>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -239,7 +241,7 @@ function StatCard({ title, value, icon }) {
     <div className="rounded-2xl bg-white p-5 shadow">
       <div className="text-2xl">{icon}</div>
       <div className="mt-2 text-sm text-gray-500">{title}</div>
-      <div className="mt-1 text-3xl font-bold text-blue-700">
+      <div className="mt-1 text-3xl font-bold text-[#08284d]">
         {value}
       </div>
     </div>

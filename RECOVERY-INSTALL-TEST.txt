@@ -1,0 +1,46 @@
+SPRINT 5.3 EMERGENCY RECOVERY — STABLE SOURCE
+=============================================
+هذه ليست ميزة جديدة.
+هذه الحزمة ترجع ملفات Source إلى آخر حالة مستقرة قبل SPRINT 5.3،
+مع الإبقاء على قاعدة البيانات والطلاب والمدفوعات والشهادات كما هي.
+
+لا يوجد SQL.
+لا تحذف Supabase tables.
+لا تشغل أي SQL قديم.
+
+التركيب:
+1) أوقف السيرفر:
+Ctrl + C
+
+2) خذ نسخة احتياطية سريعة من src الحالي:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-broken-s53-backup" -Recurse -Force
+
+3) فك Recovery:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\S5-3-RECOVERY-STABLE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+4) تثبيت dependencies إن لزم:
+npm install
+
+5) التشغيل:
+npm run dev
+
+الاختبار السريع:
+- الصفحة الرئيسية يجب أن تظهر.
+- Login/Register.
+- /courses
+- /admin/dashboard
+- /admin/courses
+- /admin/students
+- /admin/payments
+- /notifications
+- /certificates
+- /learn/<courseId>
+
+إذا رجعت الصفحة للعمل:
+لا تعيد تركيب SPRINT-5-3-FULL-UIUX-ADMIN-BILINGUAL.zip.
+
+GitHub فقط بعد التأكد:
+git add .
+git commit -m "Recover stable academy source before Sprint 5.3"
+git push

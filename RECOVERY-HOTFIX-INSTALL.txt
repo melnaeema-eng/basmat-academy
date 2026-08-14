@@ -1,0 +1,19 @@
+RECOVERY HOTFIX
+===============
+Fixes:
+1) Missing qrcode dependency.
+2) PostCSS error: @import must precede all other statements.
+
+Steps:
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\S5-3-RECOVERY-HOTFIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm install qrcode
+
+npm run dev
+
+Expected:
+- No "qrcode could not be resolved".
+- No "@import must precede all other statements".
+- Home page renders.

@@ -1,38 +1,115 @@
-SPRINT 5 — ACADEMY UI/UX & LEARNING EXPERIENCE
-==============================================
-هذا Sprint بصري/تجربة استخدام ولا يحتاج SQL.
-يحافظ على وظائف Sprint 4 الحالية.
+SPRINT 5.4 — UDEMY-STYLE STABLE REDESIGN
+========================================
 
-يشمل:
-- Design System موحد: Navy + Orange + Green accents وخلفيات محايدة.
-- خط Cairo عربي موحد.
-- Cards / Buttons / Inputs / spacing موحدة.
-- صور الدورات 16:9 وobject-cover.
-- Hero جديد بهوية الأكاديمية.
-- Course Cards احترافية ومتجاوبة.
-- Navbar أكثر هدوءاً وتناسقاً.
-- Admin Layout حديث ومتجاوب.
-- Learning Player: قائمة دروس + فيديو 16:9 + السابق/التالي + progress + حفظ آخر درس محلياً.
+IMPORTANT
+---------
+- Built on the recovered stable source, NOT on broken Sprint 5.3.
+- NO SQL.
+- NO database changes.
+- NO new npm dependency in this Sprint.
+- Existing qrcode package from certificate recovery is still required.
 
-التثبيت:
-Ctrl+C
+WHAT CHANGED
+------------
+1. Unified visual system for internal pages.
+2. Admin redesigned:
+   Dashboard / Courses / Students / Payments / Certificates.
+3. Course actions now use real icons with tooltips:
+   View / Lessons / Exams / Edit / Delete.
+4. Dashboard counts students from profiles (not the old students table).
+5. Arabic / English support extended to the new Home, student and Admin UI.
+6. RTL/LTR follows selected language.
+7. Phone, email, amount, payment reference and certificate numbers stay LTR.
+8. Course catalog now has Search + Category filter, closer to a marketplace layout.
+9. My Courses redesigned with progress cards and Continue Learning.
+10. Profile / Payments / Notifications / Contact redesigned consistently.
+11. Existing payment, enrollment, lesson, exam and certificate logic is preserved.
+
+PRE-INSTALL SAFETY
+------------------
+Stop the server first: Ctrl + C
+
 cd C:\projects\basmat-academy
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-5-UIUX-LEARNING.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Make a full source backup:
+Copy-Item ".\src" ".\src-before-s54" -Recurse -Force
+
+Make sure QR dependency still exists:
+Test-Path ".\node_modules\qrcode\package.json"
+
+Expected: True
+If False:
+npm install qrcode
+
+INSTALL
+-------
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-5-4-UDEMY-STYLE-STABLE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+RUN
+---
 npm run dev
 
-الاختبار:
-1) Home: الهوية والصورة والأزرار متناسقة Desktop/Mobile.
-2) Courses: كل الصور 16:9 والبطاقات بنفس الارتفاع تقريباً.
-3) Navbar: Desktop + Mobile + قائمة الطالب تعمل.
-4) Admin: sidebar Desktop وشريط مناسب Mobile؛ كل الروابط القديمة تعمل.
-5) Learning: افتح دورة مسجلة؛ الفيديو ظاهر؛ السابق/التالي يعمل؛ تم إكمال الدرس يعمل؛ Progress يتغير.
-6) اخرج من صفحة التعلم وارجع: آخر درس فتحته يجب أن يعود تلقائياً.
-7) Regression: Profile / Exams / Certificates / Notifications / Payments / Students.
-8) npm run build
+TEST ORDER
+----------
+A. First 2-minute smoke test:
+1) /
+2) /courses
+3) /login
+4) /admin/dashboard
+5) /admin/courses
 
-بعد النجاح:
+If any page is blank, STOP and use rollback below.
+
+B. Language:
+- Arabic => RTL.
+- English => LTR.
+- Check Home, Courses and Admin.
+- Phone numbers, email, SAR amounts and references must keep correct order.
+
+C. Admin:
+- Dashboard counts render.
+- Courses table renders.
+- Hover course action icons: tooltip must appear.
+- View / Lessons / Exams / Edit routes work.
+- Students page shows profiles.
+- Payments approval/rejection still works.
+- Certificates page still works.
+
+D. Student:
+- Register/Login.
+- My Courses.
+- Learning video.
+- Profile.
+- Notifications.
+- Payments.
+- Exams.
+- Certificate + QR verify.
+
+E. Final Windows build:
+npm run build
+
+ROLLBACK
+--------
+Option 1 (fastest, uses your pre-install backup):
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s54" ".\src" -Recurse -Force
+npm run dev
+
+Option 2:
+powershell -ExecutionPolicy Bypass -File ".\ROLLBACK.ps1"
+
+GITHUB — ONLY AFTER ALL TESTS PASS
+---------------------------------
 git add .
-git commit -m "Sprint 5 academy UI UX and learning experience"
+git commit -m "Sprint 5.4 stable Udemy style academy redesign"
 git push
 
-ملاحظة: لا تشغّل أي SQL لهذا Sprint.
+VALIDATION DONE BEFORE PACKAGING
+--------------------------------
+- All relative source imports checked: no missing file.
+- All new react-icons/fa icon names checked against installed react-icons declarations.
+- Arabic and English JSON files parsed successfully.
+- No SQL was added.
+- Linux Vite build could not reach source compilation because this project dependency set
+  requires Rolldown native bindings that are not present in the Linux validation container.
+  The final build check must therefore be run on your Windows project with: npm run build

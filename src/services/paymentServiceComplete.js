@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from './supabase';
 
 export async function getMyLatestCoursePayment(courseId) {
   const { data: { session } } = await supabase.auth.getSession();

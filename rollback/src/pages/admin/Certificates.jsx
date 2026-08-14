@@ -1,0 +1,8 @@
+import {useEffect,useState} from 'react';
+import {adminGetCertificates,setCertificateStatus} from '../../services/certificateService';
+export default function AdminCertificates(){
+ const [items,setItems]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState('');
+ async function load(){try{setItems(await adminGetCertificates())}catch(e){setError(e.message||'تعذر تحميل الشهادات')}finally{setLoading(false)}}useEffect(()=>{load()},[]);
+ async function toggle(c){const next=(c.status||'active')==='active'?'revoked':'active';if(!confirm(next==='revoked'?'إلغاء هذه الشهادة؟':'إعادة تفعيل هذه الشهادة؟'))return;try{await setCertificateStatus(c.id,next);await load()}catch(e){alert(e.message)}}
+ return <div dir="rtl"><h1 className="text-3xl font-bold">الشهادات الصادرة</h1><p className="mt-2 text-gray-500">إدارة الشهادات والتحقق والإلغاء</p>{error&&<div className="mt-5 rounded bg-red-50 p-3 text-red-700">{error}</div>}{loading?<p className="mt-6">جاري التحميل...</p>:<div className="mt-6 overflow-x-auto rounded-xl bg-white shadow"><table className="w-full text-right"><thead className="bg-slate-800 text-white"><tr><th className="p-3">الطالب</th><th>الدورة</th><th>رقم الشهادة</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody>{items.map(c=><tr key={c.id} className="border-b"><td className="p-3">{c.profiles?.full_name||c.profiles?.email}</td><td>{c.courses?.title}</td><td>{c.certificate_number}</td><td className={(c.status||'active')==='active'?'text-green-700':'text-red-700'}>{(c.status||'active')==='active'?'سارية':'ملغاة'}</td><td><button onClick={()=>toggle(c)} className="rounded bg-slate-700 px-3 py-2 text-white">{(c.status||'active')==='active'?'إلغاء':'إعادة تفعيل'}</button></td></tr>)}</tbody></table></div>}</div>
+}

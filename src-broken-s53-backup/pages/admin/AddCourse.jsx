@@ -1,0 +1,2 @@
+import {useTranslation} from "react-i18next";import {supabase} from "../../services/supabase";import CourseForm from "../../components/admin/CourseForm";
+export default function AddCourse(){const{t}=useTranslation();async function save(course,reset){const{error}=await supabase.from("courses").insert([course]);if(error)return alert(error.message);alert(t("admin.addCourse"));reset()}return <CourseForm onSubmit={save} submitText={t("admin.addCourse")}/>}

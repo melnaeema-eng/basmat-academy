@@ -1,0 +1,9 @@
+import { useEffect,useState } from "react";
+import MainLayout from "../layouts/MainLayout";
+import { supabase } from "../services/supabase";
+const labels={pending:"قيد المراجعة",paid:"تم الاعتماد",rejected:"مرفوض",failed:"فشل",refunded:"مسترد"};
+export default function MyPayments(){
+ const [items,setItems]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState("");
+ useEffect(()=>{(async()=>{try{const {data:{session}}=await supabase.auth.getSession();if(!session?.user)return;const {data,error}=await supabase.from("payments").select("*, courses(id,title)").eq("user_id",session.user.id).order("created_at",{ascending:false});if(error)throw error;setItems(data||[])}catch(e){setError(e.message||"تعذر تحميل المدفوعات")}finally{setLoading(false)}})()},[]);
+ return <MainLayout><main className="mx-auto max-w-5xl p-6" dir="rtl"><h1 className="mb-6 text-3xl font-bold">مدفوعاتي</h1>{error&&<div className="mb-4 rounded bg-red-50 p-3 text-red-700">{error}</div>}{loading?<div>جاري التحميل...</div>:<div className="space-y-4">{items.map(p=><div key={p.id} className="rounded-xl border bg-white p-4"><div className="font-bold">{p.courses?.title||p.course_id}</div><div className="mt-1 text-sm">الحالة: <b>{labels[p.status]||p.status}</b> — {Number(p.amount).toFixed(2)} {p.currency}</div>{p.status==="rejected"&&<div className="mt-3 rounded bg-red-50 p-3 text-red-800">سبب الرفض: <b>{p.admin_note||"غير محدد"}</b><br/>يمكنك العودة لصفحة الدورة ورفع إيصال جديد.</div>}{p.status==="paid"&&<div className="mt-3 rounded bg-green-50 p-3 text-green-800">تم اعتماد الدفع والدورة متاحة في «دوراتي».</div>}{p.status==="pending"&&<div className="mt-3 rounded bg-amber-50 p-3 text-amber-800">الإيصال قيد مراجعة الإدارة.</div>}</div>)}{!items.length&&<div className="py-10 text-center text-gray-500">لا توجد مدفوعات.</div>}</div>}</main></MainLayout>
+}

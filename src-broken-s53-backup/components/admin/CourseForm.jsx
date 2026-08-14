@@ -1,0 +1,23 @@
+import {useEffect,useState} from "react";import {useTranslation} from "react-i18next";import {uploadCourseImage} from "../../services/storageService";
+const empty={title:"",description:"",category:"",instructor:"",price:"",level:"",duration:"",status:"Published",image:"",featured:false,course_type:"recorded"};
+export default function CourseForm({initialData,onSubmit,submitText}){
+ const {t}=useTranslation();const[course,setCourse]=useState(empty),[uploading,setUploading]=useState(false);
+ useEffect(()=>{if(initialData)setCourse({...empty,...initialData,title:initialData.title||"",description:initialData.description||"",image:initialData.image||"",featured:!!initialData.featured,course_type:initialData.course_type||"recorded"})},[initialData]);
+ function change(e){const{name,value,type,checked}=e.target;setCourse(p=>({...p,[name]:type==="checkbox"?checked:value}))}
+ async function upload(e){const file=e.target.files?.[0];if(!file)return;try{setUploading(true);const url=await uploadCourseImage(file);setCourse(p=>({...p,image:url}))}catch(e){alert(e.message)}finally{setUploading(false)}}
+ function submit(e){e.preventDefault();onSubmit(course,()=>setCourse(empty))}
+ const fields=[["title",t("courseForm.courseTitle")],["category",t("courseForm.category")],["instructor",t("courseForm.instructor")],["price",t("courseForm.price"),"number"],["level",t("courseForm.level")],["duration",t("courseForm.duration")]];
+ return <div className="mx-auto max-w-5xl"><form onSubmit={submit} className="academy-card p-5 md:p-7">
+  <h1 className="academy-title text-2xl">{t("courseForm.title")}</h1><p className="mt-2 text-sm text-slate-500">{t("admin.coursesDesc")}</p>
+  <div className="mt-6 grid gap-4 md:grid-cols-2">{fields.map(([name,label,type="text"])=><Field key={name} label={label}><input required={name==="title"} type={type} name={name} value={course[name]??""} onChange={change} className="academy-input"/></Field>)}
+   <Field label={t("courseForm.type")}><select name="course_type" value={course.course_type} onChange={change} className="academy-input"><option value="recorded">{t("courseForm.recorded")}</option><option value="live">{t("courseForm.live")}</option><option value="hybrid">{t("courseForm.hybrid")}</option></select></Field>
+   <Field label={t("courseForm.status")}><select name="status" value={course.status} onChange={change} className="academy-input"><option value="Published">{t("courseForm.published")}</option><option value="Draft">{t("courseForm.draft")}</option></select></Field>
+  </div>
+  <Field label={t("courseForm.description")} cls="mt-4"><textarea name="description" value={course.description} onChange={change} className="academy-input min-h-32"/></Field>
+  <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_300px]"><div><Field label={t("courseForm.image")}><input id="course-image" type="file" accept="image/*" onChange={upload} className="academy-input bg-white"/></Field>{uploading&&<p className="mt-2 text-sm text-blue-600">{t("courseForm.uploading")}</p>}<label className="mt-5 flex items-center gap-3 font-semibold"><input type="checkbox" name="featured" checked={course.featured} onChange={change}/>{t("courseForm.featured")}</label></div>
+   <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">{course.image?<img src={course.image} alt="" className="aspect-video w-full object-cover"/>:<div className="flex aspect-video items-center justify-center text-sm text-slate-400">{t("courseForm.image")}</div>}</div>
+  </div>
+  <div className="mt-7 flex justify-end"><button className="academy-btn-primary">{submitText||t("courseForm.save")}</button></div>
+ </form></div>
+}
+function Field({label,children,cls=""}){return <label className={`block ${cls}`}><span className="mb-1.5 block text-sm font-bold text-slate-700">{label}</span>{children}</label>}

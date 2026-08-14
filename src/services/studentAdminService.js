@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from './supabase';
 
 export async function getStudentsAdmin() {
   const { data: profiles, error: pError } = await supabase
