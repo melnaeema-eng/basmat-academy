@@ -1,0 +1,102 @@
+SPRINT 12 — FINAL UI/UX & BRAND POLISH
+=======================================
+
+BASELINE
+--------
+Sprint 11 stable.
+
+SCOPE
+-----
+UI/UX only. NO SQL.
+
+Included:
+- Modern professional Home hero with real search.
+- Improved course cards: consistent image ratio, course type, instructor, rating area, price.
+- Stronger learning-area / learner-journey sections.
+- Full professional footer.
+- Privacy Policy.
+- Terms & Conditions.
+- Refund Policy.
+- Public certificate verification landing page.
+- Course Details: audience + requirements sections.
+- Student Dashboard visual polish.
+- Executive Admin Dashboard visual polish + revenue + quick actions.
+- Mobile readability/accessibility improvements.
+- Print styling.
+
+NOT CHANGED
+-----------
+Payments
+Refund business logic
+Student management logic
+Exams
+Certificates / QR
+Supabase Auth
+RLS
+Database
+Email Edge Function
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-s12" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12-FINAL-UIUX-BRAND-POLISH.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+NO SQL.
+
+Start:
+npm run dev
+
+TEST
+----
+Public:
+/
+ /courses
+ /courses/<course-id>
+ /privacy
+ /terms
+ /refund-policy
+ /verify-certificate
+ /search
+
+Student:
+ /student
+ /my-courses
+ /cart
+ /purchases
+ /refunds
+
+Admin:
+ /admin/dashboard
+ /admin/students
+ /admin/payments
+ /admin/refunds
+
+MOBILE
+------
+Test:
+- Navbar
+- Home hero/search
+- Course cards
+- Student dashboard
+- Admin scroll
+- Footer
+- Legal pages
+
+FINAL:
+npm run build
+
+Only if build succeeds:
+git add .
+git commit -m "Sprint 12 final UI UX brand polish"
+git push
+
+ROLLBACK
+--------
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s12" ".\src" -Recurse -Force
+npm run dev

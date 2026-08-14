@@ -35,6 +35,8 @@ import InstructorDashboard from "../pages/InstructorDashboard";
 import CourseQA from "../pages/CourseQA";
 import Search from "../pages/Search";
 import CourseAnnouncements from "../pages/CourseAnnouncements";
+import LegalPage from "../pages/LegalPage";
+import VerifyLanding from "../pages/VerifyLanding";
 import Cart from "../pages/Cart";
 import PurchaseHistory from "../pages/PurchaseHistory";
 import Refunds from "../pages/Refunds";
@@ -105,6 +107,10 @@ export default function AppRouter() {
         <Route path="/certificates" element={<Certificates />} />
         <Route path="/certificates/:id" element={<CertificateView />} />
         <Route path="/verify/:token" element={<VerifyCertificate />} />
+        <Route path="/verify-certificate" element={<VerifyLanding />} />
+        <Route path="/privacy" element={<LegalPage type="privacy" />} />
+        <Route path="/terms" element={<LegalPage type="terms" />} />
+        <Route path="/refund-policy" element={<LegalPage type="refund" />} />
         <Route path="/completion/:courseId" element={<CourseCompletion />} />
 
         <Route path="/about" element={<About />} />

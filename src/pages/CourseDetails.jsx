@@ -117,6 +117,21 @@ export default function CourseDetails() {
         </section>
 
         <section className="academy-card p-6">
+          <h2 className="academy-title text-2xl">{ar?"لمن هذه الدورة؟":"Who is this course for?"}</h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">{[
+            ar?"المهندسون والفنيون الراغبون في تطوير خبراتهم العملية.":"Engineers and technicians seeking practical development.",
+            ar?"المتخصصون الراغبون في تحديث معرفتهم بالمجال.":"Professionals refreshing or expanding their field knowledge.",
+            ar?"الطلاب والخريجون الذين يريدون فهمًا عمليًا منظمًا.":"Students and graduates seeking structured practical understanding.",
+            ar?"فرق الشركات التي تحتاج إلى رفع المهارات المهنية.":"Company teams developing professional capability."
+          ].map(x=><div key={x} className="flex gap-2 rounded-xl bg-slate-50 p-3 text-sm leading-7"><FaCheckCircle className="mt-1 shrink-0 text-emerald-600"/><span>{x}</span></div>)}</div>
+        </section>
+
+        <section className="academy-card p-6">
+          <h2 className="academy-title text-2xl">{ar?"المتطلبات":"Requirements"}</h2>
+          <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-600"><li>• {ar?"الرغبة في التعلم والتطبيق العملي.":"Interest in learning and practical application."}</li><li>• {ar?"قد تتطلب بعض الدورات معرفة أساسية بالمجال حسب المستوى.":"Some courses may require basic field knowledge depending on level."}</li><li>• {ar?"اتصال إنترنت وجهاز مناسب للمحتوى المرئي والاختبارات.":"Internet access and a device suitable for video and assessments."}</li></ul>
+        </section>
+
+        <section className="academy-card p-6">
           <h2 className="academy-title text-2xl">{ar?"عن المدرب":"Instructor"}</h2>
           <div className="mt-5 flex items-center gap-4"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#08284d] text-xl font-extrabold text-white">{(course.instructor||"B").charAt(0).toUpperCase()}</div><div><h3 className="text-lg font-extrabold text-[#08284d]">{course.instructor_id?<Link to={`/instructors/${course.instructor_id}`} className="hover:text-orange-600">{course.instructor||"Basmat Alnawabigh Academy"}</Link>:(course.instructor||"Basmat Alnawabigh Academy")}</h3><p className="mt-1 text-sm text-slate-500">{ar?"مدرب متخصص وخبرة عملية في مجال الدورة.":"Specialist instructor with practical field experience."}</p></div></div>
         </section>

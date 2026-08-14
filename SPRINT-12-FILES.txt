@@ -1,0 +1,13 @@
+SPRINT-12-INSTALL-TEST.txt
+src/layouts/MainLayout.jsx
+src/components/CourseCard.jsx
+src/components/Hero.jsx
+src/components/Footer.jsx
+src/router/AppRouter.jsx
+src/styles/academy.css
+src/pages/CourseDetails.jsx
+src/pages/Home.jsx
+src/pages/StudentDashboard.jsx
+src/pages/LegalPage.jsx
+src/pages/VerifyLanding.jsx
+src/pages/admin/Dashboard.jsx
