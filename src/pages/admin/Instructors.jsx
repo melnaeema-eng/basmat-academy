@@ -4,7 +4,7 @@ import {FaPen,FaPlus,FaTrash,FaTimes} from "react-icons/fa";
 import {AdminPageHeader,AdminCard,StatusBadge} from "../../components/admin/AdminUI";
 import {adminDeleteInstructor,adminGetInstructors,adminSaveInstructor} from "../../services/professionalAcademyService";
 
-const empty={full_name:"",title:"",bio:"",photo_url:"",linkedin_url:"",website_url:"",specialties_text:"",is_active:true};
+const empty={full_name:"",title:"",bio:"",photo_url:"",linkedin_url:"",website_url:"",user_id:"",specialties_text:"",is_active:true};
 
 export default function AdminInstructors(){
  const {i18n}=useTranslation();const ar=i18n.language?.startsWith("ar");
@@ -23,6 +23,8 @@ export default function AdminInstructors(){
     <Field label={ar?"الاسم الكامل":"Full Name"}><input required className="academy-input" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})}/></Field>
     <Field label={ar?"المسمى/الصفة":"Professional Title"}><input className="academy-input" value={form.title||""} onChange={e=>setForm({...form,title:e.target.value})}/></Field>
     <Field label={ar?"الصورة (رابط)":"Photo URL"}><input dir="ltr" className="academy-input" value={form.photo_url||""} onChange={e=>setForm({...form,photo_url:e.target.value})}/></Field>
+    <Field label={ar?"User ID لحساب المدرب (اختياري)":"Instructor Auth User ID (optional)"}><input dir="ltr" className="academy-input" value={form.user_id||""} onChange={e=>setForm({...form,user_id:e.target.value})}/><p className="mt-1 text-xs text-slate-400">{ar?"اربط هذا الملف بحساب مستخدم ليظهر له Instructor Dashboard.":"Link this profile to an auth user to enable Instructor Dashboard."}</p></Field>
+
     <Field label={ar?"التخصصات — افصل بفاصلة":"Specialties — comma separated"}><input className="academy-input" value={form.specialties_text||""} onChange={e=>setForm({...form,specialties_text:e.target.value})}/></Field>
     <Field label={ar?"نبذة":"Bio"}><textarea className="academy-input min-h-28" value={form.bio||""} onChange={e=>setForm({...form,bio:e.target.value})}/></Field>
     <div className="grid gap-3 sm:grid-cols-2"><Field label="LinkedIn"><input dir="ltr" className="academy-input" value={form.linkedin_url||""} onChange={e=>setForm({...form,linkedin_url:e.target.value})}/></Field><Field label={ar?"الموقع":"Website"}><input dir="ltr" className="academy-input" value={form.website_url||""} onChange={e=>setForm({...form,website_url:e.target.value})}/></Field></div>

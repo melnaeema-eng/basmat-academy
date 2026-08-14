@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-export async function createBankTransferPayment({ course, user, file, bankReference = "" }) {
+export async function createBankTransferPayment({ course, user, file, bankReference = "", coupon = null }) {
   if (!user) throw new Error("يجب تسجيل الدخول أولاً");
   if (!course?.id) throw new Error("بيانات الدورة غير مكتملة");
   if (!file) throw new Error("يرجى إرفاق إيصال التحويل");
@@ -19,7 +19,8 @@ export async function createBankTransferPayment({ course, user, file, bankRefere
 
   if (uploadError) throw uploadError;
 
-  const amount = Number(course.price || 0);
+  const originalAmount = Number(course.price || 0);
+  const amount = coupon?.valid ? Number(coupon.final_amount || 0) : originalAmount;
 
   const { data, error } = await supabase
     .from("payments")
@@ -28,6 +29,9 @@ export async function createBankTransferPayment({ course, user, file, bankRefere
       course_id: course.id,
       method: "bank_transfer",
       amount,
+      original_amount: originalAmount,
+      discount_amount: coupon?.valid ? Number(coupon.discount_amount || 0) : 0,
+      coupon_id: coupon?.valid ? coupon.coupon_id : null,
       currency: "SAR",
       status: "pending",
       receipt_path: receiptPath,

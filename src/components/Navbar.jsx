@@ -34,6 +34,7 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isInstructor,setIsInstructor]=useState(false);
 
   const isArabic = i18n.language?.startsWith("ar");
 
@@ -130,6 +131,13 @@ export default function Navbar() {
           "student",
         avatar_url: data?.avatar_url || "",
       });
+      const {data: instructorRow}=await supabase
+        .from("instructors")
+        .select("id")
+        .eq("user_id",currentUser.id)
+        .eq("is_active",true)
+        .maybeSingle();
+      setIsInstructor(!!instructorRow);
     } catch (error) {
       console.error("خطأ في قراءة الملف الشخصي:", error.message);
 
@@ -161,6 +169,7 @@ export default function Navbar() {
 
     setUser(null);
     setProfile(null);
+    setIsInstructor(false);
     setDropdownOpen(false);
     setMobileMenuOpen(false);
 
@@ -341,6 +350,12 @@ export default function Navbar() {
                       </>
                     ) : (
                       <>
+                        {isInstructor&&<DropdownLink
+                          to="/instructor/dashboard"
+                          icon={<FaChalkboardTeacher />}
+                          label={isArabic ? "لوحة المدرب" : "Instructor Dashboard"}
+                          onClick={() => setDropdownOpen(false)}
+                        />}
                         <DropdownLink
                           to="/student"
                           icon={<FaTachometerAlt />}
@@ -500,6 +515,9 @@ export default function Navbar() {
 
             {user && !isAdmin && (
               <div className="flex flex-col gap-3 border-t pt-4">
+                {isInstructor&&<NavLink to="/instructor/dashboard" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
+                  <span className="flex items-center gap-2"><FaChalkboardTeacher />{isArabic ? "لوحة المدرب" : "Instructor Dashboard"}</span>
+                </NavLink>}
                 <NavLink to="/student" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
                   <span className="flex items-center gap-2"><FaTachometerAlt />{isArabic ? "لوحة التعلم" : "Learning Dashboard"}</span>
                 </NavLink>

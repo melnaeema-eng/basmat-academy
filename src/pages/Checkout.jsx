@@ -11,6 +11,7 @@ import {
   createPayPalOrder,
   getMyPayments,
 } from "../services/paymentService";
+import { validateCoupon } from "../services/proAcademyFinalService";
 
 function loadPayPalSdk(clientId) {
   return new Promise((resolve, reject) => {
@@ -55,6 +56,9 @@ export default function Checkout() {
   const [pendingPayment, setPendingPayment] = useState(null);
   const [rejectedPayment, setRejectedPayment] = useState(null);
   const [paypalError, setPaypalError] = useState("");
+  const [couponCode,setCouponCode]=useState("");
+  const [coupon,setCoupon]=useState(null);
+  const [couponMessage,setCouponMessage]=useState("");
 
   const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
   const bankName = import.meta.env.VITE_BANK_NAME || "مصرف الراجحي";
@@ -62,7 +66,7 @@ export default function Checkout() {
   const iban = import.meta.env.VITE_BANK_IBAN || "";
   const accountNumber = import.meta.env.VITE_BANK_ACCOUNT_NUMBER || "";
 
-  const amount = useMemo(() => Number(course?.price || 0), [course]);
+  const amount = useMemo(() => coupon?.valid ? Number(coupon.final_amount||0) : Number(course?.price || 0), [course,coupon]);
 
   useEffect(() => {
     async function load() {
@@ -163,6 +167,20 @@ export default function Checkout() {
     };
   }, [method, paypalClientId, course, user, navigate]);
 
+  async function applyCoupon(){
+    if(!couponCode.trim()||!course)return;
+    try{
+      setCouponMessage("");
+      const result=await validateCoupon(couponCode,course.id);
+      setCoupon(result);
+      setCouponMessage(result?.valid
+        ? (ar?`تم تطبيق الخصم: ${Number(result.discount_amount||0).toFixed(2)} ر.س`:`Discount applied: ${Number(result.discount_amount||0).toFixed(2)} SAR`)
+        : (ar?"الكوبون غير صالح أو منتهي.":"Coupon is invalid or expired."));
+    }catch(e){
+      setCoupon(null);setCouponMessage(e.message||"Coupon error");
+    }
+  }
+
   async function submitBankTransfer(e) {
     e.preventDefault();
     if (!receipt || !course || !user) return;
@@ -175,6 +193,7 @@ export default function Checkout() {
         user,
         file: receipt,
         bankReference: reference,
+        coupon,
       });
       setPendingPayment(payment);
       setRejectedPayment(null);
@@ -247,6 +266,16 @@ export default function Checkout() {
                       <div><b>IBAN:</b> <span dir="ltr">{iban || (ar ? "يُضاف في ملف .env" : "Set in .env")}</span></div>
                       <div><b>{ar ? "رقم الحساب" : "Account Number"}:</b> <span dir="ltr">{accountNumber || (ar ? "يُضاف في ملف .env" : "Set in .env")}</span></div>
                       <div><b>{ar ? "المبلغ المطلوب" : "Amount Due"}:</b> <span dir="ltr">{amount.toFixed(2)} SAR</span></div>
+                    </div>
+
+                    <div className="mb-5 rounded-xl border border-dashed border-orange-200 bg-orange-50/50 p-4">
+                      <div className="font-bold text-[#08284d]">{ar ? "كوبون خصم" : "Coupon Code"}</div>
+                      <div className="mt-2 flex gap-2">
+                        <input dir="ltr" value={couponCode} onChange={e=>{setCouponCode(e.target.value);setCoupon(null);setCouponMessage("");}} className="academy-input bg-white" placeholder="BASMAT10"/>
+                        <button type="button" onClick={applyCoupon} className="academy-btn-dark shrink-0">{ar ? "تطبيق" : "Apply"}</button>
+                      </div>
+                      {couponMessage&&<p className={`mt-2 text-sm font-bold ${coupon?.valid?"text-emerald-700":"text-red-600"}`}>{couponMessage}</p>}
+                      {coupon?.valid&&<div className="mt-2 text-sm text-slate-600"><span>{ar?"قبل الخصم":"Before"}: </span><span dir="ltr" className="line-through">{Number(coupon.original_amount).toFixed(2)} SAR</span><span className="mx-2">→</span><b dir="ltr">{Number(coupon.final_amount).toFixed(2)} SAR</b></div>}
                     </div>
 
                     <form onSubmit={submitBankTransfer} className="space-y-4">

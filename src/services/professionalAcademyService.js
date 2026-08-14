@@ -51,6 +51,7 @@ export async function adminSaveInstructor(payload) {
         linkedin_url: payload.linkedin_url || null,
         website_url: payload.website_url || null,
         specialties: payload.specialties || [],
+        user_id: payload.user_id || null,
         is_active: payload.is_active !== false,
         updated_at: new Date().toISOString(),
       })
@@ -70,6 +71,7 @@ export async function adminSaveInstructor(payload) {
       linkedin_url: payload.linkedin_url || null,
       website_url: payload.website_url || null,
       specialties: payload.specialties || [],
+      user_id: payload.user_id || null,
       is_active: payload.is_active !== false,
     })
     .select()

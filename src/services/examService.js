@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 export async function getPublishedExamsForCourse(courseId) {
-  const { data, error } = await supabase.from('exams').select('id,course_id,title,description,passing_score,max_attempts,is_final,is_published,created_at').eq('course_id', courseId).eq('is_published', true).order('created_at');
+  const { data, error } = await supabase.from('exams').select('id,course_id,title,description,passing_score,max_attempts,is_final,is_published,duration_minutes,randomize_questions,show_answers_after_submit,created_at').eq('course_id', courseId).eq('is_published', true).order('created_at');
   if (error) throw error;
   return data || [];
 }
