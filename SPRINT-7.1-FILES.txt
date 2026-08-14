@@ -1,0 +1,7 @@
+SPRINT-7.1-INSTALL-TEST.txt
+src/pages/MyCourses.jsx
+src/pages/ExamAttempt.jsx
+src/pages/LearnCourse.jsx
+src/pages/Exams.jsx
+src/services/courseCompletionService.js
+src/services/professionalAcademyService.js

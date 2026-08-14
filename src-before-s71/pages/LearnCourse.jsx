@@ -4,7 +4,6 @@ import MainLayout from '../layouts/MainLayout';
 import { issueCertificateIfEligible } from '../services/certificateService';
 import { supabase } from '../services/supabase';
 import { getCurrentUser, getEnrollment } from '../services/enrollmentService';
-import { hasCourseCertificate } from '../services/courseCompletionService';
 import {
   getLessonsByCourse,
   getLessonProgress,
@@ -42,7 +41,6 @@ export default function LearnCourse() {
   const [completedIds, setCompletedIds] = useState(new Set());
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState('');
-  const [certified, setCertified] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -53,7 +51,6 @@ export default function LearnCourse() {
           return;
         }
         setUserId(user.id);
-        setCertified(await hasCourseCertificate(user.id, courseId));
 
         const enrollment = await getEnrollment(courseId, user.id);
         if (!enrollment || enrollment.status === 'cancelled') {
@@ -95,7 +92,6 @@ export default function LearnCourse() {
   }, [completedIds, lessons.length]);
 
   async function toggleCompleted() {
-    if (certified) return;
     if (!selectedLesson || !userId) return;
     const isCompleted = completedIds.has(selectedLesson.id);
     const next = new Set(completedIds);
@@ -135,7 +131,7 @@ export default function LearnCourse() {
   return (
     <MainLayout>
       <main dir="rtl" className="min-h-screen bg-[#f6f8fb] px-3 py-5 md:px-6 md:py-8">
-        <div className="mx-auto max-w-7xl">{certified&&<div className="mb-5 rounded-xl bg-emerald-50 p-4 font-bold text-emerald-700">🏆 الدورة مكتملة والشهادة صادرة — وضع المراجعة: يمكنك مشاهدة جميع الدروس دون إعادة الاختبارات.</div>}
+        <div className="mx-auto max-w-7xl">
           <div className="academy-card mb-5 p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
@@ -146,11 +142,7 @@ export default function LearnCourse() {
                 <div className="mb-2 flex justify-between text-sm"><span>التقدم</span><span>{progress}%</span></div>
                 <div className="academy-progress"><span style={{ width: `${progress}%` }} /></div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {!certified && (
-                    <Link to={`/exams/${courseId}`} className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white">
-                      اختبارات الدورة
-                    </Link>
-                  )}
+                  <Link to={`/exams/${courseId}`} className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white">اختبارات الدورة</Link>
                   <Link to={`/completion/${courseId}`} className="rounded-lg bg-slate-700 px-3 py-2 text-sm font-semibold text-white">حالة الإكمال</Link>
                   {progress === 100 && <Link to="/certificates" className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white">الشهادات</Link>}
                 </div>

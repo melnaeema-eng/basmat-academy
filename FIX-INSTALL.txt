@@ -1,0 +1,15 @@
+SPRINT 7.1 — LEARNCOURSE PARSE FIX
+=================================
+Fixes one JSX parse error in LearnCourse.jsx only.
+
+NO SQL.
+
+Install:
+cd C:\projects\basmat-academy
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-7.1-LEARNCOURSE-PARSE-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+npm run dev
+
+Expected:
+- No Adjacent JSX elements error.
+- Certified course hides Exams button.
+- Completion and Certificates links still render correctly.

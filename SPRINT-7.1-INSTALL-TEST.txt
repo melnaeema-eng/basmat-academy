@@ -1,0 +1,79 @@
+SPRINT 7.1 — REPORTS + COURSE COMPLETION FIX
+=============================================
+
+FIX 1 — ADMIN REPORTS
+- Removed the incorrect dependency on enrollments.created_at.
+- No database column needs to be added.
+- /admin/reports now uses the existing enrollments structure.
+
+FIX 2 — CERTIFICATE = COMPLETED COURSE
+- If the student already has a certificate for a course:
+  * Course progress displays as 100%.
+  * Course remains available for review.
+  * Videos/content remain accessible.
+  * Exam button is hidden from My Courses.
+  * Exams page shows course completed.
+  * Direct exam URL is blocked in the UI and redirects the learner to review/certificate actions.
+  * Existing exam result remains preserved.
+  * No new exam attempt is needed.
+
+INSTALL
+-------
+1) Stop Vite with Ctrl+C.
+
+2) PowerShell:
+cd C:\projects\basmat-academy
+
+3) Backup:
+Copy-Item ".\src" ".\src-before-s71" -Recurse -Force
+
+4) Extract:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-7.1-COMPLETION-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+5) IMPORTANT:
+NO SQL is required for Sprint 7.1.
+
+6) Start:
+npm run dev
+
+TEST
+----
+A) Admin > Reports
+Expected:
+- No "enrollments.created_at does not exist" error.
+- Report metrics open normally.
+
+B) Login as a student who already has a certificate.
+Open My Courses.
+Expected:
+- Certified course shows 100%.
+- "Review Course" instead of normal continue flow.
+- Certificate button is visible.
+- Exam button is hidden.
+
+C) Open the certified course.
+Expected:
+- Review-mode message.
+- Lessons/videos remain available.
+
+D) Try to open the course Exams page.
+Expected:
+- Message says the course is complete and no retake is needed.
+- No new exam-start button.
+
+E) Try a direct old exam URL.
+Expected:
+- Completion screen appears.
+- No exam questions are offered again.
+
+F) Check a student WITHOUT a certificate.
+Expected:
+- Existing learning and exam behavior remains unchanged.
+
+FINAL:
+npm run build
+
+If build succeeds:
+git add .
+git commit -m "Sprint 7.1 reports and certified course completion fix"
+git push

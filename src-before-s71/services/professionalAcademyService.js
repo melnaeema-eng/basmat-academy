@@ -229,7 +229,7 @@ export async function getAdminReportData() {
   const [profiles, courses, enrollments, payments, certificates, exams] = await Promise.all([
     supabase.from("profiles").select("id",{count:"exact",head:true}).neq("role","admin"),
     supabase.from("courses").select("id",{count:"exact",head:true}),
-    supabase.from("enrollments").select("id,course_id,user_id,status,progress,courses(id,title)").limit(100),
+    supabase.from("enrollments").select("id,course_id,user_id,created_at,status,progress,courses(id,title)").order("created_at",{ascending:false}).limit(100),
     supabase.from("payments").select("id,amount,status,method,created_at,course_id,courses(id,title)").order("created_at",{ascending:false}).limit(100),
     supabase.from("certificates").select("id,issued_at,status,course_id,courses(id,title)",{count:"exact"}).order("issued_at",{ascending:false}).limit(100),
     supabase.from("exams").select("id",{count:"exact",head:true}),
