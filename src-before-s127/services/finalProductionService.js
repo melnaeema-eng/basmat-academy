@@ -28,42 +28,9 @@ export async function adminGetAnnouncements(){
 }
 export async function saveAnnouncement(payload){
   const {data:{session}}=await supabase.auth.getSession();if(!session?.user)throw new Error("Login required");
-  const scope=payload.audience_scope||"course";
-  const row={
-    course_id:scope==="course"?(payload.course_id||null):null,
-    author_id:session.user.id,
-    title:payload.title.trim(),
-    body:payload.body.trim(),
-    is_published:payload.is_published!==false,
-    audience_scope:scope,
-    send_email:!!payload.send_email,
-    published_at:new Date().toISOString(),
-    updated_at:new Date().toISOString()
-  };
-  let saved;
-  if(payload.id){
-    const {data,error}=await supabase.from("course_announcements").update(row).eq("id",payload.id).select().single();
-    if(error)throw error;saved=data;
-  }else{
-    const {data,error}=await supabase.from("course_announcements").insert(row).select().single();
-    if(error)throw error;saved=data;
-  }
-  let broadcast={queued:0};
-  if(saved.is_published&&saved.send_email){
-    const {data,error}=await supabase.rpc("queue_announcement_broadcast",{p_announcement_id:saved.id});
-    if(error)throw error;
-    broadcast=data||{queued:0};
-  }
-  return {...saved,broadcast};
-}
-export async function sendPendingAnnouncementEmails(){
-  const {data,error}=await supabase.functions.invoke("process-email-outbox");
-  if(error)throw error;
-  return data;
-}
-export async function getGlobalAnnouncements(){
-  const {data,error}=await supabase.rpc("get_global_announcements");
-  if(error)throw error;return data||[];
+  const row={course_id:payload.course_id,author_id:session.user.id,title:payload.title.trim(),body:payload.body.trim(),is_published:payload.is_published!==false,published_at:new Date().toISOString(),updated_at:new Date().toISOString()};
+  if(payload.id){const {data,error}=await supabase.from("course_announcements").update(row).eq("id",payload.id).select().single();if(error)throw error;return data}
+  const {data,error}=await supabase.from("course_announcements").insert(row).select().single();if(error)throw error;return data;
 }
 export async function deleteAnnouncement(id){
   const {error}=await supabase.from("course_announcements").delete().eq("id",id);if(error)throw error;

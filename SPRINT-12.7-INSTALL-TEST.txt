@@ -1,0 +1,161 @@
+SPRINT 12.7 — GLOBAL ANNOUNCEMENT + EMAIL BROADCAST
+===================================================
+
+GOAL
+----
+Publish an announcement to:
+1) Students enrolled in one selected course, OR
+2) ALL Academy accounts with email — including users NOT enrolled in that course.
+
+Optional:
+- Publish inside the Academy.
+- Send an email copy.
+
+IMPORTANT DEFINITION
+--------------------
+"All Academy Accounts" means users who have an Academy profile/account and an email.
+It includes enrolled and not-enrolled users.
+It does NOT mean arbitrary external email addresses that do not exist in the Academy database.
+
+CHANGES
+-------
+ADMIN > ANNOUNCEMENTS
+- Audience selector:
+  * Course Students Only
+  * All Academy Accounts
+- Checkbox: Publish in Academy
+- Checkbox: Send Email Copy
+- When email is enabled:
+  * recipients are queued in email_outbox
+  * one sending batch is triggered immediately
+  * remaining pending messages can be sent from Admin > Email Notifications
+
+STUDENT DASHBOARD
+- Global announcements appear as highlighted announcement cards.
+
+EMAIL
+-----
+The existing process-email-outbox Edge Function is upgraded:
+- Announcement title becomes the email subject.
+- Announcement body is included in the email.
+- Course title is included for course-specific announcements.
+- Existing payment/refund email processing continues.
+
+DATABASE
+--------
+Adds to course_announcements:
+- audience_scope
+- send_email
+- email_queued_count
+
+Allows course_id to be NULL for global announcements.
+
+Adds RPC:
+- queue_announcement_broadcast
+- get_global_announcements
+
+INSTALL
+-------
+1) Stop dev server:
+Ctrl+C
+
+2) PowerShell:
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-s127" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.7-GLOBAL-ANNOUNCEMENT-EMAIL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3) Supabase > SQL Editor:
+Run ONLY:
+supabase\SPRINT-12.7-ANNOUNCEMENT-BROADCAST.sql
+
+Expected:
+Success. No rows returned
+
+4) Deploy updated email Edge Function:
+npx supabase functions deploy process-email-outbox
+
+5) Start:
+npm run dev
+
+TEST A — COURSE STUDENTS
+------------------------
+Admin > Announcements > New Announcement
+Audience:
+Course Students Only
+
+Choose course.
+Enable:
+Publish in Academy
+Send Email Copy
+
+Publish.
+
+Expected:
+- Announcement saved.
+- Emails queued only for active students in selected course.
+- First pending email batch is sent automatically.
+- Student sees it via the course announcements page.
+
+TEST B — ALL REGISTERED / NOT ENROLLED
+--------------------------------------
+Admin > Announcements > New Announcement
+Audience:
+All Academy Accounts
+
+No course is required.
+Enable:
+Publish in Academy
+Send Email Copy
+
+Publish.
+
+Expected:
+- Announcement saved as global.
+- Every Academy profile with an email is queued.
+- This includes people who have an Academy account but are NOT enrolled in a course.
+- Global announcement appears on Student Dashboard.
+- First email batch sends automatically.
+
+TEST C — EMAIL QUEUE
+--------------------
+Admin > Email Notifications
+
+Expected:
+- Announcement emails appear with template=announcement in database.
+- Pending can be sent with "Send Pending Emails".
+- Sent / Failed remains visible.
+
+BATCH NOTE
+----------
+The Edge Function processes 25 pending emails per call intentionally.
+For a large audience, open Admin > Email Notifications and click
+Send Pending Emails again until pending emails are cleared.
+
+REGRESSION
+----------
+Check:
+- payment emails
+- refund emails
+- course announcements
+- student dashboard
+- admin announcements
+- admin email outbox
+
+FINAL BUILD
+-----------
+npm run build
+
+If successful:
+git add .
+git commit -m "Sprint 12.7 global announcement email broadcast"
+git push
+
+ROLLBACK SOURCE
+---------------
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s127" ".\src" -Recurse -Force
+npm run dev
+
+Do not remove the new DB columns after announcements have been created.
