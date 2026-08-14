@@ -1,0 +1,139 @@
+SPRINT 8 — FINAL ACADEMY COMPLETION
+====================================
+Baseline: uploaded working Sprint 7.1 project.
+
+PRIMARY COMPLETION
+------------------
+Student Management is now operational, not read-only:
+- Search/filter students.
+- Active / Disabled / Archived counters.
+- Open full student record.
+- Edit name, phone, city, bio and Admin note.
+- Temporarily disable.
+- Archive.
+- Reactivate.
+- Review enrollments and progress.
+- Review payments.
+- Review exam attempts/results.
+- Review certificates.
+- Review student notifications/activity.
+- Safe permanent-delete precheck.
+
+IMPORTANT DELETE SAFETY
+-----------------------
+Sprint 8 does NOT delete auth.users from browser JavaScript.
+"Check Permanent Delete" reports blockers.
+If academic/financial records exist, permanent deletion is blocked.
+If no blockers exist, the screen tells Admin that final Auth deletion must be
+done through a trusted Supabase Admin/API path.
+
+ACCOUNT STATUS
+--------------
+Sprint 8 adds profiles.account_status:
+active / disabled / archived.
+
+Student getCurrentUser now rejects disabled/archived profiles and signs the
+local session out when student workflows check the current user.
+
+INSTALL
+-------
+1) Ctrl+C
+2) cd C:\projects\basmat-academy
+3) Backup:
+   Copy-Item ".\src" ".\src-before-s8" -Recurse -Force
+
+4) Extract:
+   Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-8-FINAL-ACADEMY-COMPLETION.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+5) Supabase > SQL Editor:
+   Run:
+   C:\projects\basmat-academy\supabase\SPRINT-8.sql
+
+Expected:
+Success. No rows returned
+
+6) Start:
+   npm run dev
+
+STUDENT MANAGEMENT TEST
+-----------------------
+Admin > Students
+
+Expected:
+- All / Active / Disabled / Archived counters.
+- Search by name/email/phone/city.
+- Eye button opens /admin/students/<student-id>.
+
+Open one student:
+- Edit name/phone/city/bio/Admin note.
+- Save and reload.
+- Courses tab.
+- Payments tab.
+- Exams tab.
+- Certificates tab.
+- Notifications tab.
+
+Lifecycle:
+A) Disable a TEST student.
+B) Login/use student workflow with that account.
+Expected: student session is rejected by protected student workflow.
+C) Admin reactivates the student.
+D) Student can use platform again.
+E) Archive a TEST student, then reactivate.
+
+Delete check:
+- Student with enrollments/payments/exams/certificates => blocked.
+- No destructive delete is executed by this Sprint.
+
+REGRESSION — MUST PASS
+----------------------
+Admin:
+- Dashboard
+- Courses / Add / Edit / Lessons
+- Instructors
+- Live Sessions
+- Learning Paths
+- Students
+- Payments approval/rejection
+- Certificates
+- Reports
+- Mobile Website button
+- Mobile Logout
+
+Student:
+- Register/Login
+- Profile
+- Courses
+- Free enrollment
+- Paid checkout
+- Rejected receipt reason + resubmit
+- Notifications
+- My Courses
+- Video learning
+- Lesson completion
+- Exams
+- Certificate
+- QR verification
+- Certified course review without exam retake
+- Wishlist / Reviews
+- Live Sessions
+- Arabic / English
+- Mobile
+
+FINAL:
+npm run build
+
+Only after build succeeds:
+git add .
+git commit -m "Sprint 8 final academy completion and student management"
+git push
+
+ROLLBACK SOURCE
+---------------
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s8" ".\src" -Recurse -Force
+npm run dev
+
+NOTE:
+Sprint 8 SQL is additive. Do not manually drop columns after real student
+lifecycle data has been entered.

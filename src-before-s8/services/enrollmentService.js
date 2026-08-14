@@ -3,20 +3,7 @@ import { supabase } from "./supabase";
 export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
-  const user = data.session?.user || null;
-  if (!user) return null;
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("account_status")
-    .eq("id", user.id)
-    .maybeSingle();
-  // Backward-compatible if Sprint 8 SQL has not been applied yet.
-  if (profileError && profileError.code !== "42703") throw profileError;
-  if (profile?.account_status && profile.account_status !== "active") {
-    await supabase.auth.signOut({ scope: "local" });
-    return null;
-  }
-  return user;
+  return data.session?.user || null;
 }
 
 export async function getEnrollment(courseId, userId) {

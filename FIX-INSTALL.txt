@@ -1,15 +1,23 @@
-SPRINT 7.1 — LEARNCOURSE PARSE FIX
-=================================
-Fixes one JSX parse error in LearnCourse.jsx only.
+SPRINT 8 — STUDENTDETAILS IMPORT FIX
+====================================
+Fixes:
+AppRouter.jsx: StudentDetails is not defined
+
+Cause:
+The route was added, but the import line was missing.
 
 NO SQL.
+NO other files changed.
 
 Install:
 cd C:\projects\basmat-academy
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-7.1-LEARNCOURSE-PARSE-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-8-STUDENTDETAILS-IMPORT-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
 npm run dev
 
 Expected:
-- No Adjacent JSX elements error.
-- Certified course hides Exams button.
-- Completion and Certificates links still render correctly.
+- No "StudentDetails is not defined"
+- Home loads
+- /admin/students loads
+- Opening a student goes to /admin/students/<id>

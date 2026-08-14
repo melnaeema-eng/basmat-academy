@@ -1,0 +1,7 @@
+SPRINT-8-INSTALL-TEST.txt
+supabase/SPRINT-8.sql
+src/services/studentAdminService.js
+src/services/enrollmentService.js
+src/router/AppRouter.jsx
+src/pages/admin/Students.jsx
+src/pages/admin/StudentDetails.jsx

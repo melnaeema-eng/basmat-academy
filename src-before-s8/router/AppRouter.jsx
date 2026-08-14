@@ -42,7 +42,6 @@ import EditCourse from "../pages/admin/EditCourse";
 import Lessons from "../pages/admin/Lessons";
 import Payments from "../pages/admin/Payments";
 import Students from "../pages/admin/Students";
-import StudentDetails from "../pages/admin/StudentDetails";
 import AdminExams from "../pages/admin/Exams";
 import AdminCertificates from "../pages/admin/Certificates";
 import AdminInstructors from "../pages/admin/Instructors";
@@ -139,10 +138,6 @@ export default function AppRouter() {
           <Route
             path="students"
             element={<Students />}
-          />
-          <Route
-            path="students/:id"
-            element={<StudentDetails />}
           />
           <Route
             path="courses/:courseId/exams"
