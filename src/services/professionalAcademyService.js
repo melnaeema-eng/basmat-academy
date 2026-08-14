@@ -1,5 +1,28 @@
 import { supabase } from "./supabase";
 
+
+export async function uploadInstructorPhoto(file, instructorId = "new") {
+  if (!file) throw new Error("Photo file is required");
+  if (!file.type?.startsWith("image/")) throw new Error("Only image files are allowed");
+  if (file.size > 5 * 1024 * 1024) throw new Error("Image must be 5 MB or less");
+
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `${instructorId}/${crypto.randomUUID()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("instructor-photos")
+    .upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from("instructor-photos").getPublicUrl(path);
+  return { path, publicUrl: data.publicUrl };
+}
+
 export async function getPublicInstructors() {
   const { data, error } = await supabase
     .from("instructors")
@@ -76,6 +99,80 @@ export async function adminSaveInstructor(payload) {
     })
     .select()
     .single();
+  if (error) throw error;
+  return data;
+}
+
+
+export async function adminGetCoursesForInstructorManagement() {
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id,title,category,price,status,course_type,instructor,instructor_id,image")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function adminSetInstructorCourses(instructor, selectedCourseIds = []) {
+  if (!instructor?.id) throw new Error("Instructor must be saved first");
+
+  const { data: currentlyLinked, error: currentError } = await supabase
+    .from("courses")
+    .select("id")
+    .eq("instructor_id", instructor.id);
+  if (currentError) throw currentError;
+
+  const currentIds = (currentlyLinked || []).map(x => x.id);
+  const selected = new Set(selectedCourseIds);
+  const toUnlink = currentIds.filter(id => !selected.has(id));
+
+  if (toUnlink.length) {
+    const { error } = await supabase
+      .from("courses")
+      .update({ instructor_id: null, instructor: null })
+      .in("id", toUnlink);
+    if (error) throw error;
+  }
+
+  if (selectedCourseIds.length) {
+    const { error } = await supabase
+      .from("courses")
+      .update({
+        instructor_id: instructor.id,
+        instructor: instructor.full_name,
+      })
+      .in("id", selectedCourseIds);
+    if (error) throw error;
+  }
+
+  return true;
+}
+
+export async function adminCreateCourseForInstructor(instructor, payload) {
+  if (!instructor?.id) throw new Error("Instructor must be saved first");
+  if (!payload?.title?.trim()) throw new Error("Course title is required");
+
+  const row = {
+    title: payload.title.trim(),
+    description: payload.description?.trim() || null,
+    category: payload.category?.trim() || null,
+    instructor: instructor.full_name,
+    instructor_id: instructor.id,
+    price: Number(payload.price || 0),
+    level: payload.level?.trim() || null,
+    duration: payload.duration?.trim() || null,
+    status: payload.status || "Draft",
+    course_type: payload.course_type || "recorded",
+    featured: false,
+    image: payload.image || null,
+  };
+
+  const { data, error } = await supabase
+    .from("courses")
+    .insert(row)
+    .select()
+    .single();
+
   if (error) throw error;
   return data;
 }

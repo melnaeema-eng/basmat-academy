@@ -1,0 +1,91 @@
+SPRINT 12.2 — INSTRUCTOR COURSE MANAGEMENT
+==========================================
+
+WHAT CHANGED
+------------
+Admin > Instructors is now a complete instructor/course management page.
+
+1) EXISTING COURSES
+- Open an instructor.
+- Existing academy courses appear with checkboxes.
+- Select one or more courses and Save Links.
+- Course receives:
+  instructor_id = selected instructor
+  instructor = instructor full name
+- It immediately appears as that instructor's course in Course Management and public instructor profile.
+- If a course is currently linked to another instructor, the UI clearly warns before you select/reassign it.
+- Unchecking a currently-linked course removes the instructor link but does NOT delete the course.
+
+2) CREATE A NEW COURSE FROM INSTRUCTOR PAGE
+- Save/open the instructor first.
+- Click + under "Create New Course for Instructor".
+- Enter title, category, price, level, type and optional initial description.
+- "Create & Link Course" creates it as DRAFT.
+- It immediately appears in Admin > Courses.
+- It is automatically linked to the instructor.
+- Open the course from Course Management to complete image, lessons, exams and full details.
+
+3) HIDDEN TECHNICAL USER ID
+- "Instructor Auth User ID (optional)" is removed from the visible instructor form.
+- Existing user_id is preserved internally when editing.
+- Instructor Dashboard linkage is therefore not destroyed.
+
+4) PHOTO + BIO
+- Sprint 12.1 photo upload and bio remain unchanged.
+
+NO SQL
+------
+No database changes are required.
+The existing courses.instructor_id + courses.instructor fields are used.
+
+INSTALL
+-------
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-s122" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.2-INSTRUCTOR-COURSE-MANAGEMENT.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+TEST
+----
+A) Link existing course:
+1. Admin > Instructors.
+2. Edit instructor.
+3. Check an existing course.
+4. Save Links.
+5. Admin > Courses.
+Expected: instructor name appears on that course.
+6. Public /instructors/<id>.
+Expected: course appears under instructor.
+
+B) Unlink:
+1. Edit instructor.
+2. Uncheck one currently-linked course.
+3. Save Links.
+Expected: course remains in Course Management, but instructor link is removed.
+
+C) Create new:
+1. Edit instructor.
+2. Create New Course.
+3. Add a title and choose type.
+4. Create & Link.
+5. Admin > Courses.
+Expected:
+- New course exists.
+- Status = Draft.
+- Instructor already linked.
+6. Edit the course normally to complete image/description/lessons.
+
+D) Verify hidden field:
+- Instructor form must NOT show User ID.
+- Existing Instructor Dashboard linkage should remain intact.
+
+FINAL:
+npm run build
+
+If successful:
+git add .
+git commit -m "Sprint 12.2 instructor course management"
+git push

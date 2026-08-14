@@ -1,0 +1,36 @@
+SPRINT 12.6 — IMAGE CONTAIN HOTFIX
+==================================
+NO SQL.
+
+Fixes:
+- Home Hero image now fits completely inside its frame.
+- Course images fit completely inside equal-sized frames.
+- No cropping of logos/text/edges.
+- object-fit: contain + centered alignment.
+- Clean light background fills unused space.
+- Admin course thumbnails use the same non-cropping behavior.
+
+Install:
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.6-IMAGE-CONTAIN-HOTFIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+Test:
+/
+ /courses
+ /my-courses
+ /search
+ /cart
+ /admin/courses
+ /admin/instructors
+
+Expected:
+- Entire image visible.
+- No image extends outside frame.
+- No cropping.
+- Frames stay equal in size.
+
+Then:
+npm run build

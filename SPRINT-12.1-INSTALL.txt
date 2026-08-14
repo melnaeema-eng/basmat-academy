@@ -1,0 +1,54 @@
+SPRINT 12.1 — INSTRUCTOR PROFILE FIX
+=====================================
+
+FIXES
+-----
+- Admin can upload instructor photo from computer.
+- JPG / PNG / WEBP up to 5 MB.
+- Image preview before saving.
+- Image stored in Supabase Storage bucket: instructor-photos.
+- Bio/Instructor Definition is required in Admin form.
+- Bio is clearly visible in Admin cards.
+- Bio is clearly visible on public instructors list.
+- Full bio appears on Instructor Details page.
+- Existing instructor table columns are used:
+  full_name, title, bio, photo_url, linkedin_url, website_url, specialties,
+  user_id, is_active.
+- No instructor table rebuild.
+
+INSTALL
+-------
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-s121" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.1-INSTRUCTOR-PROFILE-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+SUPABASE
+--------
+Run:
+supabase\SPRINT-12.1-INSTRUCTOR-PROFILE.sql
+
+Expected:
+Success. No rows returned
+
+TEST
+----
+Admin > Instructors:
+1. Edit an instructor.
+2. Choose a JPG/PNG photo from computer.
+3. Add/update Professional Title.
+4. Add Instructor Bio.
+5. Save.
+
+Expected:
+- Photo preview before save.
+- Photo remains after reload.
+- Admin instructor card displays photo + bio.
+- /instructors displays photo + short bio.
+- /instructors/<id> displays full bio and specialties.
+
+Then:
+npm run build
+
+NO OTHER BUSINESS LOGIC IS CHANGED.

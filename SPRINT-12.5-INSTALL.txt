@@ -1,0 +1,28 @@
+SPRINT 12.5 — ADMIN ANNOUNCEMENTS ACCESS FIX
+============================================
+NO SQL.
+
+Changes:
+- A dedicated highlighted "الإعلانات / Announcements" button is now always visible at the top of Admin navigation.
+- Works on desktop and mobile admin navigation.
+- /admin/announcements now has a very clear "+ نشر إعلان جديد" button.
+- Includes a second "ابدأ الآن" CTA when the form is closed.
+- New announcement form is clear: Course, Title, Message, Publish now.
+- Existing announcements are listed below with delete action.
+
+Install:
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.5-ADMIN-ANNOUNCEMENTS-ACCESS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+Test:
+1. Admin Dashboard.
+2. Look at top of Admin menu: "الإعلانات" must be clearly visible.
+3. Open it.
+4. Click "+ نشر إعلان جديد".
+5. Choose a course, enter title/message, Publish.
+6. Login as enrolled student and open course learning > Announcements.
+
+NO SQL.

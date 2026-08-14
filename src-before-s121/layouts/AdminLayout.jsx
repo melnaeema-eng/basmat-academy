@@ -1,0 +1,20 @@
+import {NavLink,Outlet,useNavigate} from "react-router-dom";import {useTranslation} from "react-i18next";import {FaBookOpen,FaCertificate,FaCreditCard,FaGlobe,FaPlus,FaSignOutAlt,FaTachometerAlt,FaUsers,FaChalkboardTeacher,FaVideo,FaRoute,FaChartBar,FaTags,FaChartLine,FaBullhorn,FaHeartbeat,FaUndo,FaEnvelope} from "react-icons/fa";import {supabase} from "../services/supabase";import logo from "../assets/images/logo.png";import LanguageSwitcher from "../components/LanguageSwitcher";
+export default function AdminLayout(){const{t,i18n}=useTranslation();const navigate=useNavigate();const rtl=i18n.language?.startsWith('ar');const items=[
+['/admin/dashboard',FaTachometerAlt,t('admin.dashboard')],
+['/admin/courses',FaBookOpen,t('admin.courses')],
+['/admin/add-course',FaPlus,t('admin.addCourse')],
+['/admin/instructors',FaChalkboardTeacher,rtl?'المدربون':'Instructors'],
+['/admin/live-sessions',FaVideo,rtl?'الجلسات المباشرة':'Live Sessions'],
+['/admin/learning-paths',FaRoute,rtl?'المسارات التعليمية':'Learning Paths'],
+['/admin/students',FaUsers,t('admin.students')],
+['/admin/payments',FaCreditCard,t('admin.payments')],
+['/admin/certificates',FaCertificate,t('admin.certificates')],
+['/admin/reports',FaChartBar,rtl?'التقارير':'Reports'],
+['/admin/coupons',FaTags,rtl?'الكوبونات':'Coupons'],
+['/admin/advanced-analytics',FaChartLine,rtl?'تحليلات متقدمة':'Advanced Analytics'],
+['/admin/announcements',FaBullhorn,rtl?'الإعلانات':'Announcements'],
+['/admin/system-health',FaHeartbeat,rtl?'حالة النظام':'System Health'],
+['/admin/refunds',FaUndo,rtl?'الاستردادات':'Refunds'],
+['/admin/email-outbox',FaEnvelope,rtl?'البريد':'Email']
+];async function logout(){await supabase.auth.signOut({scope:'local'});navigate('/admin/login')}
+return <div dir={rtl?'rtl':'ltr'} className="min-h-screen bg-[#f7f9fc] lg:flex lg:h-screen lg:overflow-hidden"><aside className="border-b border-white/10 bg-[#08284d] text-white lg:sticky lg:top-0 lg:h-screen lg:w-[285px] lg:shrink-0 lg:overflow-y-auto"><div className="flex items-center gap-3 border-b border-white/10 p-5"><img src={logo} alt="Basmat Alnawabigh" className="h-12 w-12 rounded-xl bg-white object-contain p-1"/><div className="min-w-0"><div className="truncate font-extrabold">{t('admin.panel')}</div><div className="truncate text-xs text-slate-300">Basmat Alnawabigh Academy</div></div></div><nav className="flex gap-2 overflow-x-auto p-3 lg:block lg:space-y-1 lg:overflow-visible">{items.map(([to,Icon,label])=><NavLink key={to} to={to} className={({isActive})=>`flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${isActive?'bg-[#f97316] text-white shadow-lg':'text-slate-200 hover:bg-white/10'}`}><Icon/><span>{label}</span></NavLink>)}</nav><div className="hidden border-t border-white/10 p-4 lg:block"><NavLink to="/" className="mb-2 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-200 hover:bg-white/10"><FaGlobe/>{t('admin.website')}</NavLink><button onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-200 hover:bg-red-500"><FaSignOutAlt/>{t('admin.logout')}</button></div></aside><div className="min-w-0 flex-1 lg:h-screen lg:overflow-y-auto"><header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur md:px-7"><div className="text-sm font-bold text-[#08284d]">{t('admin.brand')}</div><div className="flex items-center gap-2"><LanguageSwitcher/><NavLink to="/" title={t('admin.website')} aria-label={t('admin.website')} className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-[#08284d] lg:hidden"><FaGlobe/></NavLink><button onClick={logout} title={t('admin.logout')} aria-label={t('admin.logout')} className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 lg:hidden"><FaSignOutAlt/></button></div></header><main className="min-h-[calc(100vh-4rem)] overflow-visible p-4 md:p-7 lg:p-9"><div className="mx-auto max-w-[1540px]"><Outlet/></div></main></div></div>}

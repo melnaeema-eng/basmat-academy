@@ -1,0 +1,30 @@
+SPRINT 12.3 — COURSE IMAGE UNIFORMITY
+=====================================
+NO SQL.
+
+Fixes:
+- Same course-image height across Home/Courses/My Courses.
+- Search course images use same visual treatment.
+- Admin course thumbnails use one fixed size.
+- Centered crop using object-fit: cover.
+- Responsive height:
+  Desktop/tablet = 220px
+  Mobile = 190px
+
+Install:
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-12.3-COURSE-IMAGE-UNIFORMITY.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+Test:
+/
+ /courses
+ /my-courses
+ /search
+ /admin/courses
+ /admin/instructors
+
+Then:
+npm run build
