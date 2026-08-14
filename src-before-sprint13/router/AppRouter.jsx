@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Website
 import Home from "../pages/Home";
@@ -129,7 +129,6 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route
             path="dashboard"
             element={<Dashboard />}

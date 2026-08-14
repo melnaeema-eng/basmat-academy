@@ -1,0 +1,94 @@
+SPRINT 13 — PRODUCTION & LAUNCH READINESS
+=========================================
+
+AUDIT RESULT
+------------
+Reviewed the uploaded production baseline:
+- 61 application routes
+- 25 Supabase SQL scripts
+- 3 Edge Functions
+- 0 missing local imports
+- 0 hardcoded Supabase project URLs in src
+- 0 service-role secrets in src
+- 0 TODO/FIXME/HACK markers in src
+- 0 dangerouslySetInnerHTML usage
+
+PRODUCTION FIXES INCLUDED
+-------------------------
+1. Removed console logging of import.meta.env, Supabase URL, and KEY-exists status.
+   This was development logging and should not be present in production.
+
+2. Admin protected routes now redirect unauthorized users to:
+   /admin/login
+   instead of the student /login page.
+
+3. /admin now redirects cleanly to:
+   /admin/dashboard
+
+4. Added .env.production.example documenting the two required public Vite variables.
+
+IMPORTANT
+---------
+This Sprint intentionally does NOT change database tables, RLS, payments,
+exams, announcements, or business logic. The RLS fix already applied directly
+in Supabase remains a database-side fix and is not overwritten here.
+
+NO SQL REQUIRED FOR SPRINT 13.
+
+INSTALL
+-------
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-sprint13" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-13-PRODUCTION-READINESS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+TEST
+----
+1. npm run build
+2. npm run dev
+
+Check:
+- /
+- /login
+- /register
+- /courses
+- /student
+- /my-courses
+- /admin
+- /admin/login
+- /admin/dashboard
+- /admin/courses
+- /admin/students
+- /admin/instructors
+- /admin/announcements
+- /admin/email-outbox
+
+SECURITY CHECK
+--------------
+Open browser DevTools > Console.
+Expected:
+- No Supabase environment object dump.
+- No "URL:" debug message.
+- No "KEY exists:" debug message.
+
+ADMIN AUTH CHECK
+----------------
+While logged out, open /admin/dashboard.
+Expected:
+- Redirect to /admin/login.
+
+ADMIN ROOT CHECK
+----------------
+While logged in as Admin, open /admin.
+Expected:
+- Redirect to /admin/dashboard.
+
+FINAL RELEASE
+-------------
+npm run build
+
+If successful:
+git add .
+git commit -m "Sprint 13 production readiness"
+git push
