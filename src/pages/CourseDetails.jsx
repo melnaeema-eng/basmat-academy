@@ -1,510 +1,128 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FaHeart, FaRegHeart, FaStar, FaPlayCircle, FaCheckCircle, FaGlobe, FaSignal, FaClock } from "react-icons/fa";
 import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
 import { enrollInCourse, getCurrentUser, getEnrollment } from "../services/enrollmentService";
-
-function getYouTubeEmbedUrl(url) {
-  if (!url) return null;
-
-  try {
-    const parsedUrl = new URL(url);
-
-    if (parsedUrl.hostname.includes("youtu.be")) {
-      const videoId = parsedUrl.pathname.replace("/", "");
-
-      return videoId
-        ? `https://www.youtube.com/embed/${videoId}`
-        : null;
-    }
-
-    if (parsedUrl.hostname.includes("youtube.com")) {
-      if (parsedUrl.pathname.includes("/embed/")) {
-        return url;
-      }
-
-      if (parsedUrl.pathname.includes("/shorts/")) {
-        const videoId = parsedUrl.pathname.split("/shorts/")[1]?.split("/")[0];
-
-        return videoId
-          ? `https://www.youtube.com/embed/${videoId}`
-          : null;
-      }
-
-      const videoId = parsedUrl.searchParams.get("v");
-
-      return videoId
-        ? `https://www.youtube.com/embed/${videoId}`
-        : null;
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
-}
-
-function isDirectVideo(url) {
-  if (!url) return false;
-
-  const cleanUrl = url.split("?")[0].toLowerCase();
-
-  return (
-    cleanUrl.endsWith(".mp4") ||
-    cleanUrl.endsWith(".webm") ||
-    cleanUrl.endsWith(".ogg") ||
-    cleanUrl.endsWith(".mov")
-  );
-}
+import { getCourseReviews, getMyReview, isCourseWishlisted, saveMyReview, toggleWishlist } from "../services/marketplaceService";
 
 export default function CourseDetails() {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const ar = i18n.language?.startsWith("ar");
+  const [course,setCourse]=useState(null),[lessons,setLessons]=useState([]),[reviews,setReviews]=useState([]);
+  const [enrollment,setEnrollment]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState("");
+  const [wishlisted,setWishlisted]=useState(false),[busy,setBusy]=useState(false);
+  const [myReview,setMyReview]=useState(null),[rating,setRating]=useState(5),[reviewText,setReviewText]=useState("");
 
-  const [course, setCourse] = useState(null);
-  const [lessons, setLessons] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState("");
-  const [selectedLessonId, setSelectedLessonId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [enrollment, setEnrollment] = useState(null);
-  const [enrolling, setEnrolling] = useState(false);
-  const [enrollMessage, setEnrollMessage] = useState("");
-
-  const isArabic = i18n.language?.startsWith("ar");
-
-  useEffect(() => {
-    async function loadCourse() {
-      setLoading(true);
-      setErrorMessage("");
-
-      try {
-        const { data: courseData, error: courseError } = await supabase
-          .from("courses")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (courseError) {
-          throw courseError;
-        }
-
-        setCourse(courseData);
-
-        const firstVideo =
-          courseData.trailer_url ||
-          courseData.video_url ||
-          courseData.preview_url ||
-          "";
-
-        setSelectedVideo(firstVideo);
-
-        setLessons([]);
-      } catch (error) {
-        console.error("COURSE DETAILS ERROR:", error);
-        setErrorMessage(t("courseDetails.loadError"));
-      } finally {
-        setLoading(false);
+  async function load(){
+    try{
+      setLoading(true);setError("");
+      const [{data:c,error:ce},{data:l,error:le},reviewRows] = await Promise.all([
+        supabase.from("courses").select("*").eq("id",id).single(),
+        supabase.from("lessons").select("id,title,description,duration,lesson_type,is_preview,is_published,order_number").eq("course_id",id).eq("is_published",true).order("order_number"),
+        getCourseReviews(id),
+      ]);
+      if(ce)throw ce;if(le)throw le;
+      setCourse(c);setLessons(l||[]);setReviews(reviewRows);
+      const user=await getCurrentUser();
+      if(user){
+        const [en,w,mr]=await Promise.all([getEnrollment(id,user.id),isCourseWishlisted(id),getMyReview(id)]);
+        setEnrollment(en);setWishlisted(w);setMyReview(mr);
+        if(mr){setRating(mr.rating);setReviewText(mr.review_text||"")}
       }
-    }
+    }catch(e){setError(e.message||"Could not load course")}finally{setLoading(false)}
+  }
+  useEffect(()=>{load()},[id]);
 
-    loadCourse();
-  }, [id, t]);
+  const title=useMemo(()=>course?((ar?course.title_ar:course.title_en)||course.title||t("course.untitled")):"",[course,ar,t]);
+  const description=useMemo(()=>course?((ar?course.description_ar:course.description_en)||course.description||""):"",[course,ar]);
+  const average=reviews.length?reviews.reduce((s,r)=>s+Number(r.rating||0),0)/reviews.length:0;
+  const totalMinutes=lessons.reduce((s,l)=>s+(Number.parseInt(l.duration)||0),0);
 
-  useEffect(() => {
-    async function checkEnrollment() {
-      try {
-        const user = await getCurrentUser();
-        if (!user) return;
-        const existing = await getEnrollment(id, user.id);
-        setEnrollment(existing);
-      } catch (error) {
-        console.error("ENROLLMENT CHECK ERROR:", error);
-      }
-    }
-    checkEnrollment();
-  }, [id]);
-
-  async function handleEnroll() {
-    setEnrollMessage("");
-    try {
-      setEnrolling(true);
-      const user = await getCurrentUser();
-      if (!user) {
-        navigate("/login", { state: { from: `/courses/${id}` } });
-        return;
-      }
-      if (enrollment) {
-        navigate("/my-courses");
-        return;
-      }
-
-      // Paid courses must go through checkout. Enrollment is created only
-      // after a confirmed payment (PayPal) or admin-approved bank transfer.
-      if (Number(course?.price || 0) > 0) {
-        navigate(`/checkout/${id}`);
-        return;
-      }
-
-      const created = await enrollInCourse(id, user.id);
-      setEnrollment(created);
-      setEnrollMessage(isArabic ? "تم التسجيل في الدورة بنجاح" : "Successfully enrolled in the course");
-    } catch (error) {
-      console.error("ENROLL COURSE ERROR:", error);
-      setEnrollMessage(error.message || (isArabic ? "تعذر التسجيل في الدورة" : "Could not enroll in the course"));
-    } finally {
-      setEnrolling(false);
-    }
+  async function enroll(){
+    try{
+      setBusy(true);const user=await getCurrentUser();
+      if(!user){navigate("/login",{state:{from:`/courses/${id}`}});return}
+      if(enrollment){navigate("/my-courses");return}
+      if(Number(course?.price||0)>0){navigate(`/checkout/${id}`);return}
+      const created=await enrollInCourse(id,user.id);setEnrollment(created);navigate(`/learn/${id}`);
+    }catch(e){alert(e.message)}finally{setBusy(false)}
+  }
+  async function wishlist(){
+    try{setBusy(true);setWishlisted(await toggleWishlist(id))}catch(e){if(e.message==="LOGIN_REQUIRED")navigate("/login",{state:{from:`/courses/${id}`}});else alert(e.message)}finally{setBusy(false)}
+  }
+  async function submitReview(e){
+    e.preventDefault();
+    try{setBusy(true);const saved=await saveMyReview(id,rating,reviewText);setMyReview(saved);setReviews(await getCourseReviews(id))}catch(e){alert(e.message==="LOGIN_REQUIRED"?"Please login first":e.message)}finally{setBusy(false)}
   }
 
-  const title = useMemo(() => {
-    if (!course) return "";
+  if(loading)return <MainLayout><div className="flex min-h-[60vh] items-center justify-center">{t("common.loading")}</div></MainLayout>;
+  if(error||!course)return <MainLayout><div className="academy-container py-16"><div className="academy-card p-8 text-center text-red-700">{error||"Course not found"}</div></div></MainLayout>;
 
-    return (
-      (isArabic ? course.title_ar : course.title_en) ||
-      course.title ||
-      t("course.untitled")
-    );
-  }, [course, isArabic, t]);
-
-  const description = useMemo(() => {
-    if (!course) return "";
-
-    return (
-      (isArabic ? course.description_ar : course.description_en) ||
-      course.description ||
-      t("courseDetails.noDescription")
-    );
-  }, [course, isArabic, t]);
-
-  const category = useMemo(() => {
-    if (!course) return "";
-
-    return (
-      (isArabic ? course.category_ar : course.category_en) ||
-      course.category ||
-      ""
-    );
-  }, [course, isArabic]);
-
-  const level = useMemo(() => {
-    if (!course) return "";
-
-    return (
-      (isArabic ? course.level_ar : course.level_en) ||
-      course.level ||
-      t("courseDetails.notSpecified")
-    );
-  }, [course, isArabic, t]);
-
-  const youtubeEmbedUrl = getYouTubeEmbedUrl(selectedVideo);
-
-  function selectLesson(lesson) {
-    setSelectedVideo(lesson.video_url || "");
-    setSelectedLessonId(lesson.id);
-  }
-
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
-
-            <p className="mt-4 text-gray-600">
-              {t("courseDetails.loading")}
-            </p>
+  return <MainLayout><main dir={i18n.dir()} className="min-h-screen bg-[#f7f9fc]">
+    <section className="bg-[#08284d] text-white">
+      <div className="academy-container grid gap-8 py-10 lg:grid-cols-[1fr_390px] lg:py-12">
+        <div>
+          <div className="mb-4 text-sm font-bold text-orange-300">{course.category||"Academy"}</div>
+          <h1 className="text-3xl font-extrabold leading-[1.35] md:text-5xl">{title}</h1>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg">{description}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-sm">
+            <span className="flex items-center gap-1 text-amber-300"><FaStar/> <b>{average?average.toFixed(1):"New"}</b> <span className="text-slate-300">({reviews.length})</span></span>
+            {course.instructor&&<span>{ar?"المدرب":"Instructor"}: <b>{course.instructor}</b></span>}
+            <span className="flex items-center gap-1"><FaSignal/>{course.level||"All levels"}</span>
+            <span className="flex items-center gap-1"><FaGlobe/>{ar?"العربية / الإنجليزية":"Arabic / English"}</span>
           </div>
         </div>
-      </MainLayout>
-    );
-  }
-
-  if (errorMessage || !course) {
-    return (
-      <MainLayout>
-        <div className="flex min-h-[60vh] items-center justify-center px-6">
-          <div className="max-w-lg rounded-2xl bg-white p-8 text-center shadow-lg">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {t("courseDetails.notFound")}
-            </h1>
-
-            <p className="mt-3 text-gray-600">
-              {errorMessage || t("courseDetails.notFoundDescription")}
-            </p>
-
-            <Link
-              to="/courses"
-              className="mt-6 inline-block rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800"
-            >
-              {t("courseDetails.backToCourses")}
-            </Link>
+        <aside className="lg:row-span-2">
+          <div className="overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl">
+            <img src={course.image||"https://placehold.co/800x450?text=Course"} alt={title} className="aspect-video w-full object-cover"/>
+            <div className="p-5">
+              <div className="text-3xl font-extrabold text-[#08284d]">{Number(course.price)>0?<span dir="ltr">{course.price} SAR</span>:t("common.free")}</div>
+              <button onClick={enroll} disabled={busy} className="academy-btn-primary mt-4 w-full">{enrollment?(ar?"اذهب إلى دوراتي":"Go to My Courses"):Number(course.price)>0?(ar?"اشترِ الدورة":"Buy Course"):(ar?"سجل مجانًا":"Enroll for Free")}</button>
+              <button onClick={wishlist} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-bold hover:bg-slate-50">{wishlisted?<FaHeart className="text-red-500"/>:<FaRegHeart/>}{wishlisted?(ar?"في قائمة الرغبات":"Wishlisted"):(ar?"أضف لقائمة الرغبات":"Add to Wishlist")}</button>
+              <div className="mt-5 space-y-3 border-t pt-5 text-sm text-slate-600">
+                <div className="flex items-center gap-2"><FaPlayCircle className="text-[#f97316]"/>{lessons.length} {ar?"درس":"lessons"}</div>
+                {totalMinutes>0&&<div className="flex items-center gap-2"><FaClock className="text-[#f97316]"/>{totalMinutes} {ar?"دقيقة تقريبًا":"minutes approx."}</div>}
+                <div className="flex items-center gap-2"><FaCheckCircle className="text-emerald-600"/>{ar?"وصول من الجوال والكمبيوتر":"Access on mobile and desktop"}</div>
+                <div className="flex items-center gap-2"><FaCheckCircle className="text-emerald-600"/>{ar?"شهادة عند استيفاء المتطلبات":"Certificate when requirements are met"}</div>
+              </div>
+            </div>
           </div>
-        </div>
-      </MainLayout>
-    );
-  }
+        </aside>
+      </div>
+    </section>
 
-  return (
-    <MainLayout>
-      <main dir={i18n.dir()} className="min-h-screen bg-gray-50">
-        <section className="bg-gradient-to-br from-blue-950 to-blue-700 py-14 text-white">
-          <div className="mx-auto max-w-7xl px-6">
-            <Link
-              to="/courses"
-              className="inline-flex items-center text-sm text-blue-100 hover:text-white"
-            >
-              {isArabic ? "←" : "→"}{" "}
-              {t("courseDetails.backToCourses")}
-            </Link>
-
-            {category && (
-              <p className="mt-6 font-semibold text-orange-300">
-                {category}
-              </p>
-            )}
-
-            <h1 className="mt-3 max-w-4xl text-3xl font-bold leading-tight md:text-5xl">
-              {title}
-            </h1>
-
-            {course.instructor && (
-              <p className="mt-5 text-lg text-blue-100">
-                {t("courseDetails.instructor")}: {course.instructor}
-              </p>
-            )}
+    <div className="academy-container grid gap-7 py-9 lg:grid-cols-[1fr_390px]">
+      <div className="space-y-6">
+        <section className="academy-card p-6">
+          <h2 className="academy-title text-2xl">{ar?"ماذا ستتعلم؟":"What you'll learn"}</h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {[ar?"فهم المفاهيم الأساسية والتطبيقية للدورة":"Understand core and practical concepts",ar?"تطبيق المعرفة في بيئة عملية":"Apply the knowledge in practical scenarios",ar?"متابعة تقدمك درسًا بعد درس":"Track progress lesson by lesson",ar?"تقييم مستواك عبر الاختبارات":"Assess your skills through exams"].map(x=><div key={x} className="flex gap-2 text-sm leading-7"><FaCheckCircle className="mt-1 shrink-0 text-emerald-600"/><span>{x}</span></div>)}
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[2fr_1fr]">
-          <div className="space-y-8">
-            <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
-              {youtubeEmbedUrl ? (
-                <div className="aspect-video">
-                  <iframe
-                    src={youtubeEmbedUrl}
-                    title={title}
-                    className="h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              ) : selectedVideo && isDirectVideo(selectedVideo) ? (
-                <video
-                  key={selectedVideo}
-                  controls
-                  controlsList="nodownload"
-                  className="aspect-video w-full bg-black"
-                  poster={course.image || ""}
-                >
-                  <source src={selectedVideo} />
-                  {t("courseDetails.videoNotSupported")}
-                </video>
-              ) : selectedVideo ? (
-                <div className="flex aspect-video items-center justify-center bg-gray-900 p-8 text-center text-white">
-                  <div>
-                    <p className="text-lg font-semibold">
-                      {t("courseDetails.unsupportedVideo")}
-                    </p>
-
-                    <a
-                      href={selectedVideo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-block rounded-lg bg-orange-500 px-5 py-2 font-semibold hover:bg-orange-600"
-                    >
-                      {t("courseDetails.openVideo")}
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative aspect-video">
-                  <img
-                    src={
-                      course.image ||
-                      "https://placehold.co/1280x720?text=Course"
-                    }
-                    alt={title}
-                    className="h-full w-full object-cover opacity-70"
-                  />
-
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                    <p className="rounded-lg bg-black/60 px-5 py-3 text-white">
-                      {t("courseDetails.noVideo")}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-2xl bg-white p-7 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {t("courseDetails.aboutCourse")}
-              </h2>
-
-              <p className="mt-5 whitespace-pre-line leading-8 text-gray-600">
-                {description}
-              </p>
-            </div>
-
-            {lessons.length > 0 && (
-              <div className="rounded-2xl bg-white p-7 shadow-sm">
-                <div className="mb-6 flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {t("courseDetails.lessons")}
-                  </h2>
-
-                  <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
-                    {lessons.length} {t("courseDetails.lessonCount")}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {lessons.map((lesson, index) => {
-                    const lessonTitle =
-                      (isArabic ? lesson.title_ar : lesson.title_en) ||
-                      lesson.title ||
-                      `${t("courseDetails.lesson")} ${index + 1}`;
-
-                    const isSelected = selectedLessonId === lesson.id;
-
-                    return (
-                      <button
-                        key={lesson.id}
-                        type="button"
-                        onClick={() => selectLesson(lesson)}
-                        className={`flex w-full items-center justify-between rounded-xl border p-4 text-start transition ${
-                          isSelected
-                            ? "border-orange-500 bg-orange-50"
-                            : "border-gray-200 hover:border-blue-400 hover:bg-blue-50"
-                        }`}
-                      >
-                        <div className="flex items-center gap-4">
-                          <span
-                            className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${
-                              isSelected
-                                ? "bg-orange-500 text-white"
-                                : "bg-blue-100 text-blue-700"
-                            }`}
-                          >
-                            ▶
-                          </span>
-
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {lessonTitle}
-                            </p>
-
-                            {lesson.duration && (
-                              <p className="mt-1 text-sm text-gray-500">
-                                {lesson.duration}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {lesson.is_free && (
-                          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                            {t("courseDetails.freePreview")}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+        <section className="academy-card overflow-hidden">
+          <div className="border-b p-5"><h2 className="academy-title text-2xl">{ar?"محتوى الدورة":"Course content"}</h2><p className="mt-1 text-sm text-slate-500">{lessons.length} {ar?"درس":"lessons"}</p></div>
+          <div className="divide-y">{lessons.map((l,i)=><div key={l.id} className="flex items-center justify-between gap-4 p-4"><div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><div className="min-w-0"><div className="truncate font-bold text-[#08284d]">{l.title}</div>{l.description&&<div className="mt-1 line-clamp-1 text-xs text-slate-500">{l.description}</div>}</div></div><div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">{l.is_preview&&<span className="rounded-full bg-orange-50 px-2 py-1 font-bold text-orange-700">{ar?"معاينة":"Preview"}</span>}{l.duration&&<span dir="ltr">{l.duration}</span>}</div></div>)}
+            {!lessons.length&&<div className="p-8 text-center text-slate-500">{ar?"سيتم إضافة محتوى الدورة قريبًا.":"Course content will be added soon."}</div>}
           </div>
-
-          <aside>
-            <div className="sticky top-6 overflow-hidden rounded-2xl bg-white shadow-lg">
-              <img
-                src={
-                  course.image ||
-                  "https://placehold.co/600x400?text=Course"
-                }
-                alt={title}
-                className="h-56 w-full object-cover"
-              />
-
-              <div className="p-6">
-                <div className="mb-6 text-3xl font-bold text-orange-600">
-                  {Number(course.price) > 0
-                    ? `${course.price} ${t("course.currency")}`
-                    : t("course.free")}
-                </div>
-
-                <div className="space-y-4 border-y border-gray-200 py-5">
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-500">
-                      {t("courseDetails.instructor")}
-                    </span>
-
-                    <span className="font-semibold text-gray-900">
-                      {course.instructor ||
-                        t("courseDetails.notSpecified")}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-500">
-                      {t("courseDetails.level")}
-                    </span>
-
-                    <span className="font-semibold text-gray-900">
-                      {level}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-500">
-                      {t("courseDetails.duration")}
-                    </span>
-
-                    <span className="font-semibold text-gray-900">
-                      {course.duration ||
-                        t("courseDetails.notSpecified")}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-500">
-                      {t("courseDetails.lessons")}
-                    </span>
-
-                    <span className="font-semibold text-gray-900">
-                      {lessons.length}
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleEnroll}
-                  disabled={enrolling}
-                  className="mt-6 w-full rounded-xl bg-orange-500 px-5 py-3 font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {enrolling
-                    ? (isArabic ? "جاري التسجيل..." : "Enrolling...")
-                    : enrollment
-                      ? (isArabic ? "اذهب إلى دوراتي" : "Go to My Courses")
-                      : Number(course.price) > 0
-                        ? t("courseDetails.enrollNow")
-                        : t("courseDetails.startCourse")}
-                </button>
-
-                {enrollMessage && (
-                  <p className="mt-3 text-center text-sm font-semibold text-gray-700">
-                    {enrollMessage}
-                  </p>
-                )}
-              </div>
-            </div>
-          </aside>
         </section>
-      </main>
-    </MainLayout>
-  );
+
+        <section className="academy-card p-6">
+          <h2 className="academy-title text-2xl">{ar?"عن المدرب":"Instructor"}</h2>
+          <div className="mt-5 flex items-center gap-4"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#08284d] text-xl font-extrabold text-white">{(course.instructor||"B").charAt(0).toUpperCase()}</div><div><h3 className="text-lg font-extrabold text-[#08284d]">{course.instructor||"Basmat Alnawabigh Academy"}</h3><p className="mt-1 text-sm text-slate-500">{ar?"مدرب متخصص وخبرة عملية في مجال الدورة.":"Specialist instructor with practical field experience."}</p></div></div>
+        </section>
+
+        <section className="academy-card p-6">
+          <div className="flex items-end justify-between gap-4"><div><h2 className="academy-title text-2xl">{ar?"تقييمات الطلاب":"Student reviews"}</h2><p className="mt-1 text-sm text-slate-500">{reviews.length} {ar?"تقييم":"reviews"}</p></div>{reviews.length>0&&<div className="text-3xl font-extrabold text-[#08284d]">{average.toFixed(1)} <FaStar className="inline text-lg text-amber-400"/></div>}</div>
+          <div className="mt-5 space-y-4">{reviews.slice(0,8).map(r=><article key={r.id} className="border-t pt-4"><div className="flex items-center justify-between gap-3"><b>{r.display_name}</b><span className="text-amber-400">{"★".repeat(r.rating)}<span className="text-slate-200">{"★".repeat(5-r.rating)}</span></span></div>{r.review_text&&<p className="mt-2 text-sm leading-7 text-slate-600">{r.review_text}</p>}</article>)}{!reviews.length&&<div className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">{ar?"لا توجد تقييمات بعد.":"No reviews yet."}</div>}</div>
+          {enrollment&&<form onSubmit={submitReview} className="mt-6 border-t pt-5"><h3 className="font-extrabold text-[#08284d]">{myReview?(ar?"عدّل تقييمك":"Update your review"):(ar?"قيّم هذه الدورة":"Rate this course")}</h3><div className="mt-3 flex gap-1">{[1,2,3,4,5].map(n=><button type="button" key={n} onClick={()=>setRating(n)} className={`text-2xl ${n<=rating?"text-amber-400":"text-slate-200"}`}>★</button>)}</div><textarea value={reviewText} onChange={e=>setReviewText(e.target.value)} className="academy-input mt-3 min-h-24" placeholder={ar?"اكتب تجربتك مع الدورة...":"Share your experience..."}/><button disabled={busy} className="academy-btn-dark mt-3">{ar?"حفظ التقييم":"Save Review"}</button></form>}
+        </section>
+      </div>
+      <div className="hidden lg:block"/>
+    </div>
+  </main></MainLayout>
 }

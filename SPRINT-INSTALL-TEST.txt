@@ -1,115 +1,155 @@
-SPRINT 5.4 — UDEMY-STYLE STABLE REDESIGN
-========================================
+SPRINT 6 — UDEMY EXPERIENCE + MOBILE FIXES
+==========================================
+GOAL
+----
+Make the academy experience closer to a mature course marketplace while preserving
+the stable Sprint 5.4 payment, enrollment, exams and certificates.
 
-IMPORTANT
----------
-- Built on the recovered stable source, NOT on broken Sprint 5.3.
-- NO SQL.
-- NO database changes.
-- NO new npm dependency in this Sprint.
-- Existing qrcode package from certificate recovery is still required.
+INCLUDED
+--------
+1. Admin mobile logout button is visible in the mobile header.
+2. Course Details rebuilt in marketplace/Udemy style:
+   - Course headline + instructor + level
+   - Rating summary
+   - Price/enroll card
+   - Wishlist
+   - Course curriculum
+   - Instructor block
+   - Student reviews
+   - Enrolled student can submit/update one review
+3. Wishlist page.
+4. Student Learning Dashboard /student:
+   Continue Learning + My Courses + Alerts + Payments + Certificates + Wishlist.
+5. Course Catalog sorting:
+   Newest / Price Low-High / Price High-Low.
+6. Learning player improvements:
+   - Keeps last lesson
+   - Previous / Next
+   - Progress
+   - Direct MP4 marks complete when video reaches the end
+   - Lesson attachment panel when a file URL exists.
+7. Mobile/Desktop preserved.
 
-WHAT CHANGED
-------------
-1. Unified visual system for internal pages.
-2. Admin redesigned:
-   Dashboard / Courses / Students / Payments / Certificates.
-3. Course actions now use real icons with tooltips:
-   View / Lessons / Exams / Edit / Delete.
-4. Dashboard counts students from profiles (not the old students table).
-5. Arabic / English support extended to the new Home, student and Admin UI.
-6. RTL/LTR follows selected language.
-7. Phone, email, amount, payment reference and certificate numbers stay LTR.
-8. Course catalog now has Search + Category filter, closer to a marketplace layout.
-9. My Courses redesigned with progress cards and Continue Learning.
-10. Profile / Payments / Notifications / Contact redesigned consistently.
-11. Existing payment, enrollment, lesson, exam and certificate logic is preserved.
+DATABASE
+--------
+This Sprint DOES include one SQL file:
+supabase\SPRINT-6.sql
 
-PRE-INSTALL SAFETY
-------------------
-Stop the server first: Ctrl + C
+It ONLY creates:
+- course_wishlist
+- course_reviews
+- public review RPC
 
-cd C:\projects\basmat-academy
-
-Make a full source backup:
-Copy-Item ".\src" ".\src-before-s54" -Recurse -Force
-
-Make sure QR dependency still exists:
-Test-Path ".\node_modules\qrcode\package.json"
-
-Expected: True
-If False:
-npm install qrcode
+It does NOT modify payments, profiles, enrollments, exams or certificates.
 
 INSTALL
 -------
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-5-4-UDEMY-STYLE-STABLE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+1) Stop dev server:
+Ctrl + C
 
-RUN
----
+2) Backup current stable source:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-s6" -Recurse -Force
+
+3) Extract:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-6-UDEMY-EXPERIENCE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+4) Supabase > SQL Editor:
+Run ONLY:
+C:\projects\basmat-academy\supabase\SPRINT-6.sql
+
+5) Start:
 npm run dev
 
-TEST ORDER
+SMOKE TEST FIRST
+----------------
+Open in this order:
+/
+ /courses
+ /courses/<COURSE-ID>
+ /login
+ /admin/dashboard
+
+If one is blank, STOP. Do not continue.
+
+TEST COURSE MARKETPLACE
+-----------------------
+1. Open a course.
+2. Course detail page must show:
+   image / price / instructor / curriculum / rating / wishlist.
+3. Guest presses Wishlist -> login.
+4. Student presses Wishlist -> heart state changes.
+5. /wishlist shows the saved course.
+
+TEST REVIEWS
+------------
+1. Login as student already enrolled in a course.
+2. Open that course.
+3. Review form must appear.
+4. Submit 1–5 stars + text.
+5. Refresh: review remains.
+6. Submit again: same review updates, no duplicate.
+
+TEST STUDENT DASHBOARD
+----------------------
+Open:
+/student
+
+Expected:
+- My courses total
+- Unread alerts
+- Payments count
+- Certificates count
+- Continue Learning cards
+
+TEST LEARNING
+-------------
+- Open recorded course.
+- Last lesson restore still works.
+- Previous / Next works.
+- MP4 video reaching the end marks lesson complete.
+- Existing manual "complete lesson" still works.
+- Attachments open if a file is attached.
+
+TEST ADMIN MOBILE
+-----------------
+Open Admin from a mobile-sized browser.
+Expected:
+- Logout icon is visible in Admin header.
+- It logs out correctly.
+- Desktop sidebar logout remains available.
+
+REGRESSION
 ----------
-A. First 2-minute smoke test:
-1) /
-2) /courses
-3) /login
-4) /admin/dashboard
-5) /admin/courses
+Do NOT close Sprint unless these still work:
+- Register/Login
+- Free enrollment
+- Paid checkout + receipt
+- Admin approve/reject payment
+- Notifications
+- Admin students
+- Exams
+- Certificate + QR verification
+- Profile
+- Arabic/English
+- Mobile
 
-If any page is blank, STOP and use rollback below.
-
-B. Language:
-- Arabic => RTL.
-- English => LTR.
-- Check Home, Courses and Admin.
-- Phone numbers, email, SAR amounts and references must keep correct order.
-
-C. Admin:
-- Dashboard counts render.
-- Courses table renders.
-- Hover course action icons: tooltip must appear.
-- View / Lessons / Exams / Edit routes work.
-- Students page shows profiles.
-- Payments approval/rejection still works.
-- Certificates page still works.
-
-D. Student:
-- Register/Login.
-- My Courses.
-- Learning video.
-- Profile.
-- Notifications.
-- Payments.
-- Exams.
-- Certificate + QR verify.
-
-E. Final Windows build:
+FINAL WINDOWS BUILD
+-------------------
 npm run build
 
-ROLLBACK
---------
-Option 1 (fastest, uses your pre-install backup):
-Remove-Item ".\src" -Recurse -Force
-Copy-Item ".\src-before-s54" ".\src" -Recurse -Force
-npm run dev
-
-Option 2:
-powershell -ExecutionPolicy Bypass -File ".\ROLLBACK.ps1"
-
-GITHUB — ONLY AFTER ALL TESTS PASS
----------------------------------
+GITHUB AFTER SUCCESS ONLY
+-------------------------
 git add .
-git commit -m "Sprint 5.4 stable Udemy style academy redesign"
+git commit -m "Sprint 6 Udemy experience wishlist reviews dashboard mobile fixes"
 git push
 
-VALIDATION DONE BEFORE PACKAGING
---------------------------------
-- All relative source imports checked: no missing file.
-- All new react-icons/fa icon names checked against installed react-icons declarations.
-- Arabic and English JSON files parsed successfully.
-- No SQL was added.
-- Linux Vite build could not reach source compilation because this project dependency set
-  requires Rolldown native bindings that are not present in the Linux validation container.
-  The final build check must therefore be run on your Windows project with: npm run build
+ROLLBACK SOURCE
+---------------
+If UI fails:
+Remove-Item ".\src" -Recurse -Force
+Copy-Item ".\src-before-s6" ".\src" -Recurse -Force
+npm run dev
+
+Note: The SQL tables may remain safely even after source rollback because they are additive
+and do not change existing academy tables.

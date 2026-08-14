@@ -14,6 +14,7 @@ import {
   FaUsers,
   FaBell,
   FaCreditCard,
+  FaHeart,
 } from "react-icons/fa";
 
 import logo from "../assets/images/logo.png";
@@ -330,11 +331,25 @@ export default function Navbar() {
                     ) : (
                       <>
                         <DropdownLink
+                          to="/student"
+                          icon={<FaTachometerAlt />}
+                          label={isArabic ? "لوحة التعلم" : "Learning Dashboard"}
+                          onClick={() => setDropdownOpen(false)}
+                        />
+
+                        <DropdownLink
                           to="/my-courses"
                           icon={<FaBookOpen />}
                           label={t("navbar.myCourses")}
                           onClick={() => setDropdownOpen(false)}
                         />
+                        <DropdownLink
+                          to="/wishlist"
+                          icon={<FaHeart />}
+                          label={isArabic ? "قائمة الرغبات" : "Wishlist"}
+                          onClick={() => setDropdownOpen(false)}
+                        />
+
 
                         <DropdownLink
                           to="/notifications"

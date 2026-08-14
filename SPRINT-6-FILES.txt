@@ -1,0 +1,11 @@
+SPRINT-INSTALL-TEST.txt
+supabase/SPRINT-6.sql
+src/pages/Courses.jsx
+src/pages/CourseDetails.jsx
+src/pages/Wishlist.jsx
+src/pages/StudentDashboard.jsx
+src/pages/LearnCourse.jsx
+src/components/Navbar.jsx
+src/services/marketplaceService.js
+src/layouts/AdminLayout.jsx
+src/router/AppRouter.jsx

@@ -185,7 +185,7 @@ export default function LearnCourse() {
                       {getYouTubeEmbedUrl(selectedLesson.video_url) ? (
                         <iframe className="aspect-video w-full" src={getYouTubeEmbedUrl(selectedLesson.video_url)} title={selectedLesson.title} allowFullScreen />
                       ) : (
-                        <video className="aspect-video w-full" controls src={selectedLesson.video_url} />
+                        <video className="aspect-video w-full" controls src={selectedLesson.video_url} onEnded={() => { if (!completedIds.has(selectedLesson.id)) toggleCompleted(); }} />
                       )}
                     </div>
                   )}
@@ -198,6 +198,7 @@ export default function LearnCourse() {
                     <a className="mt-6 inline-block rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white" href={selectedLesson.file_url} target="_blank" rel="noreferrer">فتح ملف الدرس</a>
                   )}
 
+                  {selectedLesson.file_url && selectedLesson.lesson_type !== 'file' && <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="font-bold text-[#08284d]">مرفقات الدرس</div><a href={selectedLesson.file_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-bold text-[#f97316]">فتح / تحميل الملف</a></div>}
                   <div className="mt-6 flex items-center justify-between gap-3 border-t pt-5"><button disabled={selectedIndex<=0} onClick={()=>selectLesson(lessons[selectedIndex-1]?.id)} className="rounded-xl border px-4 py-2 font-bold disabled:opacity-30">السابق</button><span className="text-sm text-slate-500">{selectedIndex+1} / {lessons.length}</span><button disabled={selectedIndex<0||selectedIndex>=lessons.length-1} onClick={()=>selectLesson(lessons[selectedIndex+1]?.id)} className="rounded-xl bg-[#071d49] px-4 py-2 font-bold text-white disabled:opacity-30">التالي</button></div>
                   <div className="mt-8 border-t pt-5">
                     <button onClick={toggleCompleted} className={`rounded-lg px-6 py-3 font-semibold text-white ${completedIds.has(selectedLesson.id) ? 'bg-gray-600' : 'bg-green-600'}`}>

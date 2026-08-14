@@ -18,6 +18,8 @@ import Certificates from "../pages/Certificates";
 import CertificateView from "../pages/CertificateView";
 import VerifyCertificate from "../pages/VerifyCertificate";
 import CourseCompletion from "../pages/CourseCompletion";
+import Wishlist from "../pages/Wishlist";
+import StudentDashboard from "../pages/StudentDashboard";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
@@ -54,6 +56,8 @@ export default function AppRouter() {
           element={<CourseDetails />}
         />
 
+        <Route path="/student" element={<StudentDashboard />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/my-courses" element={<MyCourses />} />
         <Route path="/learn/:courseId" element={<LearnCourse />} />
         <Route path="/checkout/:courseId" element={<Checkout />} />
