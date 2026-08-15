@@ -1,0 +1,84 @@
+SCHOOL SYSTEM ACCESS FINAL V4
+=============================
+
+الهدف:
+إغلاق ملف الدخول والصلاحيات بالكامل قبل الإنتاج.
+
+القواعد النهائية:
+--------------
+1) /login
+   الأكاديمية فقط.
+
+2) /school/login
+   المدرسة فقط.
+
+3) المستخدم لا يرى إلا الأدوار المرتبطة فعليًا بحسابه.
+
+4) Teacher / Parent / Student
+   أدوار Identity تلقائية من:
+   school_teachers.auth_user_id
+   school_parents.auth_user_id
+   school_students.auth_user_id
+
+5) School Admin / Finance / HR / Admissions / Student Affairs / Employee
+   من school_staff_roles.
+
+6) نفس الحساب يمكن أن يكون:
+   School Admin + Teacher + Parent
+   وهذا طبيعي.
+
+7) لا نجعل Admin = Student تلقائيًا.
+   إذا أردنا اختبار بوابة طالب، ندخل بحساب الطالب الحقيقي.
+
+صفحات الإدارة:
+-------------
+/school/admin/access-management
+إدارة صلاحيات الموظفين.
+
+/school/admin/portals
+دليل جميع بوابات النظام وحالة صلاحية الحساب الحالي.
+
+INSTALL:
+--------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-system-access-v4" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-SYSTEM-ACCESS-FINAL-V4.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase:
+supabase\SCHOOL-SYSTEM-ACCESS-FINAL-V4.sql
+
+Expected:
+school_access_v4_health
+
+ثم:
+npm run dev
+
+TEST:
+-----
+A) melnaeema@gmail.com
+/school/login
+Expected:
+إدارة المدرسة + ولي الأمر + المعلم
+إذا كان هذا الحساب غير مربوط كطالب، لا تظهر بوابة الطالب. وهذا صحيح.
+
+B) /school/admin/portals
+يجب أن تظهر كل بوابات النظام التسع، مع "مسموح لحسابك" أو "غير مخصص لحسابك".
+
+C) /school/admin/access-management
+راجع كل User واضغط "تفاصيل الربط".
+ستعرف بالضبط هل الحساب مربوط كطالب/معلم/ولي أمر/موظف.
+
+D) حساب الطالب الحقيقي
+/school/login
+Expected:
+/school/student
+
+E) Build
+npm run build
+
+بعد نجاح Build:
+Git Push ثم Production.

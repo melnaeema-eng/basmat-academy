@@ -1,0 +1,13 @@
+supabase/SCHOOL-S1-CORE.sql
+src/services/schoolService.js
+src/layouts/SchoolAdminLayout.jsx
+src/pages/school/admin/Dashboard.jsx
+src/pages/school/admin/AcademicYears.jsx
+src/pages/school/admin/Structure.jsx
+src/pages/school/admin/Subjects.jsx
+src/pages/school/admin/Classes.jsx
+src/router/AppRouter.jsx
+src/services/supabase.js
+src/components/ProtectedRoute.jsx
+.env.production.example
+SCHOOL-S1-INSTALL-TEST.txt

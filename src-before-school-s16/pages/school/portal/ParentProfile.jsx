@@ -1,0 +1,9 @@
+import {useEffect,useState} from "react";
+import {getMySchoolParentProfile,updateMySchoolParentContact} from "../../../services/schoolService";
+export default function ParentProfile(){
+ const[form,setForm]=useState({full_name:"",phone:"",whatsapp:"",email:"",address:"",occupation:""}),[saving,setSaving]=useState(false);
+ useEffect(()=>{getMySchoolParentProfile().then(x=>setForm({...form,...x,phone:x.phone||"",whatsapp:x.whatsapp||"",email:x.email||"",address:x.address||"",occupation:x.occupation||""})).catch(e=>alert(e.message))},[]);
+ async function save(e){e.preventDefault();try{setSaving(true);await updateMySchoolParentContact(form);alert("تم تحديث بيانات التواصل")}catch(e){alert(e.message)}finally{setSaving(false)}}
+ return <div><h1 className="text-3xl font-extrabold text-[#12345b]">بيانات ولي الأمر</h1><form onSubmit={save} className="academy-card mt-6 max-w-2xl space-y-4 p-5"><F l="الاسم"><input disabled className="academy-input bg-slate-50" value={form.full_name}/></F><div className="grid gap-3 sm:grid-cols-2"><F l="الجوال"><input className="academy-input" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></F><F l="واتساب"><input className="academy-input" value={form.whatsapp} onChange={e=>setForm({...form,whatsapp:e.target.value})}/></F></div><F l="البريد الإلكتروني *"><input required type="email" className="academy-input" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></F><F l="العنوان"><textarea className="academy-input min-h-24" value={form.address} onChange={e=>setForm({...form,address:e.target.value})}/></F><button disabled={saving} className="academy-btn-primary w-full">حفظ التعديلات</button></form></div>
+}
+function F({l,children}){return <label className="block"><span className="mb-1.5 block text-sm font-bold">{l}</span>{children}</label>}

@@ -1,53 +1,29 @@
-:root{--navy:#08284d;--navy2:#0d3767;--orange:#f97316;--green:#16865a;--bg:#f7f9fc;--surface:#fff;--text:#172033;--muted:#64748b;--border:#e4eaf1}
-html{scroll-behavior:smooth}body{font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}button,a,input,select,textarea{transition:.2s ease}.academy-container{width:min(1240px,calc(100% - 32px));margin-inline:auto}.academy-section{padding:64px 0}.academy-card{background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 26px rgba(8,40,77,.055)}.academy-title{font-weight:800;color:var(--navy);letter-spacing:-.02em}.academy-eyebrow{display:inline-flex;border-radius:999px;background:#fff7ed;color:#c2410c;padding:.42rem .8rem;font-size:.8rem;font-weight:800}.academy-btn-primary,.academy-btn-dark{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:11px;padding:.78rem 1.35rem;font-weight:800}.academy-btn-primary{background:var(--orange);color:#fff;box-shadow:0 8px 18px rgba(249,115,22,.17)}.academy-btn-dark{background:var(--navy);color:#fff}.academy-btn-primary:hover,.academy-btn-dark:hover{transform:translateY(-1px)}.academy-input{width:100%;border:1px solid var(--border);background:#fff;border-radius:12px;padding:.8rem 1rem;outline:none}.academy-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.12)}.academy-course-image{
-  width:100%;
-  height:220px;
-  object-fit:contain;
-  object-position:center;
-  background:#f8fafc;
-  display:block
-}.academy-progress{height:8px;background:#e7edf4;border-radius:99px;overflow:hidden}.academy-progress>span{display:block;height:100%;background:var(--orange)}.academy-table th{font-weight:700}.academy-table td,.academy-table th{vertical-align:middle}.number-ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}@media(max-width:767px){.academy-container{width:min(100% - 20px,1240px)}.academy-section{padding:48px 0}}
-
-
-/* Sprint 12 — Final UI/UX polish */
-::selection{background:rgba(249,115,22,.2);color:var(--navy)}
-.academy-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.academy-card:hover{border-color:#d8e0ea}
-.academy-btn-primary:focus-visible,.academy-btn-dark:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid rgba(249,115,22,.28);outline-offset:2px}
-@media(min-width:1024px){
-  .academy-section{padding:72px 0}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+:root{
+  --academy-navy:#0a2540;
+  --academy-navy-2:#123b63;
+  --academy-orange:#f97316;
+  --academy-orange-soft:#fff7ed;
+  --academy-green:#2f855a;
+  --academy-green-soft:#f0fdf4;
+  --academy-bg:#f8fafc;
+  --academy-surface:#ffffff;
+  --academy-text:#172033;
+  --academy-muted:#64748b;
+  --academy-border:#e7edf3;
 }
-@media(max-width:767px){
-  body{overflow-x:hidden}
-  .academy-title{letter-spacing:-.01em}
-  .academy-btn-primary,.academy-btn-dark{min-height:44px}
-  input,select,textarea{font-size:16px}
-}
-@media print{
-  header,footer,nav,.no-print{display:none!important}
-  body{background:#fff!important}
-  .academy-card{box-shadow:none!important;border-color:#ddd!important}
-}
-
-
-/* Sprint 12.3 — unified course imagery */
-.academy-course-thumb{
-  width:100%;
-  height:220px;
-  object-fit:contain;
-  object-position:center;
-  display:block;
-  background:#f8fafc;
-}
-.academy-course-admin-thumb{
-  width:96px;
-  height:58px;
-  object-fit:contain;
-  object-position:center;
-  display:block;
-  border-radius:12px;
-  background:#f8fafc;
-}
-@media(max-width:767px){
-  .academy-course-image,.academy-course-thumb{height:190px}
-}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--academy-bg);color:var(--academy-text);-webkit-font-smoothing:antialiased}
+button,a,input,select,textarea{transition:all .2s ease}
+.academy-container{width:min(1180px,calc(100% - 32px));margin-inline:auto}
+.academy-section{padding:72px 0}
+.academy-card{background:#fff;border:1px solid var(--academy-border);border-radius:20px;box-shadow:0 8px 30px rgba(10,37,64,.055)}
+.academy-title{color:var(--academy-navy);font-weight:800;letter-spacing:-.02em}
+.academy-eyebrow{display:inline-flex;align-items:center;gap:.5rem;border-radius:999px;background:var(--academy-orange-soft);color:#c2410c;padding:.45rem .8rem;font-size:.8rem;font-weight:800}
+.academy-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--academy-orange);color:#fff;border-radius:12px;padding:.8rem 1.35rem;font-weight:800;box-shadow:0 8px 18px rgba(249,115,22,.18)}
+.academy-btn-primary:hover{transform:translateY(-1px);background:#ea680d}
+.academy-btn-dark{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--academy-navy);color:#fff;border-radius:12px;padding:.8rem 1.35rem;font-weight:800}
+.academy-btn-dark:hover{background:var(--academy-navy-2)}
+.academy-course-image{aspect-ratio:16/9;width:100%;object-fit:cover;background:#eef2f6}
+.academy-progress{height:8px;overflow:hidden;border-radius:999px;background:#e9edf3}.academy-progress>span{display:block;height:100%;border-radius:inherit;background:var(--academy-orange)}
+@media(max-width:767px){.academy-container{width:min(100% - 20px,1180px)}.academy-section{padding:52px 0}}

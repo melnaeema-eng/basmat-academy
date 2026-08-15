@@ -1,0 +1,43 @@
+SCHOOL S17 BIG — SMART TIMETABLE
+================================
+يشمل:
+- إعداد أوقات الحصص.
+- تعريف Break/فسحة.
+- جدول لكل فصل.
+- منع تعارض الفصل.
+- منع تعارض المعلم.
+- لا يسمح بجدولة معلم غير مسند للمادة والفصل.
+- متابعة weekly_periods للمادة: المطلوب / المجدول / المتبقي.
+- Room.
+- Health Check للتعارضات.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s17" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S17-BIG-SMART-TIMETABLE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S17-BIG.sql
+
+Expected:
+school_s17_health
+
+ثم:
+npm run dev
+
+ROUTE:
+/school/admin/smart-timetable
+
+TEST:
+1. أضف أوقات الحصص من تبويب أوقات الحصص.
+2. اختر فصلًا.
+3. أضف مادة + معلم + يوم + حصة.
+4. حاول وضع نفس الفصل في نفس الحصة مرة ثانية => يجب الرفض.
+5. حاول وضع نفس المعلم في فصل آخر بنفس الحصة => يجب الرفض.
+6. راقب remaining_periods لكل مادة.
+
+BUILD:
+npm run build
+git add .
+git commit -m "School S17 smart timetable"
+git push

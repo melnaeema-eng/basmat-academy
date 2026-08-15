@@ -1,0 +1,128 @@
+SCHOOL S3.1 HOTFIX — SMART LOGIN ROUTING
+========================================
+
+المشكلة:
+--------
+نفس حساب Supabase يمكن أن يكون:
+- Student في Academy
+- Student في Nawabigh Aljazeera School
+
+مثال:
+melnaeem@gmail.com
+مسجل في Academy وكذلك مربوط بـ school_students.
+
+Login القديم كان يعتمد فقط على profiles.role،
+لذلك كان يحول الحساب إلى Academy حتى لو كان الدخول للمدرسة.
+
+الحل:
+-----
+تم فصل "هوية الحساب" عن "مكان الدخول".
+
+1) عند الدخول من:
+school.basmat-alnawabig.com.sa
+
+يتم البحث عن دور المدرسة فقط:
+- school_role=school_admin -> /school/admin
+- school_teachers.auth_user_id -> /school/teacher
+- school_parents.auth_user_id -> /school/parent
+- school_students.auth_user_id -> /school/student
+
+2) عند الدخول من Academy/Main:
+يبقى سلوك الأكاديمية:
+- admin -> /admin/dashboard
+- student -> Academy
+
+3) Localhost:
+استخدم:
+http://localhost:5173/school/login
+
+وجود /school/ في المسار يجعل Login يعمل School Mode.
+
+4) نفس البريد ونفس كلمة المرور يمكن استخدامهما في النظامين.
+لا نحتاج إنشاء حساب Auth جديد لمحمد.
+
+5) SchoolRoleRoute:
+تم منع Academy Admin من دخول بوابة Student/Parent/Teacher
+لمجرد أنه Admin.
+كل Portal يتطلب الربط الحقيقي بـ auth_user_id.
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s31" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S3.1-SMART-LOGIN-ROUTING.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+لا يوجد SQL في هذا Hotfix.
+
+START
+-----
+npm run dev
+
+LOCAL TEST — IMPORTANT
+----------------------
+1. Logout.
+
+2. افتح:
+http://localhost:5173/school/login
+
+3. سجل:
+melnaeem@gmail.com
+
+Expected:
+يتجه إلى:
+/school/student
+
+وليس Academy.
+
+ACADEMY REGRESSION
+------------------
+Logout.
+
+افتح:
+http://localhost:5173/login
+
+سجل نفس حساب Academy Student.
+
+Expected:
+يبقى في Academy.
+
+ADMIN TEST
+----------
+Academy Login:
+/login
+Academy Admin -> /admin/dashboard
+
+School Login:
+/school/login
+School Admin -> /school/admin
+
+PRODUCTION
+----------
+عندما ننشر المدرسة على:
+school.basmat-alnawabig.com.sa
+
+سيتم اكتشاف School Mode من hostname تلقائيًا.
+
+IMPORTANT
+---------
+هذا Hotfix لا يغير:
+- Academy database
+- School database
+- Auth users
+- Passwords
+- Student IDs
+
+هو فقط Smart Login Routing.
+
+BUILD
+-----
+npm run build
+
+إذا نجح:
+git add .
+git commit -m "School S3.1 smart login routing"
+git push

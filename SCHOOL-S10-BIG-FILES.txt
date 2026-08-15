@@ -1,0 +1,10 @@
+SCHOOL-S10-BIG-INSTALL-TEST.txt
+supabase/SCHOOL-S10-BIG.sql
+src/layouts/SchoolAdminLayout.jsx
+src/services/schoolService.js
+src/router/AppRouter.jsx
+src/pages/school/CertificateVerify.jsx
+src/pages/school/portal/AcademicRecords.jsx
+src/pages/school/portal/StudentDashboard.jsx
+src/pages/school/admin/AcademicRecords.jsx
+src/pages/school/admin/Dashboard.jsx

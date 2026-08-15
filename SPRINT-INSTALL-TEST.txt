@@ -1,282 +1,33 @@
-SPRINT 7 — ACADEMY PROFESSIONAL PLATFORM
-========================================
-Baseline: Sprint 6 (stable)
+SPRINT 5.1 — VISUAL REDESIGN
+============================
+الهدف: معالجة الألوان والخلفيات والصورة الرئيسية بدون تغيير وظائف الأكاديمية.
 
-MAIN FEATURES
--------------
-1) ADMIN MOBILE
-   - Clear "Back to Website" icon in the mobile Admin header.
-   - Logout icon remains visible.
-   - Desktop sidebar still has Website + Logout.
+التغييرات:
+- Hero جديد بصورة ICT/Data Center مناسبة، بدون نصوص مدمجة داخل الصورة.
+- خلفية بيضاء/رمادية هادئة بدل المساحات الملونة الثقيلة.
+- كحلي للعناوين، برتقالي للأزرار الأساسية، أخضر كلون مساعد فقط.
+- إعادة ترتيب Home: Hero > Specializations > Featured Courses > Stats > Why Us > CTA.
+- توحيد Course Cards والصور 16:9.
+- تقليل الظلال والتدرجات وتحسين المسافات.
+- تصميم Responsive.
 
-2) INSTRUCTOR PROFILES
-   Admin:
-   /admin/instructors
-   - Add / Edit / Delete instructor.
-   - Professional title, bio, specialties, photo URL, LinkedIn, website.
-   - Link an instructor profile to a course from Add/Edit Course.
+لا يوجد SQL.
 
-   Public:
-   /instructors
-   /instructors/:id
-   - Instructor profile + linked courses.
-
-3) LEARNING PATHS
-   Admin:
-   /admin/learning-paths
-   - Create a learning path.
-   - Add multiple existing courses in an ordered path.
-   - Publish / Draft.
-
-   Public:
-   /paths
-   /paths/:id
-
-4) LIVE COURSES / HYBRID
-   Admin:
-   /admin/live-sessions
-   - Course
-   - Zoom / Teams / Google Meet / Other
-   - Start / End time
-   - Meeting URL
-   - Scheduled / Completed / Cancelled
-   - Notes
-
-   Student:
-   /live-sessions
-   - Only sessions for courses the logged-in student is enrolled in.
-   - Upcoming and previous sessions.
-   - Join Session button.
-
-5) COURSE PREVIEW
-   Admin already has "Free Preview" checkbox in Lessons.
-   Sprint 7 now uses it on Course Details.
-   - Preview lesson opens video/file before enrollment.
-   - Non-preview media URLs are NOT returned by the public curriculum RPC.
-
-6) CHECKOUT UX
-   - Professional bank transfer / PayPal layout.
-   - Correct LTR display for IBAN, account number and amount.
-   - Rejected receipt message retained.
-   - mada / Cards / STC Pay shown as "ready for gateway activation",
-     NOT as a fake working payment method.
-
-7) ADMIN REPORTS
-   /admin/reports
-   - Students
-   - Courses
-   - Exams
-   - Certificates
-   - Paid amount
-   - Pending amount
-   - Top courses by enrollment
-   - Recent certificates/payments
-   - CSV export
-
-8) HOME / NAVIGATION
-   - Learning Paths and Instructors added to navigation.
-   - Home can show published Paths/Instructors once Admin creates them.
-   - Student menu includes Live Sessions.
-
-DATABASE CHANGES
-----------------
-Sprint 7 is additive.
-
-It creates:
-- public.instructors
-- public.learning_paths
-- public.learning_path_courses
-- public.live_sessions
-- courses.instructor_id
-- safe public curriculum RPC
-
-It DOES NOT delete or rebuild:
-- profiles
-- payments
-- enrollments
-- lessons
-- exams
-- certificates
-- notifications
-- reviews
-- wishlist
-
-PRE-INSTALL BACKUP
-------------------
-1) Stop server:
-Ctrl + C
-
-2) PowerShell:
+التثبيت:
+Ctrl+C
 cd C:\projects\basmat-academy
-
-3) Backup current Sprint 6 source:
-Copy-Item ".\src" ".\src-before-s7" -Recurse -Force
-
-INSTALL
--------
-4) Extract:
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-7-ACADEMY-PROFESSIONAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
-
-5) Supabase > SQL Editor:
-Run ONLY:
-C:\projects\basmat-academy\supabase\SPRINT-7.sql
-
-Expected:
-Success. No rows returned
-
-6) Optional DB verification:
-Run:
-C:\projects\basmat-academy\supabase\SPRINT-7-VERIFY.sql
-
-7) Start:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-5-1-VISUAL-REDESIGN.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 npm run dev
 
-FIRST SMOKE TEST — DO THIS BEFORE ENTERING DATA
------------------------------------------------
-Open:
-/
- /courses
- /admin/dashboard
- /admin/courses
- /student
+الاختبار:
+1) Home على شاشة Desktop: Hero واضح ومتوازن ولا توجد خلفيات ثقيلة.
+2) Mobile: الصورة والنص والأزرار لا تتداخل.
+3) صور الدورات كلها 16:9 ولا تتمدد.
+4) الألوان الأساسية: Navy + Orange، والأخضر محدود.
+5) تأكد أن Courses/Login/Register/Navbar ما زالت تعمل.
+6) npm run build
 
-If any page is blank:
-STOP.
-Use source rollback at the end of this file.
-
-MOBILE ADMIN TEST
------------------
-Open Admin using mobile width.
-
-Expected in Admin header:
-- Language
-- Globe icon = Back to Website
-- Logout icon
-
-Tap Globe:
-Expected: opens /
-Tap Logout:
-Expected: logs out.
-
-INSTRUCTOR TEST
----------------
-1) Admin > Instructors.
-2) Add instructor:
-   Name, title, specialties, bio.
-3) Admin > Courses > Edit a course.
-4) Select Linked Instructor Profile.
-5) Save.
-6) Public course page:
-   Instructor name links to profile.
-7) Open /instructors and instructor details.
-
-LEARNING PATH TEST
-------------------
-1) Admin > Learning Paths.
-2) Create "Telecom Professional Path".
-3) Select 2 or more courses.
-4) Save.
-5) Open /paths.
-6) Open the path.
-Expected:
-- Courses appear in selected order.
-- Each course opens Course Details.
-
-LIVE SESSION TEST
------------------
-1) Use a student enrolled in a Live or Hybrid course.
-2) Admin > Live Sessions.
-3) Add:
-   - Course
-   - Provider = Zoom / Teams / Meet
-   - Future date/time
-   - Valid meeting URL
-4) Student > /live-sessions.
-Expected:
-- Session appears.
-- Join Session opens the meeting URL.
-5) Student NOT enrolled in that course must not receive the session.
-
-COURSE PREVIEW TEST
--------------------
-1) Admin > Course > Lessons.
-2) Choose a video lesson with MP4/video_url.
-3) Enable Free Preview.
-4) Public/guest opens Course Details.
-5) Click Preview.
-Expected:
-- Preview modal opens video.
-6) A lesson NOT marked Preview:
-Expected:
-- Curriculum title visible.
-- No Preview button/media link.
-
-CHECKOUT REGRESSION
--------------------
-Use a paid course:
-- Bank data order correct.
-- IBAN remains LTR.
-- Amount is SAR and LTR.
-- Existing rejected receipt allows a new upload.
-- Existing Admin approval/rejection continues to work.
-- PayPal behavior unchanged.
-- mada/Cards/STC Pay is informational until Merchant Gateway is activated.
-
-REPORTS TEST
-------------
-Admin > Reports:
-- Metrics load.
-- Top Courses load if enrollments exist.
-- Recent payments load.
-- Export CSV downloads a file.
-
-SPRINT 6 REGRESSION — MUST STILL PASS
--------------------------------------
-- Register
-- Login
-- Student profiles
-- Admin Students
-- Free enrollment
-- Paid bank transfer
-- Payment notifications
-- Wishlist
-- Reviews
-- My Courses
-- Learning MP4
-- Lesson completion
-- Exams
-- Certificates
-- Certificate QR verify
-- Arabic / English
-- Mobile
-
-FINAL WINDOWS BUILD
--------------------
-npm run build
-
-Do NOT push if build fails.
-
-GITHUB AFTER ALL TESTS PASS
----------------------------
+بعد النجاح:
 git add .
-git commit -m "Sprint 7 academy professional platform live instructors paths reports"
+git commit -m "Sprint 5.1 visual redesign"
 git push
-
-SOURCE ROLLBACK
----------------
-If the UI fails before you enter Sprint 7 data:
-
-Remove-Item ".\src" -Recurse -Force
-Copy-Item ".\src-before-s7" ".\src" -Recurse -Force
-npm run dev
-
-The new Sprint 7 DB tables are additive and can remain unused.
-
-VALIDATION COMPLETED BEFORE PACKAGING
--------------------------------------
-- JSX/JS syntax parsed using the Babel engine bundled with Jiti.
-- All local relative imports checked: none missing.
-- All react-icons used by Sprint 7 checked against installed declarations.
-- Translation JSON parsed successfully.
-- No new npm dependency added.
-- SQL is additive and does not replace existing Academy tables.

@@ -1,0 +1,41 @@
+SCHOOL ACCESS CONTROL UI FINAL V3
+=================================
+
+سبب V3:
+V2 ضم صفحات S21/S22 لكنه لم يضم schoolService.js النهائي الذي يحتوي exports المطلوبة مثل:
+getSchoolControlCenter
+getSchoolExportSummary
+getSchoolHRDashboard
+getSchoolGradebookClass
+getSchoolOperationalSetup
+
+V3 تضم:
+- Router النهائي
+- Access Control
+- صفحات S15-S22 المطلوبة
+- schoolService.js من S22
+- schoolAccessService.js
+
+INSTALL:
+--------
+أوقف السيرفر Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-ACCESS-CONTROL-UI-FINAL-V3.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+ثم:
+npm run dev
+
+لا تشغل SQL مرة ثانية.
+
+TEST:
+-----
+/school/login
+/school/admin/access-management
+/school/admin/control-center
+/school/admin/hr-center
+/school/admin/gradebook
+
+ثم:
+npm run build

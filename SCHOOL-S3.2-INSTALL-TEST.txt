@@ -1,0 +1,73 @@
+SCHOOL S3.2 — MULTI-ROLE SCHOOL LOGIN
+=====================================
+
+الهدف:
+حل مشكلة الحساب الذي يحمل أكثر من دور في المدرسة.
+
+مثال:
+نفس حساب Supabase قد يكون:
+- ولي أمر
+- طالب
+أو معلم + ولي أمر.
+
+السلوك الجديد:
+1) إذا للحساب دور مدرسي واحد فقط:
+   يدخل مباشرة إلى بوابته.
+
+2) إذا للحساب أكثر من دور:
+   يتحول إلى:
+   /school/choose-role
+
+وتظهر خيارات حسب الربط الحقيقي:
+- إدارة المدرسة
+- المعلم
+- ولي الأمر
+- الطالب
+
+3) اختيار "ولي الأمر" يفتح:
+/school/parent
+
+واختيار "الطالب" يفتح:
+/school/student
+
+ولا يتم تحويل ولي الأمر تلقائيًا إلى الطالب.
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s32" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S3.2-MULTI-ROLE-LOGIN.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+لا يوجد SQL جديد في هذا Hotfix.
+
+npm run dev
+
+TEST
+----
+1) Logout.
+2) افتح:
+http://localhost:5173/school/login
+3) سجل بالحساب الذي لديه Parent + Student.
+
+Expected:
+يفتح:
+/school/choose-role
+
+ثم تظهر:
+الدخول كـ ولي الأمر
+الدخول كـ الطالب
+
+إذا ظهر دور واحد فقط فهذا يعني أن الحساب مربوط فعليًا بدور واحد فقط في جداول المدرسة.
+
+BUILD
+-----
+npm run build
+
+ثم:
+git add .
+git commit -m "School S3.2 multi role school login"
+git push

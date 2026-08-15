@@ -1,0 +1,93 @@
+SCHOOL ACCESS CONTROL FINAL
+===========================
+
+الهدف:
+فصل الأكاديمية عن المدرسة في تجربة الدخول، ثم فصل صلاحيات المدرسة داخليًا.
+
+ROLES:
+school_admin
+finance
+hr
+admissions
+student_affairs
+teacher
+parent
+student
+employee
+
+ACADEMY:
+يبقى Login الأكاديمية الحالي كما هو.
+لا تستخدم school_my_roles لتوجيه مستخدم الأكاديمية.
+
+SCHOOL:
+بعد نجاح /school/login:
+1) استدعِ getMySchoolRoles()
+2) صفر roles -> رسالة لا توجد صلاحية مدرسة
+3) role واحد -> getSchoolRoleHome(role) ثم Navigate
+4) أكثر من role -> Navigate("/school/choose-role")
+
+ROUTES TO ADD TO APP ROUTER:
+import SchoolChooseRole from "../pages/school/ChooseRole";
+import SchoolAccessDenied from "../pages/school/AccessDenied";
+import SchoolAreaGuard from "../components/school/SchoolAreaGuard";
+
+<Route path="/school/choose-role" element={<SchoolChooseRole />} />
+<Route path="/school/access-denied" element={<SchoolAccessDenied />} />
+
+GUARDS:
+School Admin dashboard:
+<SchoolAreaGuard area="admin">...</SchoolAreaGuard>
+
+Finance:
+/school/admin/finance
+area="finance"
+
+HR:
+/school/admin/hr-center
+area="hr"
+
+Admissions:
+/school/admin/admissions
+area="admissions"
+
+Student Affairs:
+/school/admin/student-affairs
+area="student_affairs"
+
+Teacher routes:
+area="teacher"
+
+Parent routes:
+area="parent"
+
+Student routes:
+area="student"
+
+Employee routes:
+area="employee"
+
+مهم:
+school_admin يستطيع Finance/HR/Admissions/Student Affairs عبر school_can_access_area.
+Finance لا يستطيع HR.
+HR لا يستطيع Finance.
+Teacher/Parent/Student تعتمد على روابط الهوية الحالية ولا تحتاج Staff Role.
+Multi-role مثل Parent + Teacher مدعوم ويظهر Choose Role.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-access-final" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-ACCESS-CONTROL-FINAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase:
+supabase\SCHOOL-ACCESS-CONTROL-FINAL.sql
+
+أرسل نتيجة:
+school_access_health
+
+ثم لا تعمل git push بعد.
+نختبر School Login لكل Role أولًا.
+
+ملاحظة مهمة:
+الحزمة لا تستبدل AppRouter/Login تلقائيًا لأن النسخة الحالية الكاملة من هذين الملفين غير موجودة داخل الحزم المتاحة هنا.
+هذا مقصود لتجنب تخمين/كسر Routes الحالية.
+بعد health نربط الـguards على ملفاتك الحالية بدقة.

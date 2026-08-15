@@ -1,0 +1,101 @@
+SCHOOL ACCESS CONTROL UI FINAL
+==============================
+
+هذه آخر حزمة Access قبل Production.
+
+تقوم فعليًا بـ:
+- /login = الأكاديمية فقط.
+- /school/login = المدرسة فقط.
+- School Login يرفض أي حساب لا يملك School Role.
+- Role واحد => تحويل مباشر.
+- عدة Roles => /school/choose-role.
+- صفحة /school/admin/access-management لإدارة صلاحيات الموظفين.
+- School Admin يرى كل الإدارة.
+- Finance -> Finance فقط.
+- HR -> HR Center فقط.
+- Admissions -> Admissions فقط.
+- Student Affairs -> Student Affairs فقط.
+- Teacher / Parent / Student عبر Identity Links الحالية.
+- Multi-role مدعوم.
+- is_school_admin أصبح يدعم school_staff_roles مع الحفاظ على profiles.school_role القديم.
+
+INSTALL
+-------
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-access-ui-final" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-ACCESS-CONTROL-UI-FINAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+supabase\SCHOOL-ACCESS-CONTROL-UI-FINAL.sql
+
+Expected:
+school_access_ui_health
+
+ثم:
+npm run dev
+
+TEST 1 — Academy
+----------------
+/login
+يجب أن يبقى دخول الأكاديمية.
+
+TEST 2 — School Admin
+---------------------
+/school/login
+melnaeema@gmail.com
+Expected:
+يدخل /school/admin أو Choose Role إذا لديه Parent/Teacher أيضًا.
+
+TEST 3 — Multi Role
+-------------------
+melnaeema@gmail.com
+Expected roles include:
+school_admin
+parent
+teacher
+
+يجب أن تظهر صفحة اختيار الدور.
+
+TEST 4 — Permissions
+--------------------
+/school/admin/access-management
+
+Expected:
+كل Auth Users ظاهرين.
+أدوار Teacher/Parent/Student تظهر كهوية ثابتة.
+الأدوار الإدارية يمكن تفعيلها:
+school_admin
+finance
+hr
+admissions
+student_affairs
+employee
+
+TEST 5 — Finance
+----------------
+عيّن مستخدمًا Finance فقط.
+سجّل الدخول به من /school/login.
+Expected:
+/school/admin/finance يعمل.
+HR / Admin Dashboard -> Access Denied.
+
+TEST 6 — HR
+-----------
+HR فقط -> /school/admin/hr-center يعمل.
+Finance -> Denied.
+
+TEST 7 — Student / Parent / Teacher
+-----------------------------------
+كل واحد يدخل من /school/login إلى بوابته.
+لا يتحول إلى الأكاديمية.
+
+FINAL:
+------
+npm run build
+
+إذا Build ناجح:
+git add .
+git commit -m "Finalize school login and role access control"
+git push

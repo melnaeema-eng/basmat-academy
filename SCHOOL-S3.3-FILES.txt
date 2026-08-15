@@ -1,0 +1,3 @@
+SCHOOL-S3.3-INSTALL-TEST.txt
+src/pages/school/admin/Parents.jsx
+src/pages/school/admin/Students.jsx

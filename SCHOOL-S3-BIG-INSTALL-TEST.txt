@@ -1,0 +1,322 @@
+SCHOOL SPRINT S3 BIG — NAWABIGH ALJAZEERA
+==========================================
+
+اسم المدرسة:
+نوابغ الجزيرة
+Nawabigh Aljazeera School
+
+هذا Sprint كبير ويضيف طبقة التدريس اليومية فوق الطلاب/الأهل/الرسوم الموجودة في S2.
+
+يشمل:
+------
+1) إدارة المعلمين
+   - school_teachers
+   - رقم موظف تلقائي TCH-YYYY-xxxxx
+   - التخصص والمؤهل والجوال والبريد
+   - ربط اختياري بحساب Auth User ID لبوابة المعلم
+
+2) توزيع المواد
+   - school_teacher_assignments
+   - المعلم + العام + المستوى + المنهج + المادة + الفصل
+   - إمكانية توزيع المعلم على فصل محدد أو المستوى كله
+
+3) توزيع المواد على الصفوف
+   - استخدام school_grade_subjects الموجود من S1
+   - المادة + المستوى + المنهج
+   - عدد الحصص الأسبوعية
+   - درجة النجاح
+   - الدرجة القصوى
+
+4) الجدول الدراسي
+   - school_timetable
+   - الفصل + المادة + المعلم + اليوم + رقم الحصة
+   - وقت البداية والنهاية
+   - الغرفة/الرابط
+
+5) الحضور والغياب
+   - school_attendance_sessions
+   - school_attendance_records
+   - حاضر / غائب / متأخر / بعذر
+   - تسجيل دفعة واحدة لجميع طلاب الفصل
+   - المعلم لا يدير إلا الفصل/المادة المسندة إليه
+   - School Admin يستطيع الإدارة بالكامل
+
+6) الواجبات
+   - school_assignments
+   - school_assignment_submissions
+   - عنوان ووصف وموعد تسليم ودرجة
+   - الطالب يمكنه تسليم الواجب
+   - أساس تصحيح المعلم وملاحظاته موجود في الخدمة
+
+7) بوابة المعلم
+   /school/teacher
+
+   تعرض:
+   - المواد المسندة
+   - الصفوف
+   - الواجبات القادمة
+
+8) بوابة الطالب
+   /school/student
+
+   تعرض:
+   - ملخص الحضور
+   - الواجبات
+   - حالة التسليم
+   - الدرجة/ملاحظة المعلم
+   - إمكانية تسليم نص الواجب
+
+9) بوابة ولي الأمر
+   /school/parent
+
+   تعرض:
+   - جميع الأبناء المرتبطين بالحساب
+   - المستوى والمنهج والفصل
+   - المديونية الحالية لكل ابن
+
+10) حماية مستقلة لإدارة المدرسة
+    ProtectedSchoolAdminRoute
+
+    يقبل:
+    profiles.role = admin
+    أو
+    profiles.school_role = school_admin
+
+    وبالتالي School Admin لا يحتاج أن يصبح Academy Admin.
+
+11) تثبيت إصلاح School Admin
+    أي حساب role=admin يحصل school_role=school_admin عند تشغيل SQL
+    حتى يصبح الإصلاح السابق جزءًا رسميًا من المشروع.
+
+ROUTES الجديدة:
+---------------
+/school/admin/teachers
+/school/admin/timetable
+/school/admin/attendance
+/school/admin/assignments
+
+/school/teacher
+/school/student
+/school/parent
+
+INSTALL
+-------
+1) أوقف السيرفر:
+Ctrl+C
+
+2) PowerShell:
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s3" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S3-BIG-TEACHERS-ATTENDANCE-PORTALS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3) Supabase > SQL Editor
+
+شغّل فقط:
+
+supabase\SCHOOL-S3-BIG.sql
+
+Expected:
+Success. No rows returned
+
+4) شغّل:
+
+npm run dev
+
+-----------------------------------------
+TEST 1 — المعلمين
+-----------------------------------------
+/school/admin/teachers
+
+أضف معلمًا:
+- الاسم
+- التخصص
+- المؤهل
+- البريد
+
+Expected:
+رقم تلقائي مثل:
+TCH-2026-01001
+
+ثم اختر "توزيع مادة":
+- المعلم
+- العام
+- المستوى
+- المنهج
+- المادة
+- الفصل
+
+-----------------------------------------
+TEST 2 — المواد حسب المستوى
+-----------------------------------------
+/school/admin/subjects
+
+اختر:
+توزيع مادة
+
+مثال:
+العام 2026/2027
+Grade 1 / الصف الأول
+المنهج الإنجليزي
+Mathematics
+5 حصص أسبوعية
+درجة نجاح 50
+
+Expected:
+يظهر التوزيع في القائمة.
+
+-----------------------------------------
+TEST 3 — الجدول
+-----------------------------------------
+/school/admin/timetable
+
+أضف:
+الفصل
+المادة
+المعلم
+اليوم
+رقم الحصة
+08:00 → 08:45
+
+Expected:
+تظهر تحت اليوم الصحيح.
+
+-----------------------------------------
+TEST 4 — الحضور
+-----------------------------------------
+/school/admin/attendance
+
+اختر فصلًا يحتوي طلابًا.
+يجب ظهور جميع الطلاب المسجلين في الفصل.
+
+غيّر حالة طالب:
+حاضر / غائب / متأخر / بعذر
+
+اضغط:
+حفظ الحضور
+
+Expected:
+جلسة حضور جديدة محفوظة.
+
+-----------------------------------------
+TEST 5 — الواجب
+-----------------------------------------
+/school/admin/assignments
+
+أنشئ:
+- الفصل
+- المادة
+- المعلم
+- العنوان
+- التفاصيل
+- موعد التسليم
+- الدرجة
+
+Expected:
+يظهر الواجب في القائمة.
+
+-----------------------------------------
+PORTAL AUTH LINKING
+-----------------------------------------
+حتى يدخل المعلم/الطالب/ولي الأمر ببوابته،
+يجب أن يكون لديه حساب Supabase Auth ثم تربطه من إدارة المدرسة.
+
+المعلم:
+/school/admin/teachers
+ضع Auth User ID في ملف المعلم.
+
+الطالب:
+/school/admin/students
+ضع Auth User ID في ملف الطالب.
+
+ولي الأمر:
+/school/admin/parents
+ضع Auth User ID في ملف ولي الأمر.
+
+هذه الخطوة مؤقتة في S3.
+في Sprint لاحق سنضيف إنشاء حسابات المدرسة وإرسال كلمة مرور/دعوة آليًا.
+
+-----------------------------------------
+TEST 6 — بوابة المعلم
+-----------------------------------------
+بعد ربط Auth User ID بالمعلم:
+سجل الدخول بالحساب.
+
+افتح:
+/school/teacher
+
+Expected:
+المواد والصفوف والواجبات المسندة إليه فقط.
+
+-----------------------------------------
+TEST 7 — بوابة الطالب
+-----------------------------------------
+بعد ربط Auth User ID:
+افتح:
+/school/student
+
+Expected:
+الحضور + الواجبات.
+
+جرّب تسليم واجب نصي.
+
+-----------------------------------------
+TEST 8 — بوابة ولي الأمر
+-----------------------------------------
+بعد ربط Auth User ID:
+افتح:
+/school/parent
+
+Expected:
+كل الأبناء المرتبطين بنفس ولي الأمر
++ الصف
++ المنهج
++ الفصل
++ المبلغ المستحق.
+
+SECURITY
+--------
+- Academy tables untouched.
+- School Admin مستقل.
+- Teacher access scoped to assignments/classes.
+- Student sees own enrollment/homework.
+- Parent sees linked children.
+- School tables remain prefixed school_.
+
+REGRESSION
+----------
+اختبر:
+/
+ /courses
+ /student
+ /admin/dashboard
+ /school/admin
+
+ثم:
+
+npm run build
+
+إذا نجح:
+git add .
+git commit -m "School S3 big teachers timetable attendance portals"
+git push
+
+NEXT BIG SPRINT
+---------------
+School S4 BIG — School Exams & Results
+
+سيشمل:
+- Monthly Exams
+- Midterm Exams
+- Final Exams
+- Question bank
+- Exam schedules
+- Financial lock before exam
+- Financial clearance override
+- Marks/Gradebook
+- Subject results
+- Term report card
+- Parent results view
+- Student results view

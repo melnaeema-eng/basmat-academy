@@ -1,0 +1,26 @@
+SCHOOL S18 BIG — ATTENDANCE & STUDENT AFFAIRS
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s18" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S18-BIG-ATTENDANCE-STUDENT-AFFAIRS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S18-BIG.sql
+
+Expected: school_s18_health
+
+ثم:
+npm run dev
+
+ROUTE:
+/school/admin/student-affairs
+
+يشمل:
+- تقرير حضور شهري.
+- Present/Absent/Late/Excused.
+- Attendance Rate.
+- أعذار الغياب واعتماد/رفض.
+- Student Affairs Notes.
+- Behavior/Academic/Attendance/Health/Parent Contact/Achievement.
+- متابعة طالب.

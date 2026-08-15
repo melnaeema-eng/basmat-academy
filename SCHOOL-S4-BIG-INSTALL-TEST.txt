@@ -1,0 +1,67 @@
+SCHOOL S4 BIG — EXAMS, RESULTS, FINANCIAL LOCK, CLASS TEACHER
+==============================================================
+
+يشمل:
+- فترات امتحانات: شهري / نصف سنوي / نهائي
+- جدول امتحانات حسب الفصل والمادة
+- منع مالي تلقائي قبل الامتحان باستخدام أقساط S2
+- Financial Clearance يستمر كاستثناء إداري
+- Gradebook وإدخال الدرجات
+- حاضر / غائب / بعذر / محروم
+- نشر النتائج للطالب
+- Report Card للفصل الدراسي
+- أساس الشهادات school_certificates
+- قاعدة معلم الصف للمنهج العربي P1-P3:
+  معلم واحد للدفعة 3 سنوات ثم دفعة جديدة
+
+INSTALL
+-------
+Ctrl+C
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s4" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S4-BIG-EXAMS-RESULTS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+شغّل:
+supabase\SCHOOL-S4-BIG.sql
+
+Expected:
+json health result بدون Error.
+
+ثم:
+npm run dev
+
+TEST:
+1) /school/admin/class-teachers
+   اربط معلم صف بدفعة عربية في P1.
+
+2) /school/admin/exams
+   أنشئ فترة "امتحانات شهر سبتمبر".
+   أنشئ امتحانًا لفصل ومادة.
+   فعّل المنع المالي.
+   اضغط "فحص وتجهيز الطلاب".
+
+3) الطالب الذي عليه قسط مستحق قبل تاريخ الامتحان:
+   يظهر محروم / outstanding.
+   الطالب المسدد أو لديه Financial Clearance:
+   يظهر مسموح.
+
+4) /school/admin/results
+   اختر الامتحان.
+   أدخل الدرجة وحالة present.
+   انشر النتائج.
+
+5) /school/student/results
+   الطالب يرى فقط النتائج المنشورة.
+
+6) Report Cards:
+   قاعدة البيانات وواجهة النشر جاهزة.
+   بناء البطاقة يتم عبر school_build_report_card(enrollment_id,term_no).
+
+BUILD:
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S4 big exams results financial lock class teacher"
+git push

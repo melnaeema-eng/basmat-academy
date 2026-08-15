@@ -1,0 +1,4 @@
+SCHOOL-S7.1-INSTALL-TEST.txt
+src/components/SchoolRoleRoute.jsx
+src/router/AppRouter.jsx
+src/pages/school/portal/TeacherDashboard.jsx

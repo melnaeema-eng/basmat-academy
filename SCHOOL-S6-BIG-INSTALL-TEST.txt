@@ -1,0 +1,84 @@
+SCHOOL S6 BIG — HR + CONTRACTS + LEAVE + STAFF ATTENDANCE
+=========================================================
+
+يشمل:
+- عقود الموظفين.
+- رقم عقد تلقائي.
+- مدة العقد والتجربة.
+- ساعات وأيام العمل.
+- أنواع الإجازات.
+- طلبات الإجازة.
+- الموافقة/الرفض.
+- حضور الموظفين.
+- حاضر / غائب / متأخر / إجازة / عن بعد / عطلة.
+- Check-in / Check-out.
+- دقائق التأخير.
+- دقائق العمل الإضافي.
+- Overtime foundation.
+- Payroll Adjustments.
+- خصم التأخير تلقائيًا.
+- خصم الغياب يوميًا.
+- ربط خصومات HR بمسير الرواتب قبل إنشائه.
+- Employee self-read policies.
+
+ROUTES:
+-------
+/school/admin/contracts
+/school/admin/staff-attendance
+/school/admin/leave
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s6" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S6-BIG-HR-CONTRACTS-ATTENDANCE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+supabase\SCHOOL-S6-BIG.sql
+
+Expected:
+school_s6_health JSON
+
+ثم:
+npm run dev
+
+TEST:
+-----
+1) /school/admin/contracts
+أضف عقدًا لموظف.
+
+2) /school/admin/staff-attendance
+اختر تاريخ اليوم.
+غيّر موظف إلى Late وأدخل 30 دقيقة تأخير.
+غيّر موظفًا آخر إلى Absent.
+احفظ.
+
+3) /school/admin/payroll
+أنشئ مسير نفس الشهر.
+Expected:
+خصم التأخير والغياب يدخل ضمن Deductions تلقائيًا.
+
+4) /school/admin/leave
+أنشئ طلب إجازة.
+اعتمده.
+راجع الحالة Approved.
+
+5) Regression:
+employees
+payroll
+accounting
+finance
+teachers
+school portals
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S6 HR contracts leave attendance"
+git push

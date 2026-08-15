@@ -1,36 +1,48 @@
-SPRINT 11 — CANCEL / REFUND RPC FIX V2
-======================================
+SCHOOL LOGOUT FINAL PATCH
+=========================
 
-1) Extract:
+الهدف:
+إضافة زر تسجيل خروج واضح لكل بوابات المدرسة التي تستخدم SchoolPortalLayout:
+- المعلم
+- ولي الأمر
+- الطالب
+
+وكذلك:
+- إدارة المدرسة
+- المستخدمون الإداريون Finance / HR / Admissions / Student Affairs عندما يعملون داخل SchoolAdminLayout
+
+السلوك:
+1) supabase.auth.signOut()
+2) حذف school_active_role
+3) الرجوع مباشرة إلى:
+/school/login
+
+بهذا تستطيع إدخال بريد مختلف ومعرفة الدور الذي يكتشفه النظام.
+
+INSTALL:
+--------
+أوقف السيرفر Ctrl+C
+
 cd C:\projects\basmat-academy
 
-Expand-Archive -Path "$env:USERPROFILE\Downloads\SPRINT-11-CANCEL-REFUND-RPC-FIX-V2.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-LOGOUT-FINAL-PATCH.zip" -DestinationPath "C:\projects\basmat-academy" -Force
 
-2) Supabase > SQL Editor:
-Run ONLY:
-supabase\SPRINT-11-CANCEL-REFUND-RPC-FIX-V2.sql
-
-Expected:
-Success. No rows returned
-
-3) Restart:
+ثم:
 npm run dev
 
-TEST FREE:
-- Student > My Courses
-- Free course > Cancel Enrollment
-Expected:
-  disappears from My Courses.
-  No HTTP 400.
-  repeated cancellation is safe.
+TEST:
+-----
+1. ادخل /school/login
+2. اختر بوابة المعلم
+3. اضغط تسجيل الخروج
+Expected: /school/login
 
-TEST PAID:
-- Refund request -> Admin approve.
-- After actual money refund -> Admin "تم الاسترداد فعليًا".
-Expected:
-  refund = processed
-  payment = refunded
-  enrollment = cancelled
-  course disappears from My Courses.
+4. ادخل بحساب ولي الأمر
+5. اضغط تسجيل الخروج
+Expected: /school/login
 
-This SQL also repairs earlier refund_requests that are already processed.
+6. ادخل كإدارة المدرسة
+7. اضغط تسجيل الخروج من القائمة الجانبية
+Expected: /school/login
+
+لا يوجد SQL في هذه الحزمة.

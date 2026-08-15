@@ -1,0 +1,48 @@
+SCHOOL S7.1 — TEACHER LIBRARY ROUTE FIX
+=======================================
+
+المشكلة:
+--------
+/school/teacher/library
+كان يمر عبر SchoolRoleRoute الذي يسمح فقط بحساب Teacher مربوط فعليًا.
+عند الاختبار بحساب School Admin كان يعيدك إلى /school/login.
+
+الحل:
+-----
+- Teacher الحقيقي ما زال يدخل طبيعيًا.
+- School Admin يستطيع معاينة Teacher Library فقط.
+- بقية Teacher Portal تبقى محمية ولا يستطيع Admin انتحال دور Teacher.
+- أضيف زر "المكتبة الرقمية" داخل Teacher Dashboard.
+
+لا يوجد SQL.
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s71" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S7.1-TEACHER-LIBRARY-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+TEST:
+-----
+1) بحساب School Admin افتح:
+/school/teacher/library
+Expected: تفتح المكتبة ولا يرجع Login.
+
+2) بحساب Teacher مربوط في school_teachers.auth_user_id:
+افتح:
+/school/teacher/library
+Expected: تفتح طبيعيًا.
+
+3) جرّب:
+/school/teacher
+بحساب Admin.
+Expected: يبقى محميًا ولا يتحول Admin إلى Teacher.
+
+BUILD:
+------
+npm run build

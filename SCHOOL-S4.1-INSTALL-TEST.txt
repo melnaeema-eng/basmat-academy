@@ -1,0 +1,50 @@
+SCHOOL S4.1 — EXAM FILTER CORRECTION
+====================================
+هذا تصحيح S4 فقط. لا يوجد SQL جديد.
+
+تم إصلاح صفحة الامتحانات لتعمل بالترتيب:
+1. المنهج
+2. الصف / المستوى
+3. الفصل
+4. المادة
+
+التصحيح:
+- لم يعد حقل "الفصل" يعرض KG1 وKG2 وKG3 وGrade 1 معًا.
+- بعد اختيار المنهج تظهر فقط الصفوف التي لها Class Sections في هذا المنهج.
+- بعد اختيار الصف تظهر فقط فصول هذا الصف والمنهج (A/B/C...).
+- المواد تأتي من school_grade_subjects للصف + المنهج + العام الدراسي الحالي.
+- تغيير المنهج أو الصف يصفر الاختيارات التابعة حتى لا يبقى اختيار قديم خاطئ.
+
+INSTALL
+-------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s41" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S4.1-EXAM-FILTER-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+TEST
+----
+افتح:
+/school/admin/exams
+
+مثال:
+المنهج الإنجليزي
+-> الصف الأول الابتدائي
+-> يجب أن يظهر في "الفصل" A فقط إذا كان A هو الفصل الوحيد الذي أنشأته.
+-> لا يجب أن تظهر مستويات KG داخل قائمة الفصل.
+
+ثم اختر KG:
+-> تظهر مستويات/صفوف KG المناسبة أولًا.
+-> بعد اختيار المستوى يظهر الفصل A/B... لذلك المستوى فقط.
+
+لا تشغّل SQL. قاعدة البيانات S4 الحالية صحيحة.
+
+بعد نجاح الاختبار:
+npm run build
+git add .
+git commit -m "Fix S4 exam dependent filters"
+git push

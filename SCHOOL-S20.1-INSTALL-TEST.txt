@@ -1,0 +1,41 @@
+SCHOOL S20.1 — FINANCE COMPLETE CORRECTED
+=========================================
+
+هذه النسخة مبنية على الـschema الفعلي الموجود بالفعل.
+
+تم تصحيح:
+- school_expenses -> school_expense_entries
+- tuition_fee -> annual_tuition
+- payment_status -> status
+- school_student_parents -> school_parent_students
+- finance transaction model -> transaction_type + direction
+- school_payroll_items structure
+- school_payments integration
+
+مهم:
+لا تشغل SCHOOL-S20-BIG.sql القديم مرة أخرى.
+
+INSTALL:
+--------
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S20.1-FINANCE-COMPLETE-CORRECTED.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+شغّل فقط:
+
+supabase\SCHOOL-S20.1-CORRECTED.sql
+
+EXPECTED:
+school_s20_health
+
+بعد نجاح SQL:
+select public.school_finance_dashboard();
+
+اختبار خصم الأشقاء:
+select public.school_apply_sibling_discount('<ENROLLMENT_ID>');
+
+اختبار ملخص رسوم طالب:
+select public.school_enrollment_finance_summary('<ENROLLMENT_ID>');
+
+هذه النسخة لا تضيف Payroll columns غير موجودة ولا تعيد تعريف جداول S5/S6.

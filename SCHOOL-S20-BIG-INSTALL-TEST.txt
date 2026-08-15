@@ -1,0 +1,53 @@
+SCHOOL S20 BIG — FINANCE COMPLETE
+=================================
+
+يشمل:
+- Fee Plans الموجودة سابقًا.
+- رسوم الطالب وصافي المستحق.
+- خصم الأشقاء 10% تلقائي عند وجود أخ/أخت Active لنفس ولي الأمر.
+- Discounts / Scholarships / Waivers / Penalties.
+- Receipts بأرقام تلقائية.
+- Cash / Bank / Card / Transfer reference.
+- Outstanding Balance + Financial Clearance.
+- Finance Accounts + Transactions الموجودة سابقًا.
+- Expenses.
+- Payroll Runs + Payroll Items.
+- Dashboard totals.
+- RLS.
+- Health Check.
+
+مهم:
+S20 لا يكرر جداول المالية السابقة؛ يبني فوقها.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s20" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S20-BIG-FINANCE-COMPLETE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S20-BIG.sql
+
+EXPECTED:
+school_s20_health
+
+بعدها:
+npm run dev
+
+TEST:
+select public.school_s20_health();
+
+اختبار خصم الأشقاء:
+select public.school_apply_sibling_discount('<ENROLLMENT_ID>');
+
+Expected when same parent has >=2 active children:
+applied=true
+percentage=10
+
+اختبار الملخص:
+select public.school_enrollment_finance_summary('<ENROLLMENT_ID>');
+
+BUILD:
+npm run build
+git add .
+git commit -m "School S20 finance complete"
+git push

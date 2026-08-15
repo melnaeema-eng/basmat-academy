@@ -1,0 +1,226 @@
+SCHOOL SPRINT S2 BIG — NAWABIGH ALJAZEERA
+==========================================
+
+هذا Sprint كبير ومتكامل فوق School S1.
+
+يشمل:
+------
+1. School Admin Role مستقل
+   profiles.school_role
+   is_school_admin()
+
+2. الطلاب
+   school_students
+   رقم طالب تلقائي:
+   NAS-YYYY-xxxxx
+
+3. التسجيل الأكاديمي
+   school_enrollments
+   العام + المستوى + المنهج + الفصل
+
+4. أولياء الأمور
+   school_parents
+   school_parent_students
+   ولي الأمر يمكن ربطه بأكثر من طالب
+   مع تحديد ولي الأمر الأساسي
+
+5. الرسوم الدراسية
+   school_fee_plans
+   رسوم سنوية + تسجيل + رسوم أخرى
+   عدد الأقساط من 1 إلى 12
+
+6. الأقساط الشهرية
+   school_installments
+   unpaid / partial / paid / overdue / waived
+
+7. الدفعات
+   school_payments
+   cash / bank / online
+   مرجع دفع وملاحظات
+   تحديث القسط تلقائيًا
+
+8. المتأخرات
+   school_refresh_overdue()
+
+9. أساس الحرمان من الامتحان ماليًا
+   school_financial_exam_eligible(enrollment_id, exam_date)
+   يتحقق من جميع الأقساط المستحقة حتى تاريخ الامتحان.
+
+10. استثناء مالي إداري
+    school_financial_clearance
+    لاستخدامه لاحقًا عند السماح لطالب بالامتحان رغم وجود مديونية.
+
+11. Dashboard موسع
+    الطلاب
+    أولياء الأمور
+    التسجيلات
+    الأقساط
+    المتأخرات
+    الدفعات
+
+12. واجهات جديدة
+    /school/admin/students
+    /school/admin/parents
+    /school/admin/finance
+
+الهيكل المعتمد:
+---------------
+العربي:
+الروضة:
+المستوى الأول
+المستوى الثاني
+المستوى الثالث
+
+ثم:
+ابتدائي 1–6
+متوسط 1–3
+ثانوي 1–3
+
+English:
+KG1
+KG2
+KG3
+Grade 1 → Grade 12
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s2" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S2-BIG-STUDENTS-PARENTS-FINANCE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+SUPABASE
+--------
+Supabase > SQL Editor
+
+Run ONLY:
+supabase\SCHOOL-S2-BIG.sql
+
+Expected:
+Success. No rows returned
+
+IMPORTANT:
+إذا كان حسابك Academy Admin فإن is_school_admin() يسمح له تلقائيًا.
+لاحقًا يمكن إعطاء شخص School Admin فقط بواسطة:
+update public.profiles
+set school_role='school_admin'
+where email='EMAIL';
+
+START
+-----
+npm run dev
+
+TEST 1 — SCHOOL DASHBOARD
+-------------------------
+/school/admin
+
+Expected:
+- 4 مراحل
+- 15 مستوى
+- 2 مناهج
+- عدادات الطلاب/الأهل/الدفعات
+
+TEST 2 — STUDENT
+----------------
+/school/admin/students
+
+1. أضف طالب.
+2. يجب أن يحصل على رقم NAS تلقائي.
+3. اختر "تسجيل طالب".
+4. اربطه بالعام الدراسي والمستوى والمنهج والفصل.
+
+TEST 3 — PARENT
+---------------
+/school/admin/parents
+
+1. أضف ولي أمر.
+2. اربطه بالطالب.
+3. اربط نفس ولي الأمر بطالب ثانٍ.
+Expected:
+ولي أمر واحد يظهر تحته أكثر من ابن.
+
+TEST 4 — FEES
+-------------
+/school/admin/finance
+
+1. خطط الرسوم.
+2. اختر:
+   العام + المستوى + المنهج.
+3. حدد الرسوم السنوية وعدد الأقساط.
+4. حفظ.
+
+TEST 5 — INSTALLMENTS
+---------------------
+Finance > الأقساط
+
+1. اختر الطالب.
+2. حدد تاريخ أول قسط.
+3. إنشاء الأقساط.
+Expected:
+تقسيم الرسوم السنوية تلقائيًا على الأشهر.
+
+TEST 6 — PAYMENT
+----------------
+1. اختر الطالب.
+2. اختر القسط.
+3. أدخل المبلغ.
+4. تسجيل الدفعة.
+Expected:
+paid_amount يتحدث.
+status يصبح partial أو paid.
+
+TEST 7 — OVERDUE
+----------------
+اضغط:
+تحديث المتأخرات
+
+Expected:
+كل قسط تاريخ استحقاقه مضى ولم يكتمل يصبح overdue.
+
+FINANCIAL EXAM LOCK FOUNDATION
+------------------------------
+لم يتم ربطه بالامتحانات المدرسية بعد لأن School Exams ستكون Sprint منفصل.
+لكن قاعدة القرار جاهزة الآن:
+school_financial_exam_eligible()
+
+القاعدة:
+- لا مديونية حتى تاريخ الامتحان = Eligible.
+- توجد أقساط مستحقة = Blocked.
+- Financial Clearance فعال = Eligible despite debt.
+
+NO ACADEMY DAMAGE
+-----------------
+لا يتم حذف أو إعادة تسمية أي جدول Academy.
+كل جداول المدرسة تبدأ بـ:
+school_
+
+REGRESSION
+----------
+اختبر:
+/
+ /courses
+ /student
+ /admin/dashboard
+
+ثم:
+npm run build
+
+إذا نجح:
+git add .
+git commit -m "School S2 big students parents finance"
+git push
+
+NEXT BIG SPRINT
+---------------
+School S3:
+- Teacher database
+- School Teacher Portal
+- Subjects per grade/curriculum
+- Timetable
+- Attendance
+- Assignments/Homework
+- Parent Portal login foundation
+- Student School Portal foundation

@@ -1,0 +1,7 @@
+SCHOOL-S8-BIG-INSTALL-TEST.txt
+supabase/SCHOOL-S8-BIG.sql
+src/layouts/SchoolAdminLayout.jsx
+src/services/schoolService.js
+src/router/AppRouter.jsx
+src/pages/school/admin/Admissions.jsx
+src/pages/school/admin/Dashboard.jsx

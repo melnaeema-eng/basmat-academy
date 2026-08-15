@@ -1,0 +1,8 @@
+SCHOOL-SYSTEM-ACCESS-FINAL-V4-INSTALL.txt
+supabase/SCHOOL-SYSTEM-ACCESS-FINAL-V4.sql
+src/services/schoolAccessService.js
+src/router/AppRouter.jsx
+src/layouts/SchoolAdminLayout.jsx
+src/pages/school/ChooseAccessRole.jsx
+src/pages/school/admin/AccessManagement.jsx
+src/pages/school/admin/PortalDirectory.jsx

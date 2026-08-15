@@ -1,0 +1,50 @@
+SCHOOL ACCESS CONTROL UI FINAL V2
+=================================
+
+سبب V2:
+الحزمة السابقة حدثت AppRouter لكنها لم تضم بعض صفحات السبرنتات الحديثة التي يستوردها Router،
+وأول ملف ظهر مفقودًا كان:
+src/pages/school/admin/ControlCenter.jsx
+
+V2 تضم الصفحات الحديثة المطلوبة مع Access Control في حزمة واحدة:
+- Security
+- OperationalSetup
+- SmartTimetable
+- StudentAffairs
+- Gradebook
+- HRControlCenter
+- ControlCenter
+- AccessManagement
+- SchoolLogin
+- ChooseAccessRole
+- AccessDenied
+- SchoolAreaGuard
+- AppRouter
+- SchoolAdminLayout
+- schoolAccessService
+
+INSTALL:
+--------
+أوقف السيرفر Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-ACCESS-CONTROL-UI-FINAL-V2.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+ثم:
+npm run dev
+
+لا تعيد تشغيل SQL إذا كان:
+school_access_ui_health
+قد نجح عندك بالفعل.
+
+TEST:
+-----
+1) افتح /school/login
+2) سجل بحساب متعدد الأدوار.
+3) افتح /school/admin/access-management
+4) افتح /school/admin/control-center
+5) افتح /login للتأكد أن دخول الأكاديمية مستقل.
+
+بعد نجاح التشغيل:
+npm run build

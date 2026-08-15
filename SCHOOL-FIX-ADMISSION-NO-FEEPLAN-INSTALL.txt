@@ -1,0 +1,68 @@
+BLOCKING FIX — ADMISSION WITHOUT FEE PLAN
+=========================================
+
+المشكلة:
+--------
+عند الضغط على:
+"تحويل إلى طالب مسجل"
+ظهر:
+Fee plan not found
+
+السبب:
+------
+دالة خصم الأشقاء كانت تشترط وجود Fee Plan أثناء Enrollment.
+
+التصحيح:
+--------
+- تسجيل الطالب لا يعتمد على وجود Fee Plan.
+- Parent reuse يستمر.
+- Sibling detection يستمر.
+- إذا كان الطالب أخًا/أختًا إضافيًا:
+  يتم حفظ 10% كنسبة حتى لو لم توجد خطة رسوم.
+- قيمة الخصم تكون 0 مؤقتًا حتى إنشاء Fee Plan.
+- عند إنشاء Fee Plan ثم Generate Installments:
+  النظام يعيد حساب 10% من Tuition تلقائيًا.
+- Registration Fee وOther Fees لا تدخل في الخصم.
+- school_generate_installments فقط هو الذي يطلب Fee Plan، وهذا صحيح لأنه لا يمكن إنشاء أقساط بدون خطة مالية.
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-feeplan-hotfix" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-FIX-ADMISSION-NO-FEEPLAN.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+شغّل:
+supabase\SCHOOL-FIX-ADMISSION-NO-FEEPLAN.sql
+
+Expected:
+{
+  "hotfix": "OK",
+  "rule": "Admission no longer requires Fee Plan"
+}
+
+ثم:
+npm run dev
+
+TEST:
+-----
+/school/admin/admissions
+
+1. استخدم نفس الطلب Accepted الذي كان يعطي Fee plan not found.
+2. اضغط "تحويل إلى طالب مسجل".
+Expected:
+- يتم إنشاء Student.
+- يتم إنشاء Enrollment.
+- يتم ربط نفس Parent.
+- لا يظهر Fee plan not found.
+- إذا أخ/أخت إضافي: 10% محفوظ.
+- إذا لا توجد خطة مالية يظهر فقط تنبيه أن الخطة المالية ستضاف لاحقًا.
+
+بعد ذلك:
+اذهب إلى /school/admin/finance
+أنشئ Fee Plan للصف/المنهج.
+عند Generate Installments:
+يتم تطبيق 10% على Tuition تلقائيًا.

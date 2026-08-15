@@ -1,0 +1,8 @@
+// SCHOOL S20 — Finance Complete
+export async function getSchoolS20Health(){const{data,error}=await supabase.rpc("school_s20_health");if(error)throw error;return data||{}}
+export async function getSchoolFinanceDashboard(){const{data,error}=await supabase.rpc("school_finance_dashboard");if(error)throw error;return data||{}}
+export async function getSchoolEnrollmentFinanceSummary(id){const{data,error}=await supabase.rpc("school_enrollment_finance_summary",{p_enrollment_id:id});if(error)throw error;return data||{}}
+export async function applySchoolSiblingDiscount(id){const{data,error}=await supabase.rpc("school_apply_sibling_discount",{p_enrollment_id:id});if(error)throw error;return data||{}}
+export async function createSchoolFeeReceipt(x){const{data,error}=await supabase.rpc("school_create_fee_receipt",{p_enrollment_id:x.enrollment_id,p_amount:Number(x.amount),p_payment_method:x.payment_method||"cash",p_reference_no:x.reference_no||null,p_notes:x.notes||null});if(error)throw error;return data}
+export async function getSchoolFeeReceipts(){const{data,error}=await supabase.from("school_fee_receipts").select("*,school_enrollments(id,school_students(student_no,full_name_ar))").order("paid_at",{ascending:false});if(error)throw error;return data||[]}
+export async function getSchoolFeeAdjustments(){const{data,error}=await supabase.from("school_fee_adjustments").select("*").order("created_at",{ascending:false});if(error)throw error;return data||[]}

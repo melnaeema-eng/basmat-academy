@@ -1,0 +1,46 @@
+SCHOOL S13 BIG — COMPLETE STUDENT PORTAL
+==========================================
+يشمل:
+- Dashboard كامل للطالب.
+- الصف/المنهج/الفصل.
+- الحضور والتفاصيل.
+- الواجبات والتسليم والتصحيح.
+- الجدول الأسبوعي.
+- الامتحانات الورقية/الإلكترونية/الهجينة.
+- أهلية الامتحان المالية.
+- النتائج والسجل الأكاديمي والشهادات.
+- المكتبة والإشعارات.
+- الملف الشخصي.
+- تحديث الجوال والبريد.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s13" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S13-BIG-STUDENT-PORTAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S13-BIG.sql
+
+Expected: school_s13_health
+
+ثم:
+npm run dev
+
+ROUTES:
+/school/student
+/school/student/assignments
+/school/student/attendance
+/school/student/timetable
+/school/student/exams
+/school/student/online-exams
+/school/student/results
+/school/student/academic-records
+/school/student/library
+/school/student/notifications
+/school/student/profile
+
+BUILD:
+npm run build
+git add .
+git commit -m "School S13 complete student portal"
+git push

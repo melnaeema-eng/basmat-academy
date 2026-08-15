@@ -1,0 +1,14 @@
+SCHOOL-S4.2-INSTALL-TEST.txt
+src/services/schoolService.js
+src/pages/school/admin/Exams.jsx
+src/pages/school/admin/ClassTeachers.jsx
+src/pages/school/admin/Teachers.jsx
+src/pages/school/admin/Finance.jsx
+src/pages/school/admin/Parents.jsx
+src/pages/school/admin/Assignments.jsx
+src/pages/school/admin/Structure.jsx
+src/pages/school/admin/Timetable.jsx
+src/pages/school/admin/AcademicYears.jsx
+src/pages/school/admin/Students.jsx
+src/pages/school/admin/Subjects.jsx
+src/pages/school/admin/Classes.jsx

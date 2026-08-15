@@ -1,0 +1,47 @@
+SCHOOL S14.2 — ROLE-AWARE CONFLICT FIX
+======================================
+
+الهدف:
+------
+السماح لنفس Auth User أن يحمل أكثر من دور في المدرسة بشكل طبيعي.
+
+مثال صحيح:
+Parent + Teacher بنفس البريد ونفس auth_user_id
+
+هذا ليس Conflict.
+
+يصبح Conflict فقط إذا كان نفس auth_user_id مرتبطًا بأكثر من:
+- Teacher record
+أو أكثر من:
+- Parent record
+أو أكثر من:
+- Student record
+أو أكثر من:
+- Employee record
+
+INSTALL:
+--------
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S14.2-ROLE-AWARE-CONFLICT-FIX.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+supabase\SCHOOL-S14.2-ROLE-AWARE-CONFLICT-FIX.sql
+
+Expected:
+school_s14_2_health
+
+بالنسبة للحالة الحالية:
+same_role_conflicts = 0
+multi_role_users >= 1
+teachers_with_auth = 1
+teachers_unlinked = 0
+
+اختبار اختياري:
+select * from public.school_auth_role_map();
+
+المفروض melnaeema@gmail.com يظهر له:
+["parent","teacher"]
+
+بعد النجاح:
+S14 يعتبر مغلقًا.

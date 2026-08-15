@@ -1,0 +1,4 @@
+SCHOOL-S3.2-INSTALL-TEST.txt
+src/services/authDestination.js
+src/router/AppRouter.jsx
+src/pages/school/portal/ChooseRole.jsx

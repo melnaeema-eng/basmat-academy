@@ -1,0 +1,76 @@
+SCHOOL S11.1 — ATTENDANCE TABLE FIX
+===================================
+
+سبب المشكلة:
+-------------
+S11 الأصلي استخدم جدولًا غير موجود:
+school_attendance
+
+الجداول الصحيحة الموجودة فعليًا:
+school_attendance_sessions
+school_attendance_records
+school_staff_attendance
+
+التصحيح:
+--------
+- تنبيه غياب/تأخير الطلاب أصبح Trigger على:
+  school_attendance_records
+- تاريخ الحضور يؤخذ من:
+  school_attendance_sessions.attendance_date
+- school_staff_attendance لا يستخدم لتنبيهات الطلاب.
+- يمنع تكرار التنبيه إذا تم Update بدون تغيير status.
+- الملف S11.1-FIXED.sql هو S11 كامل مصحح وقابل لإعادة التشغيل.
+- سيكمل أيضًا:
+  Assignments alerts
+  Exam alerts
+  Result alerts
+  Certificate alerts
+  RLS
+  Templates
+  school_s11_health
+
+INSTALL:
+--------
+لا تحتاج إعادة فك ZIP للمشروع إذا ملفات S11 موجودة بالفعل.
+
+Supabase > SQL Editor:
+شغّل الملف كاملًا:
+
+supabase\SCHOOL-S11.1-FIXED.sql
+
+Expected في النهاية:
+school_s11_health
+
+مثال:
+{
+  "announcements": 0,
+  "notifications": 0,
+  "unread_notifications": 0,
+  "templates": 4,
+  "communication_log": 0
+}
+
+بعد نجاح SQL:
+npm run dev
+
+TEST:
+-----
+1) افتح:
+/school/admin/communications
+
+2) أنشئ إعلانًا تجريبيًا وانشره.
+
+3) سجل طالبًا absent أو late من صفحة حضور الطلاب.
+
+Expected:
+ولي الأمر المرتبط يستلم Attendance Notification.
+
+4) افتح:
+Student:
+/school/student/notifications
+
+Parent:
+/school/parent/notifications
+
+Teacher:
+/school/teacher/notifications

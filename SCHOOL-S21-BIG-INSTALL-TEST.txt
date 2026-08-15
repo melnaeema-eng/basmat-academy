@@ -1,0 +1,44 @@
+SCHOOL S21 BIG — HR & STAFF MANAGEMENT
+======================================
+
+يشمل:
+- Dashboard موارد بشرية.
+- الموظفون النشطون.
+- ربط الموظف بالمعلم والحساب الموجود مسبقًا.
+- العقود.
+- العقود المنتهية قريبًا.
+- حضور الموظفين.
+- التأخير والغياب.
+- الإجازات.
+- Overtime.
+- الرواتب الموجودة من S5/S6.
+- تقييم أداء جديد:
+  Attendance Score / Performance Score / Behavior Score / Overall Score.
+- Strengths / Improvement Areas / Manager Comment.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s21" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S21-BIG-HR-STAFF-MANAGEMENT.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase:
+supabase\SCHOOL-S21-BIG.sql
+
+Expected:
+school_s21_health
+
+ثم:
+npm run dev
+
+ROUTE:
+/school/admin/hr-center
+
+TEST:
+1) افتح HR Center.
+2) اختر موظفًا.
+3) راجع العقود والحضور والإجازات.
+4) أضف Performance Review.
+5) راجع Payroll من صفحة المالية أو الرواتب.
+
+بعد النجاح:
+S22 FINAL.

@@ -1,0 +1,41 @@
+SCHOOL S14.1 — AUTO AUTH LINKING HOTFIX
+=======================================
+
+ينهي مشكلة auth_user_id = null للطالب وولي الأمر والمعلم والموظف.
+
+القاعدة الجديدة:
+Email -> auth.users -> auth_user_id تلقائيًا عند INSERT أو تعديل البريد.
+
+كما يقوم SQL عند تشغيله بإصلاح السجلات القديمة التي يوجد لها حساب Auth بنفس البريد.
+
+INSTALL
+-------
+cd C:\projects\basmat-academy
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S14.1-AUTO-AUTH-LINKING.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+supabase\SCHOOL-S14.1-AUTO-AUTH-LINKING.sql
+
+Expected:
+school_s14_1_health
+
+المعلم الحالي melnaeema@gmail.com:
+إذا البريد موجود في auth.users، المفروض:
+teachers_unlinked = 0
+teachers_with_auth = 1
+
+فحص الحسابات غير المربوطة:
+select * from public.school_unlinked_accounts();
+
+فحص التعارضات:
+select * from public.school_auth_link_conflicts();
+
+إعادة الربط مستقبلًا:
+select public.school_resync_auth_links();
+
+بعد نجاح SQL:
+npm run dev
+
+ثم اختبر:
+/school/teacher

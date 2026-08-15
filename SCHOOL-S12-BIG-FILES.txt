@@ -1,0 +1,7 @@
+SCHOOL-S12-BIG-INSTALL-TEST.txt
+supabase/SCHOOL-S12-BIG.sql
+src/services/schoolService.js
+src/router/AppRouter.jsx
+src/pages/school/portal/ParentDashboard.jsx
+src/pages/school/portal/ParentProfile.jsx
+src/pages/school/admin/Dashboard.jsx

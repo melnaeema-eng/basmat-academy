@@ -1,0 +1,5 @@
+SCHOOL-S3.1-INSTALL-TEST.txt
+src/services/authDestination.js
+src/components/SchoolRoleRoute.jsx
+src/pages/Login.jsx
+src/router/AppRouter.jsx

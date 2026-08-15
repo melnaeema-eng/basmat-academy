@@ -1,0 +1,54 @@
+SCHOOL S14 BIG — COMPLETE TEACHER PORTAL
+==========================================
+يبنى فوق S13.
+
+يشمل:
+- ملف المعلم.
+- الفصول والمواد المسندة.
+- قائمة الطلاب.
+- Snapshot لمتابعة الطالب.
+- حضور يومي من بوابة المعلم.
+- الواجبات والتسليمات.
+- التصحيح وإضافة Feedback.
+- الجدول الأسبوعي.
+- الامتحانات المرتبطة بالمعلم/المادة.
+- بنك الأسئلة والمكتبة والإشعارات موجودة ومتكاملة.
+- حماية: المعلم يرى فقط الطلاب والفصول المسموح له إدارتها.
+
+INSTALL:
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s14" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S14-BIG-TEACHER-PORTAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S14-BIG.sql
+
+Expected: school_s14_health
+
+ثم:
+npm run dev
+
+ROUTES:
+/school/teacher
+/school/teacher/classes
+/school/teacher/attendance
+/school/teacher/homework
+/school/teacher/timetable
+/school/teacher/exams
+/school/teacher/library
+/school/teacher/notifications
+/school/teacher/profile
+
+TEST:
+1. ادخل Teacher مربوط بـ auth_user_id.
+2. راجع الفصول والطلاب.
+3. سجل Attendance.
+4. راجع Submission وصححه.
+5. راجع الجدول والامتحانات.
+6. جرّب Student غير تابع لفصل المعلم؛ يجب رفض الوصول.
+
+BUILD:
+npm run build
+git add .
+git commit -m "School S14 complete teacher portal"
+git push

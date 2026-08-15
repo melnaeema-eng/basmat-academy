@@ -1,0 +1,16 @@
+S14.2 — FUNCTION RETURN TYPE FIX
+================================
+
+سبب الخطأ:
+PostgreSQL لا يسمح بتغيير RETURNS TABLE لدالة موجودة باستخدام CREATE OR REPLACE.
+
+الحل:
+DROP FUNCTION ثم إعادة إنشائها بالشكل الجديد.
+
+نفذ فقط:
+supabase\SCHOOL-S14.2-FUNCTION-RETURN-FIX.sql
+
+Expected:
+school_s14_2_health
+
+ولا تحتاج إعادة تشغيل أي SQL قديم.

@@ -1,0 +1,66 @@
+SCHOOL S19 BIG — HOMEWORK + EXAMS + UNIFIED GRADEBOOK
+=====================================================
+
+يشمل:
+- Term-aware Homework.
+- Assignment scores + Teacher Feedback.
+- Paper Exams.
+- Online / Hybrid Exams.
+- Question Bank (الموجود من S9).
+- Unified Gradebook.
+- أوزان قابلة للتعديل لكل مادة:
+  Assignments % + Exams % = 100.
+- Pass Mark لكل مادة/فصل.
+- حساب Weighted Final Score.
+- لا يعاقب الطالب على Component غير موجود؛ الوزن يعاد توزيعه على العناصر الموجودة.
+- Subject Term Grades.
+- Subject Annual Grades.
+- بناء Report Cards من Gradebook.
+- ربط نشر بطاقات الفصل بالـ Financial Clearance المعتمد سابقًا.
+- بناء school_annual_results من درجات المواد السنوية.
+
+INSTALL:
+--------
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s19" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S19-BIG-UNIFIED-GRADEBOOK.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL:
+supabase\SCHOOL-S19-BIG.sql
+
+Expected:
+school_s19_health
+
+ثم:
+npm run dev
+
+ROUTE:
+/school/admin/gradebook
+
+WORKFLOW:
+---------
+1. أنشئ واجبات ودرجاتها من صفحة الواجبات.
+2. أنشئ امتحانات Paper/Online/Hybrid وسجل النتائج.
+3. افتح Gradebook.
+4. اختر الفصل + المادة + Term.
+5. حدد:
+   Assignments Weight
+   Exams Weight
+   Pass Mark
+6. اضغط إعادة حساب المادة.
+7. راجع درجات الطلاب.
+8. اضغط بناء ونشر بطاقة الفصل.
+9. في نهاية العام اضغط بناء النتيجة السنوية.
+
+مهم:
+-----
+- نشر بطاقة الفصل يحترم Financial Clearance الحالي.
+- النتيجة السنوية لا تلغي Promotion Workflow الموجود في S10.
+- الامتحانات الإلكترونية وبنك الأسئلة الموجودان من S9 لم يتم نسخهما أو ترقيعهما؛ تم دمجهما كمصدر درجات داخل Gradebook.
+
+BUILD:
+------
+npm run build
+git add .
+git commit -m "School S19 unified gradebook homework exams"
+git push

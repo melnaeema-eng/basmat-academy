@@ -1,0 +1,125 @@
+SCHOOL S9 BIG — QUESTION BANK + ONLINE EXAMS
+============================================
+
+يشمل:
+- بنك أسئلة مدرسي.
+- أنواع:
+  MCQ
+  True / False
+  Short Answer
+  Essay
+- تصنيف حسب:
+  العام
+  المنهج
+  الصف
+  المادة
+  الصعوبة
+- إضافة الأسئلة إلى امتحان موجود.
+- Snapshot للسؤال داخل الامتحان حتى لا يتغير الامتحان إذا عُدّل بنك الأسئلة لاحقًا.
+- Paper / Online / Hybrid.
+- فتح وإغلاق الامتحان.
+- عدد المحاولات.
+- Randomize Questions / Options foundation.
+- المنع المالي الحالي مستمر.
+- Student Online Exam.
+- حفظ الإجابات أثناء الحل.
+- Auto grading:
+  MCQ
+  True/False
+  Short Answer
+- Manual grading:
+  Essay
+- Teacher/Admin feedback.
+- Finalize Attempt.
+- ترحيل الدرجة النهائية إلى school_exam_results.
+- النشر النهائي يستمر من صفحة Results الحالية.
+
+ROUTES:
+-------
+Admin:
+/school/admin/question-bank
+/school/admin/online-exams
+
+Student:
+/school/student/online-exams
+/school/student/exam/:attemptId
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s9" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S9-BIG-ONLINE-EXAMS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+supabase\SCHOOL-S9-BIG.sql
+
+Expected:
+school_s9_health JSON
+
+ثم:
+npm run dev
+
+TEST ADMIN:
+-----------
+1. /school/admin/question-bank
+أضف:
+- MCQ
+- True/False
+- Essay
+
+2. /school/admin/exams
+أنشئ امتحانًا عاديًا وحدد الفصل والمادة.
+
+3. /school/admin/online-exams
+اختر الامتحان.
+غيّر Delivery Mode إلى Online.
+حدد opens_at / closes_at.
+أضف الأسئلة من بنك الأسئلة.
+احفظ.
+
+4. من صفحة الامتحانات الحالية:
+شغّل "فحص وتجهيز الطلاب"
+حتى يستمر Financial Lock.
+
+TEST STUDENT:
+-------------
+/school/student/online-exams
+
+ابدأ الامتحان.
+أجب عن الأسئلة.
+اضغط تسليم.
+
+Expected:
+- MCQ/True-False/Short Answer تصحيح تلقائي.
+- Essay يصبح Needs Review.
+
+TEST MANUAL:
+------------
+/school/admin/online-exams
+صحح Essay.
+اضغط اعتماد النتيجة.
+
+ثم:
+/school/admin/results
+Expected:
+الدرجة النهائية موجودة في Gradebook.
+يمكن نشر النتيجة للطالب كالمعتاد.
+
+IMPORTANT:
+----------
+- S9 لا يلغي S4 Exams/Results.
+- S9 يضيف طبقة Online فوق نفس school_exams.
+- Financial Lock الحالي محفوظ.
+- Report Cards الحالية محفوظة.
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S9 online exams question bank"
+git push

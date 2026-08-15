@@ -1,0 +1,247 @@
+SCHOOL S10 BIG
+REPORT CARDS + ANNUAL RESULTS + PROMOTION + CERTIFICATES + TRANSCRIPT
+=====================================================================
+
+BASELINE:
+---------
+S9 + Admission No FeePlan Hotfix
+
+يشمل:
+------
+1) بطاقات النتائج الفصلية
+   - بناء بطاقات الفصل الدراسي 1/2/3 لفصل كامل.
+   - المعدل.
+   - الحضور والغياب.
+   - Pass / Fail.
+   - نشر للطالب.
+   - منع نشر البطاقة إذا توجد رسوم غير مسددة، إلا عند وجود Financial Clearance.
+
+2) النتيجة السنوية
+   - تجميع درجات جميع امتحانات العام.
+   - حساب Total / Max / Average.
+   - فحص المواد الراسبة حسب pass_mark في school_grade_subjects.
+   - PASS فقط إذا:
+     Average >= 50%
+     AND failed_subjects = 0
+   - ترتيب الطالب داخل الفصل.
+   - نشر النتيجة.
+   - منع نشر النتيجة السنوية إذا توجد رسوم غير مسددة.
+
+3) الترفيع السنوي
+   - Promote.
+   - Repeat Year.
+   - Graduate.
+   - Transfer.
+   - لا يسمح بترفيع طالب نتيجته السنوية ليست PASS.
+   - لا يسمح بالترفيع إلى نفس العام الدراسي.
+   - لا يسمح بالتخرج إلا من آخر صف.
+   - إنشاء Enrollment جديد للعام التالي.
+   - حفظ Promotion History كامل.
+
+4) Bulk Promotion
+   - بناء نتائج الفصل كله.
+   - ترفيع الطلاب الناجحين فقط.
+   - الطلاب الراسبون/المسودة لا يتم ترفيعهم.
+   - اختيار العام والفصل التالي.
+
+5) معلم الصف — المنهج العربي
+   - عند Bulk Promotion:
+     P1 -> P2: معلم الصف يتحرك مع نفس الدفعة.
+     P2 -> P3: معلم الصف يتحرك مع نفس الدفعة.
+     بعد P3: دورة معلم الصف تصبح Completed.
+   - هذا يحافظ على قاعدة "معلم الصف" التي تم اعتمادها.
+
+6) الشهادات
+   - Completion Certificate.
+   - Promotion Certificate.
+   - Graduation Certificate.
+   - رقم شهادة تلقائي:
+     NAJ-CERT-YYYY-XXXXXX
+   - Verification Code تلقائي.
+   - QR حقيقي في بوابة الطالب.
+   - صفحة تحقق عامة.
+   - إلغاء الشهادة Revocation بدون حذف السجل.
+   - لا تصدر شهادة نجاح/تخرج إذا النتيجة ليست PASS.
+   - لا تصدر شهادة إذا توجد رسوم غير مسددة إلا عند وجود Financial Clearance.
+
+7) كشف الدرجات Transcript
+   - تاريخ الطالب لكل السنوات.
+   - العام الدراسي.
+   - الصف.
+   - المنهج.
+   - المواد.
+   - الدرجة / الدرجة القصوى / النسبة.
+   - المعدل السنوي.
+   - حالة النجاح والترفيع.
+   - طباعة.
+   - Student self access.
+   - Parent access foundation عبر can_receive_results.
+   - School Admin access.
+
+8) Student Portal
+   /school/student/academic-records
+
+   يحتوي:
+   - النتائج السنوية.
+   - بطاقات الفصول.
+   - كشف الدرجات.
+   - الشهادات.
+   - QR للتحقق.
+   - الطباعة.
+
+9) Public Certificate Verification
+   /school/verify-certificate/VERIFICATION_CODE
+
+10) Admin
+   /school/admin/academic-records
+
+   يحتوي:
+   - Build Annual Results.
+   - Build Term Report Cards.
+   - Publish.
+   - Bulk Promotion.
+   - Individual Promote.
+   - Repeat.
+   - Graduate.
+   - Issue Certificate.
+   - Transcript.
+   - Certificate Revocation.
+
+INSTALL:
+--------
+1) أوقف السيرفر:
+Ctrl+C
+
+2) PowerShell:
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s10" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S10-BIG-ACADEMIC-RECORDS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3) Supabase > SQL Editor:
+شغّل:
+supabase\SCHOOL-S10-BIG.sql
+
+Expected:
+school_s10_health JSON
+بدون Error.
+
+4) شغّل:
+npm run dev
+
+TEST 1 — TERM REPORT CARDS:
+---------------------------
+/school/admin/academic-records
+اختر:
+بطاقات الفصول
+اختر الفصل
+اختر Term 1
+اضغط بناء البطاقات.
+
+إذا الطالب عليه رسوم غير مدفوعة:
+زر النشر يجب أن يرفض النشر.
+إذا مسدد أو عنده Financial Clearance:
+النشر ينجح.
+
+TEST 2 — ANNUAL RESULTS:
+------------------------
+من نفس الصفحة:
+النتائج السنوية
+اختر الفصل
+اضغط "بناء النتائج".
+
+Expected:
+Average
+Failed Subjects
+Pass/Fail
+Rank
+
+TEST 3 — PROMOTION:
+-------------------
+مهم:
+قبل Bulk Promotion يجب أن يكون:
+- العام الدراسي التالي موجودًا.
+- الفصل للصف التالي موجودًا في العام التالي.
+
+مثال:
+Grade 4 / A / 2026-2027
+->
+Grade 5 / A / 2027-2028
+
+اضغط:
+ترفيع الناجحين
+
+Expected:
+- PASS students -> Enrollment جديد.
+- Failed/Draft -> لا يترفع.
+- Enrollment القديم -> Completed.
+
+TEST 4 — ARABIC CLASS TEACHER:
+------------------------------
+للمنهج العربي:
+P1 -> P2
+P2 -> P3
+
+بعد Bulk Promotion:
+راجع:
+/school/admin/class-teachers
+
+Expected:
+معلم الصف تحرك مع نفس Cohort.
+
+TEST 5 — GRADUATION:
+--------------------
+آخر Grade فقط:
+استخدم "تخرج".
+
+Expected:
+Student status = graduated
+Promotion history = graduate.
+
+TEST 6 — CERTIFICATE:
+---------------------
+من طالب PASS:
+اضغط شهادة.
+
+Expected:
+Certificate No + Verification Code.
+
+إذا عليه Outstanding Fees:
+Expected:
+يرفض إصدار الشهادة.
+
+TEST 7 — STUDENT:
+-----------------
+/school/student/academic-records
+
+Expected:
+- Term report cards المنشورة.
+- Annual results المنشورة.
+- Transcript.
+- Certificates.
+- QR.
+
+امسح QR أو افتح:
+/school/verify-certificate/CODE
+
+Expected:
+Valid Certificate + student/grade/year details.
+
+TEST 8 — BUILD:
+---------------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S10 academic records promotion certificates transcript"
+git push
+
+IMPORTANT:
+----------
+- لا يحذف السجل الأكاديمي القديم.
+- Promotion History دائم.
+- Certificate Revocation بدل Delete.
+- النتائج والشهادات مرتبطة بالمالية.
+- خصم الأشقاء S8 يبقى كما هو.
+- S9 Online Exams يبقى كما هو.

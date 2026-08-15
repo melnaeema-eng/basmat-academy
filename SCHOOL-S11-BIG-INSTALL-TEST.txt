@@ -1,0 +1,71 @@
+SCHOOL S11 BIG — COMMUNICATIONS + NOTIFICATIONS
+================================================
+
+يشمل:
+- إعلانات المدرسة.
+- إعلان عام / طلاب / أولياء أمور / معلمين / موظفين / فصل محدد.
+- Priority: Low / Normal / High / Urgent.
+- Unified Notification Inbox.
+- Read / Unread.
+- Mark All Read.
+- Communication Log.
+- Message Templates.
+- Notification Preferences foundation.
+- تنبيه رسوم مستحقة خلال 7 أيام.
+- تنبيه غياب وتأخير تلقائي لولي الأمر.
+- تنبيه واجب جديد للطلاب.
+- تنبيه امتحان منشور.
+- تنبيه نتيجة سنوية منشورة للطالب وولي الأمر.
+- تنبيه شهادة جديدة.
+- Email/SMS/WhatsApp integration-ready via communication log/templates.
+- In-app delivery يعمل الآن.
+
+ROUTES:
+Admin:
+/school/admin/communications
+
+Student:
+/school/student/notifications
+
+Parent:
+/school/parent/notifications
+
+Teacher:
+/school/teacher/notifications
+
+INSTALL:
+Ctrl+C
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s11" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S11-BIG-COMMUNICATIONS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+supabase\SCHOOL-S11-BIG.sql
+
+Expected:
+school_s11_health JSON
+
+ثم:
+npm run dev
+
+TEST:
+1) /school/admin/communications
+أنشئ إعلانًا للطلاب وانشره.
+2) ادخل كطالب:
+/school/student/notifications
+Expected: الإعلان يظهر Unread.
+افتحه ثم يرجع Read.
+3) سجل غياب طالب.
+Expected: ولي الأمر يستلم Attendance Alert.
+4) سجل Assignment منشور.
+Expected: الطالب يستلم Homework Alert.
+5) انشر نتيجة سنوية.
+Expected: الطالب وولي الأمر يستلمان Result Alert.
+6) اضغط "إرسال تنبيهات الأقساط القادمة".
+Expected: أولياء الأمور ذوو الأقساط القادمة يستلمون Fee Due Alert.
+
+BUILD:
+npm run build
+git add .
+git commit -m "School S11 communications notifications"
+git push

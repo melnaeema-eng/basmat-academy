@@ -1,0 +1,156 @@
+SCHOOL S15 BIG — CORE SECURITY + PERMISSIONS CLEANUP
+====================================================
+
+الهدف:
+------
+تحويل ما تم بناؤه حتى S14 إلى قاعدة أمن وصلاحيات موحدة قبل إضافة وظائف جديدة.
+هذا Sprint تجميعي/تأسيسي وليس Hotfix.
+
+ما الذي يتم توحيده؟
+-------------------
+1) أدوار المدرسة:
+   - school_admin
+   - teacher
+   - parent
+   - student
+   - employee
+
+2) Multi-role:
+   نفس الحساب يستطيع أن يكون Parent + Teacher أو أي أدوار مختلفة.
+   هذا ليس Conflict.
+
+3) Teacher Authorization:
+   الدالة الأساسية الوحيدة:
+   school_teacher_can_manage_class(class_section_id, subject_id)
+
+   والاسم:
+   school_teacher_can_manage(...)
+   يبقى اسمًا رسميًا متوافقًا مع الأكواد القديمة، لكنه يستدعي نفس الدالة الأساسية.
+   لا توجد قاعدتا صلاحيات مختلفتان.
+
+4) Student Access:
+   school_can_access_student(student_id)
+   school_can_access_enrollment(enrollment_id)
+
+   الوصول مسموح فقط لـ:
+   - School Admin
+   - الطالب نفسه
+   - ولي أمر مرتبط
+   - معلم لديه Assignment للفصل
+
+5) Auto Auth Linking:
+   Student / Parent / Teacher / Employee
+   Email -> auth.users -> auth_user_id
+   تلقائيًا عند INSERT أو تغيير Email.
+
+6) Role-aware conflict detection:
+   Parent + Teacher لن يعتبر Conflict.
+   Conflict فقط إذا نفس Auth مربوط بأكثر من سجل من نفس النوع.
+
+7) Central Security Health:
+   school_security_health()
+   يفحص:
+   - Missing core functions
+   - Same-role conflicts
+   - Teachers unlinked
+   - Parents unlinked
+   - Students without login
+   - Employees unlinked
+   - Teachers without assignments
+   - Active enrollments without class
+   - School tables with RLS disabled
+
+8) Admin Security Page:
+   /school/admin/security
+
+   تعرض نتيجة الفحص المركزي.
+   الطلاب بدون Login يظهرون كمعلومة، وليس بالضرورة خطأ.
+
+INSTALL:
+--------
+أوقف السيرفر:
+Ctrl+C
+
+ثم:
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s15" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S15-BIG-SECURITY-PERMISSIONS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+شغّل الملف كاملًا:
+
+supabase\SCHOOL-S15-BIG.sql
+
+EXPECTED:
+---------
+school_s15_health
+
+يجب ألا يظهر:
+function ... does not exist
+
+القيم المهمة المتوقعة من الحالة الحالية:
+- same_role_auth_conflicts = 0
+- active_teachers_unlinked = 0
+- missing_core_functions = 0
+
+teachers_without_assignments قد يكون 1 حتى يتم إسناد فصل/مادة للمعلم.
+active_students_without_login قد يكون 2 لأن زينب ويوسف ليس لديهما Email/Login حاليًا.
+وهذا ليس خطأ إذا لم يحتاجا بوابة طالب مستقلة.
+
+بعد SQL:
+--------
+npm run dev
+
+اختبار الإدارة:
+---------------
+/school/admin/security
+
+Expected:
+صفحة Security Health تفتح بدون Error.
+
+اختبار المعلم:
+--------------
+/school/teacher
+/school/teacher/classes
+/school/teacher/attendance
+/school/teacher/homework
+/school/teacher/timetable
+/school/teacher/exams
+/school/teacher/library
+/school/teacher/notifications
+/school/teacher/profile
+
+اختبار Multi-role:
+------------------
+حساب melnaeema@gmail.com يمكن أن يبقى Parent + Teacher.
+لا يجب اعتباره Conflict.
+
+اختبار الدوال:
+--------------
+select public.school_my_roles();
+
+select public.school_security_health();
+
+select * from public.school_auth_link_conflicts();
+
+select * from public.school_unlinked_accounts();
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S15 core security permissions cleanup"
+git push
+
+SUCCESS CRITERIA:
+-----------------
+- لا توجد Missing Core Functions.
+- Teacher Portal لا يعطي function does not exist.
+- Multi-role يعمل بدون Conflict كاذب.
+- نفس Permission Helper يستخدم عبر النظام.
+- Security Health يعطي صورة واضحة قبل أي Sprint جديد.

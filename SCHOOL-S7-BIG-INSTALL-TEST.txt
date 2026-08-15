@@ -1,0 +1,106 @@
+SCHOOL S7 BIG — DIGITAL LIBRARY + BOOKS
+=======================================
+
+يشمل:
+- Storage bucket: school-books
+- رفع PDF / DOCX / PPTX
+- حد افتراضي 100 MB
+- غلاف للكتاب
+- كتاب الطالب
+- كتاب النشاط
+- دليل المعلم
+- مراجع
+- أوراق عمل
+- تصنيف حسب:
+  العام الدراسي
+  المنهج
+  الصف/المستوى
+  المادة
+- Audience:
+  Student
+  Teacher
+  Both
+- نشر/إخفاء
+- السماح/منع التنزيل
+- تعديل الكتاب
+- البحث
+- Favorites
+- Download Log
+- مكتبة Admin
+- مكتبة Student
+- مكتبة Teacher
+
+ROUTES:
+-------
+/school/admin/library
+/school/student/library
+/school/teacher/library
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s7" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S7-BIG-DIGITAL-LIBRARY.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+supabase\SCHOOL-S7-BIG.sql
+
+Expected:
+school_s7_health JSON
+
+ثم:
+npm run dev
+
+TEST ADMIN:
+-----------
+/school/admin/library
+
+1. ارفع PDF صغير.
+2. اختر:
+   المنهج
+   الصف
+   المادة
+   نوع الكتاب
+3. أضف غلافًا اختياريًا.
+4. احفظ.
+5. عدّل الكتاب وجرب إخفاءه ثم إظهاره.
+
+TEST STUDENT:
+-------------
+/school/student/library
+
+Expected:
+- الكتب المنشورة تظهر.
+- البحث يعمل.
+- فتح/تنزيل يعمل.
+- Favorite يعمل.
+
+TEST TEACHER:
+-------------
+/school/teacher/library
+
+Expected:
+- نفس المكتبة الرقمية.
+- يمكن فتح الكتب المنشورة.
+
+STORAGE:
+--------
+Bucket:
+school-books
+
+يسمح:
+- Admin upload/update/delete
+- Public file read
+- Authenticated book metadata read
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S7 digital library books files"
+git push

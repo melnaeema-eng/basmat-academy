@@ -1,0 +1,133 @@
+SCHOOL S12 BIG — COMPLETE PARENT PORTAL
+=======================================
+
+يشمل:
+- جميع الأبناء من حساب ولي أمر واحد.
+- اختيار ابن/ابنة والتبديل بينهم بدون تسجيل خروج.
+- الصف + المنهج + الفصل.
+- المستحقات.
+- الأقساط.
+- المدفوعات.
+- إيصالات قابلة للطباعة.
+- خصم الأشقاء 10% ظاهر في المالية.
+- الحضور:
+  Present / Absent / Late / Excused.
+- سجل حضور بالتاريخ والمادة والحصة.
+- الواجبات.
+- حالة التسليم.
+- الدرجة وملاحظة المعلم.
+- الجدول الأسبوعي.
+- مواعيد الامتحانات.
+- Online / Paper / Hybrid.
+- نتائج الامتحانات المنشورة.
+- بطاقات الفصول الدراسية.
+- النتيجة السنوية.
+- الترتيب.
+- الترفيع / الإعادة / التخرج.
+- كشف الدرجات الكامل Transcript.
+- الشهادات.
+- رابط التحقق من الشهادة.
+- الكتب الرقمية حسب صف ومنهج الطالب.
+- الإشعارات.
+- تحديث بيانات اتصال ولي الأمر.
+- البريد الإلكتروني يبقى إلزاميًا.
+- حماية كاملة: ولي الأمر لا يستطيع فتح بيانات طالب غير مربوط به.
+
+ROUTES:
+-------
+/school/parent
+/school/parent/fees
+/school/parent/attendance
+/school/parent/assignments
+/school/parent/timetable
+/school/parent/exams
+/school/parent/results
+/school/parent/books
+/school/parent/notifications
+/school/parent/profile
+
+INSTALL:
+--------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s12" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S12-BIG-PARENT-PORTAL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+supabase\SCHOOL-S12-BIG.sql
+
+Expected:
+school_s12_health JSON
+
+ثم:
+npm run dev
+
+TEST:
+-----
+1) ادخل بحساب ولي أمر مربوط بأكثر من طالب.
+2) افتح:
+/school/parent
+
+Expected:
+كل الأبناء يظهرون في الأعلى.
+
+3) بدّل بين الأبناء.
+Expected:
+المالية والحضور والواجبات والنتائج تتغير للابن المحدد فقط.
+
+4) /school/parent/fees
+Expected:
+- الأقساط.
+- المدفوعات.
+- الخصم 10% للطالب الإضافي إن كان مطبقًا.
+- Print receipt.
+
+5) /school/parent/attendance
+Expected:
+الحضور بالتاريخ.
+
+6) /school/parent/assignments
+Expected:
+الواجبات + Submitted/Not Submitted + Score.
+
+7) /school/parent/timetable
+Expected:
+الجدول الأسبوعي.
+
+8) /school/parent/exams
+Expected:
+الامتحانات المنشورة.
+
+9) /school/parent/results
+Expected:
+Exam Results + Report Cards + Annual Result + Transcript + Certificates.
+
+10) /school/parent/books
+Expected:
+كتب الصف والمنهج.
+
+11) /school/parent/profile
+غيّر الجوال/واتساب/العنوان.
+البريد لا يمكن تركه فارغًا.
+
+12) /school/parent/notifications
+Expected:
+الإعلانات وتنبيهات الرسوم والغياب والنتائج.
+
+SECURITY TEST:
+--------------
+لا يمكن لولي الأمر استدعاء بيانات Student ID غير مرتبط به.
+Expected:
+Student is not linked to this parent
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S12 complete parent portal"
+git push

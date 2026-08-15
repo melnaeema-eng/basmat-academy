@@ -1,0 +1,120 @@
+SCHOOL FINAL QA — END TO END
+============================
+
+لا توجد Features جديدة هنا.
+
+1) ADMIN
+--------
+/school/admin
+/school/admin/control-center
+/school/admin/security
+/school/admin/operations-setup
+/school/admin/smart-timetable
+/school/admin/student-affairs
+/school/admin/gradebook
+/school/admin/finance
+/school/admin/hr-center
+
+Expected:
+لا 404
+لا function does not exist
+لا شاشة بيضاء
+
+2) TEACHER
+----------
+/school/teacher
+/school/teacher/classes
+/school/teacher/attendance
+/school/teacher/homework
+/school/teacher/timetable
+/school/teacher/exams
+/school/teacher/library
+/school/teacher/notifications
+/school/teacher/profile
+
+Expected:
+المعلم يرى فقط فصوله ومواده.
+
+3) STUDENT
+----------
+/school/student
+/student assignments/attendance/timetable/exams/results/library/notifications/profile
+
+Expected:
+الطالب يرى بياناته فقط.
+
+4) PARENT
+---------
+/school/parent
+
+Expected:
+ولي الأمر يرى أبناءه فقط.
+إذا نفس Auth هو Parent + Teacher، اختيار الدور يعمل ولا يعتبر Conflict.
+
+5) FINANCE
+----------
+/school/admin/finance
+
+اختبر:
+- خطة رسوم.
+- اختيار طالب.
+- Balance.
+- خصم أخوة 10%.
+- Installments.
+- Receipt.
+- Income.
+- Expense.
+- Payroll فقط ببيانات حقيقية.
+
+6) ACADEMIC
+-----------
+اختبر:
+- Student -> Class.
+- Teacher -> Class + Subject.
+- Timetable.
+- Attendance.
+- Homework.
+- Exam.
+- Gradebook.
+
+7) SECURITY
+-----------
+Supabase:
+supabase\SCHOOL-FINAL-QA.sql
+
+Expected:
+status = PASS
+
+المسموح كبيانات تشغيلية:
+active_enrollments_without_class قد تكون >0 أثناء الإعداد.
+active_teachers_without_assignment قد تكون >0 أثناء الإعداد.
+
+غير المسموح:
+broken_parent_links > 0
+broken_enrollments > 0
+broken_teacher_assignments > 0
+same_role_auth_conflicts > 0
+school_tables_rls_disabled > 0
+current_academic_year_count != 1
+
+8) BUILD
+--------
+PowerShell:
+cd C:\projects\basmat-academy
+.\RUN-FINAL-QA.ps1
+
+Expected:
+BUILD completed successfully.
+
+9) GIT
+------
+بعد نجاح QA فقط:
+
+git add .
+git commit -m "School final QA production ready"
+git push
+
+10) PRODUCTION
+--------------
+بعد PASS + npm run build ناجح:
+ننتقل إلى Deployment فقط.

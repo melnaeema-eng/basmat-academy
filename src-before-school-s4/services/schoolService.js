@@ -1,0 +1,457 @@
+import {supabase} from "./supabase";
+
+export async function getSchoolCore(){
+  const [years,stages,grades,curricula,subjects,sections,health]=await Promise.all([
+    supabase.from("school_academic_years").select("*").order("starts_on",{ascending:false}),
+    supabase.from("school_stages").select("*").order("sort_order"),
+    supabase.from("school_grade_levels").select("*,school_stages(id,code,name_ar,name_en)").order("sort_order"),
+    supabase.from("school_curricula").select("*").order("code"),
+    supabase.from("school_subjects").select("*").order("name_en"),
+    supabase.from("school_class_sections").select("*,school_grade_levels(id,code,name_ar,name_en),school_curricula(id,code,name_ar,name_en)").order("section_name"),
+    supabase.rpc("school_core_health")
+  ]);
+  for(const r of [years,stages,grades,curricula,subjects,sections,health]) if(r.error) throw r.error;
+  return {
+    years:years.data||[],
+    stages:stages.data||[],
+    grades:grades.data||[],
+    curricula:curricula.data||[],
+    subjects:subjects.data||[],
+    sections:sections.data||[],
+    health:health.data||{}
+  };
+}
+
+export async function saveAcademicYear(payload){
+  const {data,error}=await supabase.rpc("school_save_academic_year",{
+    p_id:payload.id||null,
+    p_name:payload.name,
+    p_starts_on:payload.starts_on,
+    p_ends_on:payload.ends_on,
+    p_is_current:!!payload.is_current,
+    p_status:payload.status||"draft"
+  });
+  if(error)throw error;return data;
+}
+
+export async function saveSchoolSubject(payload){
+  const row={
+    code:payload.code.trim().toUpperCase(),
+    name_ar:payload.name_ar.trim(),
+    name_en:payload.name_en.trim(),
+    description_ar:payload.description_ar?.trim()||null,
+    description_en:payload.description_en?.trim()||null,
+    is_active:payload.is_active!==false,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const{data,error}=await supabase.from("school_subjects").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const{data,error}=await supabase.from("school_subjects").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function saveClassSection(payload){
+  const row={
+    academic_year_id:payload.academic_year_id,
+    grade_level_id:payload.grade_level_id,
+    curriculum_id:payload.curriculum_id,
+    section_name:payload.section_name.trim(),
+    capacity:payload.capacity?Number(payload.capacity):null,
+    is_active:payload.is_active!==false,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const{data,error}=await supabase.from("school_class_sections").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const{data,error}=await supabase.from("school_class_sections").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+
+export async function getSchoolS2Health(){
+  const {data,error}=await supabase.rpc("school_s2_health");
+  if(error)throw error;return data||{};
+}
+
+export async function getSchoolStudents(){
+  const {data,error}=await supabase
+    .from("school_students")
+    .select("*,school_enrollments(id,status,academic_year_id,grade_level_id,curriculum_id,class_section_id,school_academic_years(name),school_grade_levels(name_ar,name_en,code),school_curricula(name_ar,name_en,code),school_class_sections(section_name))")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolStudent(payload){
+  const row={
+    auth_user_id:payload.auth_user_id||null,
+    student_no:payload.student_no?.trim()||null,
+    full_name_ar:payload.full_name_ar.trim(),
+    full_name_en:payload.full_name_en?.trim()||null,
+    gender:payload.gender||null,
+    date_of_birth:payload.date_of_birth||null,
+    nationality:payload.nationality?.trim()||"Sudanese",
+    phone:payload.phone?.trim()||null,
+    email:payload.email?.trim()||null,
+    status:payload.status||"active",
+    admission_date:payload.admission_date||new Date().toISOString().slice(0,10),
+    notes:payload.notes?.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_students").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_students").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getSchoolParents(){
+  const {data,error}=await supabase
+    .from("school_parents")
+    .select("*,school_parent_students(id,relation,is_primary,student_id,school_students(id,student_no,full_name_ar,full_name_en))")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolParent(payload){
+  const row={
+    auth_user_id:payload.auth_user_id||null,
+    full_name:payload.full_name.trim(),
+    relation_default:payload.relation_default?.trim()||null,
+    national_id:payload.national_id?.trim()||null,
+    phone:payload.phone?.trim()||null,
+    whatsapp:payload.whatsapp?.trim()||null,
+    email:payload.email?.trim()||null,
+    occupation:payload.occupation?.trim()||null,
+    address:payload.address?.trim()||null,
+    is_active:payload.is_active!==false,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_parents").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_parents").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function linkParentStudent({parent_id,student_id,relation,is_primary}){
+  const {data,error}=await supabase.from("school_parent_students").upsert({
+    parent_id,student_id,relation:relation||"guardian",is_primary:!!is_primary
+  },{onConflict:"parent_id,student_id"}).select().single();
+  if(error)throw error;return data;
+}
+
+export async function saveSchoolEnrollment(payload){
+  const row={
+    student_id:payload.student_id,
+    academic_year_id:payload.academic_year_id,
+    grade_level_id:payload.grade_level_id,
+    curriculum_id:payload.curriculum_id,
+    class_section_id:payload.class_section_id||null,
+    status:payload.status||"active",
+    enrolled_on:payload.enrolled_on||new Date().toISOString().slice(0,10),
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_enrollments").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_enrollments").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getSchoolFeePlans(){
+  const {data,error}=await supabase
+    .from("school_fee_plans")
+    .select("*,school_academic_years(name),school_grade_levels(name_ar,name_en,code),school_curricula(name_ar,name_en,code)")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolFeePlan(payload){
+  const row={
+    academic_year_id:payload.academic_year_id,
+    grade_level_id:payload.grade_level_id,
+    curriculum_id:payload.curriculum_id,
+    annual_tuition:Number(payload.annual_tuition||0),
+    registration_fee:Number(payload.registration_fee||0),
+    other_fees:Number(payload.other_fees||0),
+    installments_count:Number(payload.installments_count||10),
+    currency:payload.currency||"SAR",
+    is_active:payload.is_active!==false,
+    updated_at:new Date().toISOString()
+  };
+  const {data,error}=await supabase.from("school_fee_plans").upsert(row,{
+    onConflict:"academic_year_id,grade_level_id,curriculum_id"
+  }).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getSchoolInstallments(enrollmentId=null){
+  let q=supabase.from("school_installments")
+    .select("*,school_enrollments(id,student_id,school_students(student_no,full_name_ar,full_name_en))")
+    .order("due_date",{ascending:true});
+  if(enrollmentId)q=q.eq("enrollment_id",enrollmentId);
+  const {data,error}=await q;
+  if(error)throw error;return data||[];
+}
+
+export async function generateSchoolInstallments(enrollmentId,firstDueDate){
+  const {data,error}=await supabase.rpc("school_generate_installments",{
+    p_enrollment_id:enrollmentId,p_first_due_date:firstDueDate
+  });
+  if(error)throw error;return data;
+}
+
+export async function refreshSchoolOverdue(){
+  const {data,error}=await supabase.rpc("school_refresh_overdue");
+  if(error)throw error;return data;
+}
+
+export async function recordSchoolPayment(payload){
+  const {data,error}=await supabase.rpc("school_record_payment",{
+    p_enrollment_id:payload.enrollment_id,
+    p_installment_id:payload.installment_id||null,
+    p_amount:Number(payload.amount),
+    p_method:payload.method||"cash",
+    p_reference_no:payload.reference_no||null,
+    p_notes:payload.notes||null
+  });
+  if(error)throw error;return data;
+}
+
+export async function getSchoolPayments(){
+  const {data,error}=await supabase.from("school_payments")
+    .select("*,school_enrollments(id,school_students(student_no,full_name_ar,full_name_en)),school_installments(title,due_date)")
+    .order("paid_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function checkFinancialEligibility(enrollmentId,examDate){
+  const {data,error}=await supabase.rpc("school_financial_exam_eligible",{
+    p_enrollment_id:enrollmentId,p_exam_date:examDate
+  });
+  if(error)throw error;return data;
+}
+
+
+// ============================================================
+// SCHOOL S3 — Teachers / Timetable / Attendance / Homework
+// ============================================================
+
+export async function getSchoolS3Health(){
+  const {data,error}=await supabase.rpc("school_s3_health");
+  if(error)throw error;return data||{};
+}
+
+export async function getSchoolTeachers(){
+  const {data,error}=await supabase
+    .from("school_teachers")
+    .select("*")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolTeacher(payload){
+  const row={
+    employee_no:payload.employee_no?.trim()||null,
+    auth_user_id:payload.auth_user_id||null,
+    full_name_ar:payload.full_name_ar.trim(),
+    full_name_en:payload.full_name_en?.trim()||null,
+    gender:payload.gender||null,
+    phone:payload.phone?.trim()||null,
+    email:payload.email?.trim()||null,
+    qualification:payload.qualification?.trim()||null,
+    specialization:payload.specialization?.trim()||null,
+    hire_date:payload.hire_date||new Date().toISOString().slice(0,10),
+    status:payload.status||"active",
+    notes:payload.notes?.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_teachers").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_teachers").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getTeacherAssignments(){
+  const {data,error}=await supabase.from("school_teacher_assignments")
+    .select("*,school_teachers(id,employee_no,full_name_ar,full_name_en),school_academic_years(name),school_grade_levels(name_ar,name_en,code),school_curricula(name_ar,name_en,code),school_subjects(name_ar,name_en,code),school_class_sections(section_name)")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveTeacherAssignment(payload){
+  const row={
+    teacher_id:payload.teacher_id,
+    academic_year_id:payload.academic_year_id,
+    grade_level_id:payload.grade_level_id,
+    curriculum_id:payload.curriculum_id,
+    subject_id:payload.subject_id,
+    class_section_id:payload.class_section_id||null,
+    is_primary_teacher:payload.is_primary_teacher!==false,
+    is_active:payload.is_active!==false
+  };
+  const {data,error}=await supabase.from("school_teacher_assignments").upsert(row,{
+    onConflict:"teacher_id,academic_year_id,grade_level_id,curriculum_id,subject_id,class_section_id"
+  }).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getSchoolTimetable(){
+  const {data,error}=await supabase.from("school_timetable")
+    .select("*,school_academic_years(name),school_class_sections(id,section_name,school_grade_levels(name_ar,name_en),school_curricula(name_ar,name_en)),school_subjects(name_ar,name_en),school_teachers(full_name_ar,full_name_en)")
+    .order("weekday").order("period_no");
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolTimetableEntry(payload){
+  const row={
+    academic_year_id:payload.academic_year_id,
+    class_section_id:payload.class_section_id,
+    subject_id:payload.subject_id,
+    teacher_id:payload.teacher_id,
+    weekday:Number(payload.weekday),
+    period_no:Number(payload.period_no),
+    starts_at:payload.starts_at,
+    ends_at:payload.ends_at,
+    room:payload.room?.trim()||null,
+    is_active:payload.is_active!==false,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_timetable").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_timetable").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getClassActiveEnrollments(classSectionId){
+  const {data,error}=await supabase.from("school_enrollments")
+    .select("id,student_id,school_students(id,student_no,full_name_ar,full_name_en)")
+    .eq("class_section_id",classSectionId)
+    .eq("status","active")
+    .order("created_at");
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolAttendance(payload){
+  const {data,error}=await supabase.rpc("school_save_attendance",{
+    p_class_section_id:payload.class_section_id,
+    p_subject_id:payload.subject_id||null,
+    p_attendance_date:payload.attendance_date,
+    p_period_no:payload.period_no?Number(payload.period_no):null,
+    p_notes:payload.notes||null,
+    p_records:payload.records||[]
+  });
+  if(error)throw error;return data;
+}
+
+export async function getAttendanceSessions(){
+  const {data,error}=await supabase.from("school_attendance_sessions")
+    .select("*,school_class_sections(section_name,school_grade_levels(name_ar,name_en)),school_subjects(name_ar,name_en),school_teachers(full_name_ar,full_name_en),school_attendance_records(id,status,enrollment_id)")
+    .order("attendance_date",{ascending:false})
+    .limit(100);
+  if(error)throw error;return data||[];
+}
+
+export async function getSchoolAssignments(){
+  const {data,error}=await supabase.from("school_assignments")
+    .select("*,school_class_sections(section_name,school_grade_levels(name_ar,name_en)),school_subjects(name_ar,name_en),school_teachers(full_name_ar,full_name_en),school_assignment_submissions(id,score,enrollment_id,submitted_at)")
+    .order("created_at",{ascending:false});
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolAssignment(payload){
+  const {data:{session}}=await supabase.auth.getSession();
+  const row={
+    academic_year_id:payload.academic_year_id,
+    class_section_id:payload.class_section_id,
+    subject_id:payload.subject_id,
+    teacher_id:payload.teacher_id,
+    title:payload.title.trim(),
+    description:payload.description?.trim()||null,
+    due_at:payload.due_at||null,
+    max_score:Number(payload.max_score||10),
+    is_published:payload.is_published!==false,
+    updated_at:new Date().toISOString()
+  };
+  if(payload.id){
+    const {data,error}=await supabase.from("school_assignments").update(row).eq("id",payload.id).select().single();
+    if(error)throw error;return data;
+  }
+  const {data,error}=await supabase.from("school_assignments").insert(row).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getTeacherPortalDashboard(){
+  const {data,error}=await supabase.rpc("school_teacher_dashboard");
+  if(error)throw error;return data||{};
+}
+
+export async function getStudentSchoolDashboard(){
+  const {data,error}=await supabase.rpc("school_student_dashboard");
+  if(error)throw error;return data||{};
+}
+
+export async function getParentSchoolDashboard(){
+  const {data,error}=await supabase.rpc("school_parent_dashboard");
+  if(error)throw error;return data||{};
+}
+
+export async function submitSchoolAssignment(payload){
+  const {data,error}=await supabase.from("school_assignment_submissions").upsert({
+    assignment_id:payload.assignment_id,
+    enrollment_id:payload.enrollment_id,
+    submission_text:payload.submission_text?.trim()||null,
+    attachment_url:payload.attachment_url?.trim()||null,
+    submitted_at:new Date().toISOString()
+  },{onConflict:"assignment_id,enrollment_id"}).select().single();
+  if(error)throw error;return data;
+}
+
+export async function gradeSchoolSubmission(payload){
+  const {data:{session}}=await supabase.auth.getSession();
+  const {data,error}=await supabase.from("school_assignment_submissions").update({
+    score:Number(payload.score),
+    teacher_feedback:payload.teacher_feedback?.trim()||null,
+    graded_at:new Date().toISOString(),
+    graded_by:session?.user?.id||null
+  }).eq("id",payload.id).select().single();
+  if(error)throw error;return data;
+}
+
+export async function getSchoolSubjects(){const {data,error}=await supabase.from("school_subjects").select("*").eq("is_active",true).order("name_en");if(error)throw error;return data||[];}
+
+
+export async function getSchoolGradeSubjects(){
+  const {data,error}=await supabase.from("school_grade_subjects")
+    .select("*,school_academic_years(name),school_grade_levels(name_ar,name_en,code),school_curricula(name_ar,name_en,code),school_subjects(name_ar,name_en,code)")
+    .order("sort_order");
+  if(error)throw error;return data||[];
+}
+
+export async function saveSchoolGradeSubject(payload){
+  const row={
+    academic_year_id:payload.academic_year_id,
+    grade_level_id:payload.grade_level_id,
+    curriculum_id:payload.curriculum_id,
+    subject_id:payload.subject_id,
+    weekly_periods:Number(payload.weekly_periods||1),
+    pass_mark:Number(payload.pass_mark||50),
+    max_mark:Number(payload.max_mark||100),
+    sort_order:Number(payload.sort_order||1),
+    is_active:payload.is_active!==false
+  };
+  const {data,error}=await supabase.from("school_grade_subjects").upsert(row,{
+    onConflict:"academic_year_id,grade_level_id,curriculum_id,subject_id"
+  }).select().single();
+  if(error)throw error;return data;
+}

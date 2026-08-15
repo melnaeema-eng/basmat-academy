@@ -1,0 +1,18 @@
+S14.1 AUTO AUTH LINKING — SQL FIX
+=================================
+
+سبب الخطأ:
+ORDER BY داخل UNION في school_unlinked_accounts لم يتعرف على entity_type.
+
+الحل:
+تم تحويل الاستعلام إلى CTE باسم unlinked ثم ORDER BY على أعمدة CTE بشكل صريح.
+
+نفذ فقط:
+Supabase > SQL Editor
+
+SCHOOL-S14.1-AUTO-AUTH-LINKING-FIX.sql
+
+Expected في النهاية:
+school_s14_1_health
+
+ثم أرسل النتيجة فقط.

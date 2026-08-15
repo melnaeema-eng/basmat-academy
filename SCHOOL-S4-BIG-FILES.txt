@@ -1,0 +1,10 @@
+SCHOOL-S4-BIG-INSTALL-TEST.txt
+supabase/SCHOOL-S4-BIG.sql
+src/layouts/SchoolAdminLayout.jsx
+src/services/schoolService.js
+src/router/AppRouter.jsx
+src/pages/school/portal/StudentResults.jsx
+src/pages/school/admin/Exams.jsx
+src/pages/school/admin/ClassTeachers.jsx
+src/pages/school/admin/Results.jsx
+src/pages/school/admin/Dashboard.jsx

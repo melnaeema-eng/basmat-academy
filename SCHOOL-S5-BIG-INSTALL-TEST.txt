@@ -1,0 +1,85 @@
+SCHOOL S5 BIG — FINANCE + HR + PAYROLL
+======================================
+
+يشمل:
+- الأقسام والموظفين.
+- ربط الموظف بالمعلم عند الحاجة.
+- الراتب الأساسي + بدل السكن + النقل + بدلات أخرى + خصم ثابت.
+- الصندوق والحساب البنكي.
+- ربط دفعات الطلاب تلقائيًا بسجل التحصيل.
+- الإيرادات الأخرى.
+- المصروفات.
+- Ledger موحد.
+- Payroll Run شهري.
+- صرف الرواتب وتسجيلها تلقائيًا كمصروف.
+- Reversal للقيود بدل تعديل السجل القديم.
+- Adjustment.
+- Dashboard مالي حسب فترة.
+- Collections / Income / Expenses / Salaries / Net.
+- School Admin RLS.
+
+ROUTES:
+-------
+/school/admin/employees
+/school/admin/payroll
+/school/admin/accounting
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s5" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S5-BIG-FINANCE-HR-PAYROLL.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+supabase\SCHOOL-S5-BIG.sql
+
+Expected:
+school_s5_health JSON
+
+ثم:
+npm run dev
+
+TEST:
+-----
+1) /school/admin/employees
+أضف موظفًا براتب وبدلات.
+
+2) /school/admin/payroll
+أنشئ مسير الشهر.
+تأكد أن Net Salary صحيح.
+صرف المسير من الصندوق أو البنك.
+
+3) /school/admin/accounting
+سجل إيرادًا آخر.
+سجل مصروفًا.
+راجع Ledger.
+جرب Reverse على قيد تجريبي.
+
+4) /school/admin/finance
+سجل دفعة طالب جديدة.
+ارجع /school/admin/accounting
+يجب أن تظهر كـ fee_collection تلقائيًا.
+
+5) راجع الملخص المالي:
+Collections
+Other Income
+Expenses
+Salaries
+Net
+
+BUILD:
+------
+npm run build
+
+بعد النجاح:
+git add .
+git commit -m "School S5 finance HR payroll"
+git push
+
+مهم:
+----
+لا نعدل الدفعات والرواتب المصروفة مباشرة.
+التصحيح يتم بواسطة Reversal/Adjustment للمحافظة على Audit Trail.

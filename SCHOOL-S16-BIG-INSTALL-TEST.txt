@@ -1,0 +1,153 @@
+SCHOOL S16 BIG — OPERATIONAL SETUP
+==================================
+
+الهدف:
+------
+تشغيل المدرسة ببيانات فعلية بعد تثبيت الأمن والصلاحيات في S15.
+
+يشمل:
+------
+1) توزيع الطلاب على الفصول.
+2) نقل طالب من فصل إلى فصل متوافق.
+3) توزيع جماعي لعدة طلاب.
+4) منع التوزيع إذا:
+   - العام مختلف.
+   - الصف مختلف.
+   - المنهج مختلف.
+   - الفصل ممتلئ.
+5) إسناد المعلم إلى:
+   - فصل.
+   - مادة.
+   - عام دراسي.
+   - صف.
+   - منهج.
+6) المادة لا تظهر للمعلم إلا إذا كانت مفعلة لذلك الصف/المنهج/العام.
+7) إلغاء تكليف المعلم = Deactivate، وليس حذفًا نهائيًا.
+8) Audit Log لعمليات توزيع الطلاب وتكليف المعلمين.
+9) شاشة إشغال الفصول.
+10) Health Check تشغيلي.
+
+المسار:
+-------
+/school/admin/operations-setup
+
+INSTALL:
+--------
+أوقف السيرفر:
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s16" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S16-BIG-OPERATIONAL-SETUP.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase > SQL Editor:
+شغّل:
+
+supabase\SCHOOL-S16-BIG.sql
+
+EXPECTED BEFORE DISTRIBUTION:
+-----------------------------
+school_s16_health
+
+في الحالة الحالية المتوقعة تقريبًا:
+- active_enrollments = 3
+- unassigned_enrollments = 3
+- active_teachers = 1
+- teachers_without_assignments = 1
+- active_teacher_assignments = 0
+- over_capacity_sections = 0
+
+ثم:
+npm run dev
+
+TEST A — DISTRIBUTE STUDENTS:
+-----------------------------
+افتح:
+/school/admin/operations-setup
+
+1. اختر "توزيع الطلاب".
+2. اختر الفصل المستهدف.
+3. ستظهر فقط التسجيلات التي تطابق:
+   نفس العام + نفس الصف + نفس المنهج.
+4. اختر طالبًا أو عدة طلاب.
+5. اضغط توزيع.
+
+Expected:
+- الطالب ينتقل للفصل.
+- العدد داخل الفصل يزيد.
+- لا يمكن تجاوز Capacity.
+- لا يمكن وضع طالب في صف/منهج/عام مختلف.
+
+بعد توزيع الثلاثة:
+شغّل:
+select public.school_s16_health();
+
+Expected:
+unassigned_enrollments = 0
+
+TEST B — TEACHER ASSIGNMENT:
+----------------------------
+من نفس الصفحة:
+"إسناد المعلمين"
+
+1. اختر المعلم.
+2. اختر الفصل.
+3. اختر المادة.
+4. اضغط حفظ التكليف.
+
+Expected:
+- التكليف يظهر في القائمة.
+- teacher assignment count يزيد.
+- Teacher Portal يبدأ بعرض الفصل/الطلاب للمادة المسندة.
+
+بعد إسناد مادة واحدة على الأقل:
+select public.school_s16_health();
+
+Expected:
+teachers_without_assignments = 0
+active_teacher_assignments >= 1
+
+TEST C — TEACHER PORTAL:
+------------------------
+ادخل بحساب المعلم وافتح:
+/school/teacher
+/school/teacher/classes
+/school/teacher/attendance
+/school/teacher/homework
+/school/teacher/timetable
+/school/teacher/exams
+
+Expected:
+- الفصل المسند يظهر.
+- الطلاب الموزعون يظهرون.
+- يمكن تسجيل الحضور للفصل.
+- صلاحيات المعلم تقتصر على فصوله/مواده.
+
+TEST D — SECURITY:
+------------------
+/school/admin/security
+
+Expected:
+- active_enrollments_without_class يصبح 0 بعد توزيع الطلاب.
+- teachers_without_assignments يصبح 0 بعد تكليف المعلم.
+- status يبقى OK.
+
+BUILD:
+------
+npm run build
+
+بعد نجاح الاختبار:
+git add .
+git commit -m "School S16 operational setup class teacher assignments"
+git push
+
+SUCCESS CRITERIA:
+-----------------
+- الطلاب النشطون موزعون على فصول فعلية.
+- لا يوجد Active Enrollment بدون Class.
+- المعلم لديه Assignment فعلي.
+- Teacher Portal يرى فقط الفصل/المادة المسموحين.
+- Capacity validation يعمل.
+- لا يوجد Hard Delete للتكليف.

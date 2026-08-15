@@ -1,0 +1,76 @@
+SCHOOL S8 FAMILY REVISION
+=========================
+Parent Reuse + Sibling Discount 10%
+
+السياسة المعتمدة:
+- عند إدخال ولي الأمر، ابحث بالبريد أو الجوال أو الهوية.
+- إذا كان موجودًا: استخدم نفس school_parents.id ولا تنشئ Parent مكررًا.
+- عند وجود أخ/أخت أقدم مسجل في نفس العام الدراسي:
+  الطالب الإضافي يحصل على خصم 10%.
+- الخصم يطبق على annual_tuition فقط.
+- Registration Fee و Other Fees لا تدخل في خصم الأشقاء.
+- أول طفل مسجل في الأسرة/العام = بدون خصم.
+- الأبناء اللاحقون = 10%.
+
+يضيف:
+- parent_id داخل طلب القبول.
+- كشف الأشقاء.
+- school_enrollment_discounts.
+- سجل واضح للخصم.
+- تحويل Accepted Admission إلى:
+  Parent (reuse/create)
+  Student
+  Parent-Student Link
+  Enrollment
+- school_generate_installments أصبح يحسب Net Tuition بعد الخصم.
+
+INSTALL:
+--------
+Ctrl+C
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s8-family" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S8-FAMILY-SIBLING-DISCOUNT.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+شغّل:
+supabase\SCHOOL-S8-FAMILY-DISCOUNT.sql
+
+Expected:
+school_s8_family_health JSON
+
+ثم:
+npm run dev
+
+TEST:
+-----
+/school/admin/admissions
+
+1. أدخل بيانات ولي أمر موجود.
+2. اضغط "بحث عن ولي أمر موجود".
+3. اختره.
+Expected:
+- رسالة استخدام ولي الأمر الموجود.
+- إذا عنده ابن نشط: يظهر خصم 10%.
+
+4. احفظ الطلب.
+5. Accept.
+6. اضغط "تحويل إلى طالب مسجل".
+Expected:
+- لا Parent مكرر.
+- Student جديد.
+- Parent link جديد.
+- Enrollment جديد.
+- sibling discount = 10 إذا هذا ابن إضافي.
+
+7. من /school/admin/finance
+أنشئ أقساط الطالب.
+Expected:
+annual tuition net = tuition - 10%.
+الرسوم الأخرى لا تتأثر.
+
+BUILD:
+------
+npm run build
+git add .
+git commit -m "School S8 family parent reuse sibling discount"
+git push

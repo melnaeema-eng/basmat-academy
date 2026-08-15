@@ -1,0 +1,44 @@
+SCHOOL S8 BIG — ADMISSIONS + ENROLLMENT
+========================================
+يشمل:
+- طلبات قبول KG والمراحل الدراسية.
+- المنهج العربي والإنجليزي.
+- اختيار الصف/المستوى والعام.
+- بيانات الطالب وولي الأمر.
+- المدرسة السابقة.
+- رقم طلب تلقائي.
+- New / Under Review / Accepted / Rejected / Enrolled / Withdrawn.
+- أساس مستندات القبول.
+- Storage bucket لمستندات القبول.
+- Student status history.
+- Active / Suspended / Withdrawn / Graduated / Archived.
+
+INSTALL:
+Ctrl+C
+cd C:\projects\basmat-academy
+Copy-Item ".\src" ".\src-before-school-s8" -Recurse -Force
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S8-BIG-ADMISSIONS-ENROLLMENT.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+Supabase SQL Editor:
+supabase\SCHOOL-S8-BIG.sql
+
+Expected: school_s8_health JSON
+
+npm run dev
+
+TEST:
+/school/admin/admissions
+1. أضف طلب قبول.
+2. اختر المنهج والصف.
+3. أدخل ولي الأمر والجوال.
+4. احفظ.
+5. حوّل إلى قيد المراجعة.
+6. اعتمد الطلب Accepted.
+
+BUILD:
+npm run build
+
+ثم:
+git add .
+git commit -m "School S8 admissions enrollment"
+git push

@@ -1,0 +1,86 @@
+SCHOOL S3.3 — EDIT STUDENTS & PARENTS + EMAIL POLICY
+=====================================================
+
+NO SQL.
+
+PARENT
+------
+- Parent Email is REQUIRED.
+- Edit button for every Parent.
+- Edit:
+  name, email, mobile, WhatsApp, national ID, occupation,
+  address, active status, Auth User ID.
+
+STUDENT
+-------
+- Edit button for every Student.
+- Student Email policy:
+
+  KG / الروضة:
+  Email optional.
+
+  Primary Grade 1–3:
+  Email optional.
+
+  From Primary Grade 4 and above:
+  Email REQUIRED.
+
+  This includes:
+  P4, P5, P6
+  M1, M2, M3
+  S1, S2, S3
+
+- During Academic Enrollment, if Grade 4+ is selected and
+  Student has no email, enrollment is blocked until Student
+  data is edited and email is added.
+
+- Auth User ID is used to link Student Portal login.
+- If Grade 4+ has email but Auth User ID is not linked yet,
+  Admin receives a clear warning and may link Auth shortly after.
+
+INSTALL
+-------
+Ctrl+C
+
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s33" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S3.3-EDIT-STUDENTS-PARENTS.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+npm run dev
+
+TEST PARENT
+-----------
+/school/admin/parents
+
+1. Edit existing Parent.
+2. Add email.
+3. Save.
+
+Expected:
+- Email is mandatory.
+- Parent data updates instead of creating a duplicate.
+
+TEST STUDENT
+------------
+/school/admin/students
+
+1. Edit existing student.
+2. Confirm Edit button works.
+3. For young student: email can remain empty.
+4. Try Academic Enrollment into Grade 4+ without email.
+Expected:
+Enrollment is blocked with clear message.
+5. Add email and retry.
+Expected:
+Enrollment succeeds.
+
+BUILD
+-----
+npm run build
+
+If successful:
+git add .
+git commit -m "School S3.3 edit students parents and email policy"
+git push

@@ -1,0 +1,155 @@
+SCHOOL SPRINT S1 — NAWABIGH ALJAZEERA SCHOOL CORE
+==================================================
+School Name:
+نوابغ الجزيرة
+Nawabigh Aljazeera School
+
+PURPOSE
+-------
+Adds a separate School Mode to the existing Academy project.
+Academy Mode is not replaced or modified.
+
+Planned production subdomain:
+https://school.basmat-alnawabig.com.sa
+
+SCHOOL STRUCTURE
+----------------
+Kindergarten:
+- KG1
+- KG2
+- KG3
+
+Primary:
+- Grade 1–6
+
+Intermediate:
+- Grade 1–3
+
+Secondary:
+- Grade 1–3
+
+Total:
+15 school levels
+
+CURRICULA
+---------
+- Arabic Curriculum
+- English Curriculum
+
+DATABASE
+--------
+All new database objects use the prefix:
+school_
+
+Created:
+school_academic_years
+school_stages
+school_grade_levels
+school_curricula
+school_subjects
+school_grade_subjects
+school_class_sections
+
+This keeps School Mode isolated from Academy tables.
+
+ADMIN ROUTES
+------------
+/school/admin
+/school/admin/years
+/school/admin/structure
+/school/admin/subjects
+/school/admin/classes
+
+CURRENT S1 FUNCTIONS
+--------------------
+- School dashboard
+- Academic years
+- 4 school stages
+- 15 seeded grade levels
+- Arabic/English curricula
+- Subject catalog
+- Class sections by:
+  academic year + grade + curriculum
+
+SECURITY
+--------
+- RLS enabled on all School S1 tables.
+- Authenticated users may read School Core reference data.
+- Only current Academy Admin role can write School S1 data during this first sprint.
+- Parent/Teacher/Student School roles are NOT added yet; they belong to later sprints.
+
+INSTALL
+-------
+1. Stop:
+Ctrl+C
+
+2. PowerShell:
+cd C:\projects\basmat-academy
+
+Copy-Item ".\src" ".\src-before-school-s1" -Recurse -Force
+
+Expand-Archive -Path "$env:USERPROFILE\Downloads\SCHOOL-S1-NAWABIGH-ALJAZEERA-CORE.zip" -DestinationPath "C:\projects\basmat-academy" -Force
+
+3. Supabase > SQL Editor:
+Run ONLY:
+supabase\SCHOOL-S1-CORE.sql
+
+Expected:
+Success. No rows returned
+
+4. Start:
+npm run dev
+
+TEST
+----
+Login as Admin.
+
+Open:
+/school/admin
+
+Expected dashboard:
+- stages = 4
+- grade levels = 15
+- curricula = 2
+
+Then:
+1. /school/admin/years
+   Add academic year, e.g. 2026/2027.
+2. /school/admin/structure
+   Verify KG + Primary + Intermediate + Secondary.
+3. /school/admin/subjects
+   Add sample subject:
+   MATH / الرياضيات / Mathematics
+4. /school/admin/classes
+   Create:
+   Academic Year + Grade + Arabic/English Curriculum + Section.
+
+REGRESSION
+----------
+Verify Academy still works:
+/
+ /courses
+ /student
+ /admin/dashboard
+
+NO ACADEMY TABLE IS DROPPED OR RENAMED.
+
+NEXT SPRINT
+-----------
+School S2 — Students & Parents
+- school_students
+- school_parents
+- parent/student relationship
+- multiple children under one parent
+- Student School Portal foundation
+- Parent Portal foundation
+- enrollment to academic year/grade/curriculum/class
+
+FINAL BUILD
+-----------
+npm run build
+
+If successful:
+git add .
+git commit -m "School S1 Nawabigh Aljazeera school core"
+git push
