@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>مختبر ٢ — VLANs وTrunk | بصمة النوابغ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18334e;font-family:'Cairo',Tahoma,Arial,sans-serif;font-size:18px;font-weight:500;line-height:2}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #dde4ed;border-radius:18px;padding:24px;margin-bottom:20px}h1{font-size:30px;font-weight:800;line-height:1.7}h2{color:#b94900;font-weight:800;line-height:1.7}h3{font-weight:700}a{color:#a84200}pre{font-family:Consolas,'Courier New',monospace;font-weight:400;direction:ltr;text-align:left;background:#10263d;color:#eef6ff;padding:18px;border-radius:10px;overflow:auto;line-height:1.65;font-size:14px}code{direction:ltr;unicode-bidi:embed}table{border-collapse:collapse;width:100%;font-size:16px}th,td{border:1px solid #d9e1ea;padding:10px;text-align:right}.scroll{overflow-x:auto}.tag{color:#b94900;font-weight:bold}button{background:#e96905;color:white;border:0;padding:12px 20px;border-radius:10px;font:inherit;cursor:pointer}.diagram{width:100%;height:auto;display:block}svg text{font-family:'Cairo',Tahoma,Arial,sans-serif;fill:#12345b}li{margin:8px 0}@media(max-width:600px){main{padding:12px}header,section{padding:16px}h1{font-size:23px}}@media print{body{background:white;font-size:12pt}main{max-width:none;padding:0}button,.back{display:none}section,header{border-radius:0;break-inside:auto}h2,h3{break-after:avoid}pre,tr,svg{break-inside:avoid}pre{white-space:pre-wrap;background:#f0f3f6;color:#111;font-size:11px}}
+</style></head><body><main><header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ | Basmat Alnawabigh Academy</p><h1>مختبر ٢: إنشاء VLANs وربط سويتشين باستخدام 802.1Q Trunk</h1><p>CCNA 200-301 • المهندس مجدي النعيم • ٩٠ دقيقة</p><p>ورقة المتدرب — Cisco Packet Tracer</p><button onclick="window.print()">طباعة المختبر / حفظ PDF</button></header>
+<section><h2>١. أهداف التعلم</h2><ul><li>إنشاء VLAN 10 للمبيعات وVLAN 20 للدعم على سويتشين.</li><li>إسناد منافذ المستخدمين إلى Access VLAN الصحيحة.</li><li>إعداد Trunk ثابت، وتحديد Allowed VLANs وNative VLAN بصورة متطابقة.</li><li>إثبات الاتصال داخل VLAN نفسها عبر السويتشين، وعزل الشبكتين دون جهاز توجيه.</li><li>تشخيص أخطاء عضوية المنافذ وقائمة VLANs وحالة الوصلة.</li></ul><p>المتطلبات: أساسيات Ethernet وIPv4 وCLI. موضوع المنهج: Network Access — VLANs و802.1Q Trunking. هذا مختبر طبقة ثانية مستقل عن مختبر VLSM السابق.</p></section>
+<section><h2>٢. السيناريو والأجهزة</h2><p>تعمل المبيعات والدعم في طابقين. مطلوب أن تتواصل أجهزة القسم نفسه عبر الطابقين، مع فصل القسمين منطقيًا. استخدم سويتشين 2960-24TT وأربعة أجهزة PC. لا تضف راوترًا ولا Multilayer Switch في هذا المختبر.</p>
+<svg class="diagram" viewBox="0 0 800 380" role="img" aria-labelledby="topology"><title id="topology">حاسبان على كل سويتش، وصلة trunk تربط SW1 وSW2</title><g stroke="#7296b5" stroke-width="3"><path d="M135 85L230 200M135 295L230 220M295 210H505M570 200L665 85M570 220L665 295"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="20" y="35" width="170" height="70" rx="10"/><rect x="20" y="270" width="170" height="70" rx="10"/><rect x="200" y="180" width="120" height="65" rx="10"/><rect x="480" y="180" width="120" height="65" rx="10"/><rect x="610" y="35" width="170" height="70" rx="10"/><rect x="610" y="270" width="170" height="70" rx="10"/></g><g text-anchor="middle" font-size="17"><text x="105" y="65">PC-A • VLAN 10</text><text x="105" y="90">192.168.10.11</text><text x="105" y="300">PC-B • VLAN 20</text><text x="105" y="325">192.168.20.11</text><text x="260" y="220">SW1</text><text x="540" y="220">SW2</text><text x="695" y="65">PC-C • VLAN 10</text><text x="695" y="90">192.168.10.12</text><text x="695" y="300">PC-D • VLAN 20</text><text x="695" y="325">192.168.20.12</text><text x="400" y="155">Gi0/1 ↔ Gi0/1</text><text x="400" y="180">802.1Q Trunk</text><text x="400" y="285">Native VLAN: 999</text><text x="400" y="315">Allowed: 10,20,999</text></g></svg>
+<div class="scroll"><table><tr><th>من</th><th>إلى</th><th>الكابل</th></tr><tr><td>PC-A FastEthernet0</td><td>SW1 Fa0/1</td><td>Straight-through</td></tr><tr><td>PC-B FastEthernet0</td><td>SW1 Fa0/2</td><td>Straight-through</td></tr><tr><td>PC-C FastEthernet0</td><td>SW2 Fa0/1</td><td>Straight-through</td></tr><tr><td>PC-D FastEthernet0</td><td>SW2 Fa0/2</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1</td><td>SW2 Gi0/1</td><td>Crossover</td></tr></table></div></section>
+<section><h2>٣. إعداد الحاسبات — ١٥ دقيقة</h2><p>بعد التوصيل، افتح Desktop → IP Configuration في كل حاسب. القناع للجميع 255.255.255.0. اترك Default Gateway فارغة؛ لا توجد خدمة توجيه بين الشبكتين.</p><table><tr><th>الجهاز</th><th>القسم / VLAN</th><th>IPv4</th></tr><tr><td>PC-A</td><td>SALES / 10</td><td>192.168.10.11</td></tr><tr><td>PC-C</td><td>SALES / 10</td><td>192.168.10.12</td></tr><tr><td>PC-B</td><td>SUPPORT / 20</td><td>192.168.20.11</td></tr><tr><td>PC-D</td><td>SUPPORT / 20</td><td>192.168.20.12</td></tr></table><p>دوّن توقعك قبل الإعداد: أي الأزواج يجب أن تتصل وأيها يجب أن يفشل؟</p></section>
+<section><h2>٤. إعداد السويتشين — ٢٥ دقيقة</h2><p>افتح CLI لكل سويتش. إذا ظهر معالج الإعداد الأولي، ارفضه باستخدام no. أوامر 2960 تستخدم 802.1Q دون الحاجة إلى switchport trunk encapsulation dot1q؛ قد يرفض هذا الأمر على هذا الطراز.</p><h3>SW1</h3><pre>enable
+configure terminal
+hostname SW1
+no ip domain-lookup
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+description SALES_PC
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+description SUPPORT_PC
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRUNK_TO_SW2
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>SW2</h3><pre>enable
+configure terminal
+hostname SW2
+no ip domain-lookup
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+description SALES_PC
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+description SUPPORT_PC
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRUNK_TO_SW1
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><p>اضغط Enter لقبول اسم ملف الحفظ الافتراضي. Native VLAN 999 مخصصة للوصلة ولا تُسند إلى حواسب المستخدمين. لا تفعّل PortFast على وصلة السويتشين.</p></section>
+<section><h2>٥. التحقق — ٢٠ دقيقة</h2><p>على السويتشين:</p><pre>show vlan brief
+show interfaces trunk
+show interfaces fastEthernet 0/1 switchport
+show interfaces fastEthernet 0/2 switchport
+show interfaces gigabitEthernet 0/1 switchport
+show interfaces status
+show mac address-table dynamic</pre><table><tr><th>الفحص</th><th>النتيجة المتوقعة</th></tr><tr><td>show vlan brief</td><td>VLAN 10 و20 و999 موجودة؛ Fa0/1 في 10 وFa0/2 في 20</td></tr><tr><td>show interfaces trunk</td><td>Gi0/1 trunking، Native 999، Allowed 10,20,999 على الطرفين</td></tr><tr><td>show interfaces … switchport</td><td>وضع access وVLAN صحيحة لمنافذ الحاسبات؛ وضع trunk لمنفذ الربط</td></tr><tr><td>MAC table بعد ping</td><td>تعلم عناوين الحاسبات ضمن VLAN المعنية؛ الحاسب البعيد عبر Gi0/1</td></tr></table><p>من PC-A:</p><pre>ping 192.168.10.12
+ping 192.168.20.11</pre><p>من PC-B:</p><pre>ping 192.168.20.12
+ping 192.168.10.12</pre><p>كرّر الاختبارات من PC-C إلى PC-A ومن PC-D إلى PC-B. انتظر اكتمال STP وARP ثم أعد الاختبار عند فقد أول حزمة.</p><table><tr><th>الاختبار</th><th>المتوقع</th></tr><tr><td>A ↔ C</td><td>نجاح: VLAN 10 عبر Trunk</td></tr><tr><td>B ↔ D</td><td>نجاح: VLAN 20 عبر Trunk</td></tr><tr><td>A → B وB → C</td><td>فشل متوقع: شبكتان مختلفتان بلا توجيه</td></tr></table><p>فشل الاتصال بين شبكتين مختلفتين وحده لا يثبت ضبط VLAN بصورة صحيحة؛ يجب أيضًا إثبات عضوية المنافذ وحالة Trunk ونجاح الاتصال داخل كل VLAN.</p></section>
+<section><h2>٦. تمارين الأعطال — ٢٠ دقيقة</h2><p>يطبق المدرب عطلًا واحدًا في كل مرة. قبل أي تغيير، دوّن العرض والدليل والسبب المرجح، ثم الإصلاح ونتيجة إعادة الاختبار.</p><table><tr><th>الحالة</th><th>العرض المتوقع</th><th>أداة البداية</th></tr><tr><td>عضوية Access VLAN خاطئة</td><td>حاسب واحد لا يصل إلى زميله</td><td>show vlan brief</td></tr><tr><td>VLAN مفقودة من Allowed list</td><td>قسم واحد يتوقف عبر الوصلة والآخر يعمل</td><td>show interfaces trunk</td></tr><tr><td>إغلاق منفذ Trunk</td><td>القسمان يفشلان عبر السويتشين</td><td>show interfaces status</td></tr><tr><td>Native VLAN مختلفة بين الطرفين</td><td>قد يظهر تحذير mismatch؛ نجاح بيانات 10 و20 لا ينفي الخطأ</td><td>مقارنة Native VLAN على الطرفين</td></tr></table><p>قد تؤدي اختلافات Native VLAN إلى سلوك STP مختلف حسب النظام والمحاكي؛ لا تفترض عرضًا واحدًا ثابتًا. معيار التشخيص هو مقارنة إعداد الطرفين.</p><table><tr><th>العطل</th><th>الدليل</th><th>الإصلاح</th><th>إعادة الاختبار</th></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr></table></section>
+<section><h2>٧. أسئلة وتسليم — ١٠ دقائق</h2><ol><li>لماذا نجح الاتصال داخل VLAN واحدة عبر سويتشين؟</li><li>ما الفرق بين Access VLAN وNative VLAN وAllowed VLAN list؟</li><li>هل يكفي تغيير Default Gateway لربط VLAN 10 و20؟ فسّر.</li><li>لماذا لا يظهر منفذ Trunk كمنفذ Access تحت VLAN 10 في show vlan brief؟</li><li>كيف تشخّص توقف VLAN 20 مع استمرار VLAN 10؟</li></ol><p>التسليم: ملف CCNA-L02-YourName.pkt، ونتائج أوامر التحقق، ومصفوفة ping، وتشخيص عطلين. التقييم: VLANs وAccess ٢٥، Trunk ٢٥، التحقق والعزل ٢٥، تشخيص الأعطال ٢٥.</p><p>هذه الأسئلة تدريبية في ورقة المختبر وليست اختبارًا إلكترونيًا مرتبطًا بنتيجة الدورة. لم يُنشأ ملف .pkt ولم تُشغّل محاكاة فعلية ضمن هذه الحزمة؛ يُنشئ المتدرب ملفه أثناء التنفيذ.</p><p>المرجع الفني: <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/15-2_2_e/configuration/guide/b_1522e_2960_2960c_2960s_2960sf_2960p_cg/m_1522e_vlan_trunk_2960s_cg.html">Cisco — Configuring VLAN Trunks / Catalyst 2960</a>.</p></section></main></body></html>
