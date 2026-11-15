@@ -11,6 +11,7 @@ import {
   createPayPalOrder,
   getMyPayments,
 } from "../services/paymentService";
+import {getLabByCourse,hasLabAccess} from "../services/labService";
 import { validateCoupon } from "../services/proAcademyFinalService";
 
 function loadPayPalSdk(clientId) {
@@ -45,6 +46,7 @@ export default function Checkout() {
   const paypalContainer = useRef(null);
   const paypalRendered = useRef(false);
 
+  const [labProduct,setLabProduct]=useState(null);
   const [course, setCourse] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -89,10 +91,11 @@ export default function Checkout() {
 
         if (courseError) throw courseError;
         setCourse(courseData);
+        const labRow=await getLabByCourse(courseId);setLabProduct(labRow);
 
         const existingEnrollment = await getEnrollment(courseId, currentUser.id);
-        if (existingEnrollment) {
-          navigate("/my-courses", { replace: true });
+        if (existingEnrollment && (!labRow || await hasLabAccess(labRow.id))) {
+          navigate(labRow?`/labs/${labRow.track}/${labRow.slug}`:"/my-courses", { replace: true });
           return;
         }
 
@@ -168,7 +171,7 @@ export default function Checkout() {
   }, [method, paypalClientId, course, user, navigate]);
 
   async function applyCoupon(){
-    if(!couponCode.trim()||!course)return;
+    if(labProduct||!couponCode.trim()||!course)return;
     try{
       setCouponMessage("");
       const result=await validateCoupon(couponCode,course.id);
@@ -268,7 +271,7 @@ export default function Checkout() {
                       <div><b>{ar ? "المبلغ المطلوب" : "Amount Due"}:</b> <span dir="ltr">{amount.toFixed(2)} SAR</span></div>
                     </div>
 
-                    <div className="mb-5 rounded-xl border border-dashed border-orange-200 bg-orange-50/50 p-4">
+                    {!labProduct&&<div className="mb-5 rounded-xl border border-dashed border-orange-200 bg-orange-50/50 p-4">
                       <div className="font-bold text-[#08284d]">{ar ? "كوبون خصم" : "Coupon Code"}</div>
                       <div className="mt-2 flex gap-2">
                         <input dir="ltr" value={couponCode} onChange={e=>{setCouponCode(e.target.value);setCoupon(null);setCouponMessage("");}} className="academy-input bg-white" placeholder="BASMAT10"/>
@@ -276,7 +279,7 @@ export default function Checkout() {
                       </div>
                       {couponMessage&&<p className={`mt-2 text-sm font-bold ${coupon?.valid?"text-emerald-700":"text-red-600"}`}>{couponMessage}</p>}
                       {coupon?.valid&&<div className="mt-2 text-sm text-slate-600"><span>{ar?"قبل الخصم":"Before"}: </span><span dir="ltr" className="line-through">{Number(coupon.original_amount).toFixed(2)} SAR</span><span className="mx-2">→</span><b dir="ltr">{Number(coupon.final_amount).toFixed(2)} SAR</b></div>}
-                    </div>
+                    </div>}
 
                     <form onSubmit={submitBankTransfer} className="space-y-4">
                       <label className="block">
@@ -334,7 +337,7 @@ export default function Checkout() {
 
           <aside className="h-fit rounded-2xl bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-bold">{ar ? "ملخص الطلب" : "Order Summary"}</h2>
-            {course?.image && <img src={course.image} alt={course.title} className="mb-4 aspect-video w-full rounded-xl object-cover" />}
+            {course?.image && <img src={course.image} alt={labProduct?(ar?labProduct.title_ar:labProduct.title_en):course.title} className="mb-4 aspect-video w-full rounded-xl object-cover" />}
             <div className="font-bold text-slate-900">{course?.title}</div>
             <div className="mt-4 flex justify-between border-t pt-4 text-lg font-bold">
               <span>{ar ? "الإجمالي" : "Total"}</span>
