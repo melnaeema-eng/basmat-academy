@@ -34,5 +34,19 @@ export function prepareLabDocument(source,language){
  const style='<style>html[lang="ar"] #lab-ar,html[lang="en"] #lab-en{display:block!important}html[lang="ar"] #lab-en,html[lang="en"] #lab-ar{display:none!important}</style>';
  const script=`<script>(()=>{const root=document.documentElement;function apply(lang){lang=lang==='en'?'en':'ar';root.lang=lang;root.dir=lang==='ar'?'rtl':'ltr';['ar','en'].forEach(code=>{const block=document.getElementById('lab-'+code);if(block)block.hidden=code!==lang});document.querySelectorAll('[data-lab-language]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.labLanguage===lang)))}document.querySelectorAll('[data-lab-language]').forEach(button=>button.addEventListener('click',()=>apply(button.dataset.labLanguage)));apply(root.lang)})();</script>`;
  html=html.replace('</head>',style+'</head>').replace('</body>',script+'</body>');
+ // Isolate technical phrases in Arabic prose without changing CLI blocks.
+ let skipped=[];
+ html=html.split(/(<[^>]+>)/g).map(token=>{
+  if(token.startsWith('<')){
+   const tag=token.match(/^<\s*(\/?)\s*([a-z0-9]+)/i);
+   if(tag&&/^(pre|code|style|script|svg|textarea)$/i.test(tag[2])){
+    if(tag[1])skipped.pop();else if(!/\/>$/.test(token))skipped.push(tag[2]);
+   }
+   return token;
+  }
+  if(skipped.length||!/[\u0621-\u064A]/.test(token))return token;
+  return token.replace(/([\u0621-\u064A])([A-Za-z0-9])/g,'$1 $2').replace(/([A-Za-z0-9])([\u0621-\u064A])/g,'$1 $2')
+   .replace(/(&[a-zA-Z0-9#]+;|[A-Za-z0-9][A-Za-z0-9_+./-]*(?:[ \t]+[A-Za-z0-9][A-Za-z0-9_+./-]*)*)/g,part=>part.startsWith('&')?part:'<bdi dir="ltr">'+part+'</bdi>');
+ }).join('');
  return html;
 }
