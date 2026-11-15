@@ -1,3 +1,4 @@
+import RefundPolicyNote from '../components/RefundPolicyNote';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -224,6 +225,7 @@ export default function Checkout() {
         <div className="grid gap-7 lg:grid-cols-[1fr_380px]">
           <section className="academy-card p-5 md:p-7">
             <h1 className="academy-title mb-2 text-3xl">{ar ? "إتمام التسجيل والدفع" : "Checkout & Enrollment"}</h1>
+          {amount>0&&<RefundPolicyNote/>}
             <p className="mb-6 text-slate-600">{ar ? "اختر وسيلة الدفع المناسبة. لن يتم فتح الدورة المدفوعة قبل تأكيد الدفع." : "Choose your payment method. Paid course access opens only after payment confirmation."}</p>
 
             <div className="mb-6 grid gap-3 sm:grid-cols-2">

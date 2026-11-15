@@ -18,10 +18,6 @@ export async function getLabPage(track,slug){
  const {data,error:ce}=await supabase.from('academy_lab_content').select('student_html').eq('lab_id',lab.id).maybeSingle();
  if(ce)throw ce;return {lab,html:data?.student_html||null};
 }
-export async function getLabPdf(labId){
- const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_base64').eq('lab_id',labId).maybeSingle();
- if(error)throw error;return data?.student_pdf_base64||null;
-}
 export function prepareLabDocument(source,language){
  if(!source)return '';
  const lang=language==='en'?'en':'ar';
@@ -33,7 +29,7 @@ export function prepareLabDocument(source,language){
  // Initial content must be visible even when a script cannot run in srcdoc.
  html=html.replace(new RegExp('(<div\\b[^>]*id="lab-'+lang+'"[^>]*)(\\s+hidden)([^>]*>)','i'),'$1$3');
  const style='<style>html[lang="ar"] #lab-ar,html[lang="en"] #lab-en{display:block!important}html[lang="ar"] #lab-en,html[lang="en"] #lab-ar{display:none!important}</style>';
- const script=`<script>(()=>{const root=document.documentElement;function apply(lang){lang=lang==='en'?'en':'ar';root.lang=lang;root.dir=lang==='ar'?'rtl':'ltr';['ar','en'].forEach(code=>{const block=document.getElementById('lab-'+code);if(block)block.hidden=code!==lang});document.querySelectorAll('[data-lab-language]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.labLanguage===lang)))}document.querySelectorAll('[data-lab-language]').forEach(button=>button.addEventListener('click',()=>apply(button.dataset.labLanguage)));apply(root.lang)})();</script>`;
+ const script=`<script>(()=>{const root=document.documentElement;function apply(lang){lang=lang==='en'?'en':'ar';root.lang=lang;root.dir=lang==='ar'?'rtl':'ltr';['ar','en'].forEach(code=>{const block=document.getElementById('lab-'+code);if(block)block.hidden=code!==lang});document.querySelectorAll('[data-lab-language]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.labLanguage===lang)))}document.querySelectorAll('[data-lab-language]').forEach(button=>button.addEventListener('click',()=>apply(button.dataset.labLanguage)));apply(root.lang);let viewport={active:false,top:0,bottom:0};function report(){let stage=null;if(viewport.active&&document.visibilityState==='visible'){const block=document.getElementById('lab-'+root.lang);let best=0;block?.querySelectorAll('section').forEach((section,index)=>{const r=section.getBoundingClientRect();const height=Math.max(0,Math.min(r.bottom,viewport.bottom)-Math.max(r.top,viewport.top));if(height>=Math.min(120,r.height/2)&&height>best){best=height;stage=index+1}})}window.parent.postMessage({type:'academy-lab-view',stage},'*')}window.addEventListener('message',event=>{if(event.source===window.parent&&event.data?.type==='academy-viewport'){viewport=event.data;report()}});window.addEventListener('scroll',report,{passive:true});setInterval(report,1000)})();</script>`;
  html=html.replace('</head>',style+'</head>').replace('</body>',script+'</body>');
  // Isolate technical phrases in Arabic prose without changing CLI blocks.
  let skipped=[];
@@ -52,20 +48,15 @@ export function prepareLabDocument(source,language){
  return html;
 }
 export async function getLabPdfPreview(labId){
- const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_pages').eq('lab_id',labId).maybeSingle();
- if(error)throw error;return data?.student_pdf_pages||[];
+ const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_pages,student_pdf_page_stages,student_pdf_page_languages').eq('lab_id',labId).maybeSingle();
+ if(error)throw error;return {pages:data?.student_pdf_pages||[],stages:data?.student_pdf_page_stages||[],languages:data?.student_pdf_page_languages||[]};
 }
 export async function getLabProgress(lab){
  const {data:{session},error:authError}=await supabase.auth.getSession();if(authError)throw authError;
- if(!session?.user)return {canRecord:false,loginRequired:true,completed_stages:[],progress:0};
- const [{data:enrollment,error:ee},{data:stages,error:se}]=await Promise.all([
-  supabase.from('enrollments').select('id,status').eq('course_id',lab.course_id).eq('user_id',session.user.id).maybeSingle(),
-  supabase.from('academy_lab_stage_progress').select('stage,completed').eq('lab_id',lab.id).eq('user_id',session.user.id)
- ]);
- if(ee||se)throw ee||se;const completed=(stages||[]).filter(x=>x.completed).map(x=>x.stage);
- return {canRecord:!!enrollment&&enrollment.status!=='cancelled',loginRequired:false,completed_stages:completed,progress:Math.round(completed.length*100/8)};
+ if(!session?.user)return {canRecord:false,loginRequired:true,completed_stages:[],stage_progress:[],progress:0};
+ const {data,error}=await supabase.rpc('open_academy_lab_tracking',{p_lab_id:lab.id});
+ if(error){if(error.message?.includes('enrollment_required'))return {canRecord:false,loginRequired:false,completed_stages:[],stage_progress:[],progress:0};throw error;}return data;
 }
-export async function saveLabStage(labId,stage,completed){
- const {data,error}=await supabase.rpc('set_academy_lab_stage',{p_lab_id:labId,p_stage:stage,p_completed:completed});
- if(error)throw error;return data;
+export async function trackLabView(labId,sessionId,stage){
+ const {data,error}=await supabase.rpc('track_academy_lab_view',{p_lab_id:labId,p_session_id:sessionId,p_stage:stage});if(error)throw error;return data;
 }

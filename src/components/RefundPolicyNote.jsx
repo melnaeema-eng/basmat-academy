@@ -1,0 +1,2 @@
+import {useTranslation} from 'react-i18next';
+export default function RefundPolicyNote(){const {i18n}=useTranslation(),ar=i18n.language?.startsWith('ar');return <p className="mt-3 rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm leading-7 text-orange-900">{ar?'يتوقف قبول طلبات الاسترداد عند بلوغ تقدم الدورة ٢٥٪، حتى لو انخفضت النسبة لاحقًا.':'Refund requests are unavailable once course progress reaches 25%, even if progress is later reduced.'}</p>}

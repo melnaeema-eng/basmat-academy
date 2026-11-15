@@ -1,3 +1,5 @@
+import {LabCover,mixedText} from '../components/CourseCard';
+import RefundPolicyNote from '../components/RefundPolicyNote';
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -34,7 +36,7 @@ export default function CourseDetails() {
       const user=await getCurrentUser();
       if(user){
         const [en,w,mr]=await Promise.all([getEnrollment(id,user.id),isCourseWishlisted(id),getMyReview(id)]);
-        setEnrollment(labRow ? ((await hasLabAccess(labRow.id)) ? (en||{labAccess:true}) : null) : en);setWishlisted(w);setMyReview(mr);
+        setEnrollment(labRow ? ((await hasLabAccess(labRow.id)) ? (en?.status!=='cancelled'&&en ? en : Number(labRow.price)>0?{labAccess:true}:null) : null) : en);setWishlisted(w);setMyReview(mr);
         if(mr){setRating(mr.rating);setReviewText(mr.review_text||"")}
       }
     }catch(e){setError(e.message||"Could not load course")}finally{setLoading(false)}
@@ -49,9 +51,12 @@ export default function CourseDetails() {
   async function enroll(){
     try{
       setBusy(true);
-      if(lab&&(Number(lab.price)===0||enrollment)){navigate(`/labs/${lab.track}/${lab.slug}`);return}
       const user=await getCurrentUser();
       if(!user){navigate("/login",{state:{from:`/courses/${id}`}});return}
+      if(lab&&(Number(lab.price)===0||enrollment)){
+        if(Number(lab.price)===0){const created=await enrollInCourse(id,user.id);setEnrollment(created)}
+        navigate(`/labs/${lab.track}/${lab.slug}`);return;
+      }
       if(enrollment){navigate("/my-courses");return}
       if(Number(course?.price||0)>0){navigate(`/checkout/${id}`);return}
       const created=await enrollInCourse(id,user.id);setEnrollment(created);navigate(`/learn/${id}`);
@@ -76,7 +81,7 @@ export default function CourseDetails() {
       <div className="academy-container grid gap-8 py-10 lg:grid-cols-[1fr_390px] lg:py-12">
         <div>
           <div className="mb-4 text-sm font-bold text-orange-300">{course.category||"Academy"}</div>
-          <h1 className="text-3xl font-extrabold leading-[1.35] md:text-5xl">{title}</h1>
+          <h1 className="text-3xl font-extrabold leading-[1.35] md:text-5xl">{ar?mixedText(title):title}</h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg">{description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4 text-sm">
             <span className="flex items-center gap-1 text-amber-300"><FaStar/> <b>{average?average.toFixed(1):"New"}</b> <span className="text-slate-300">({reviews.length})</span></span>
@@ -87,9 +92,10 @@ export default function CourseDetails() {
         </div>
         <aside className="lg:row-span-2">
           <div className="overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl">
-            <img src={course.image||"https://placehold.co/800x450?text=Course"} alt={title} className="aspect-video w-full object-cover"/>
+            {lab?<LabCover track={lab.track} number={lab.lab_number}/>:<img src={course.image||"https://placehold.co/800x450?text=Course"} alt={title} className="aspect-video w-full object-cover"/>}
             <div className="p-5">
               <div className="text-3xl font-extrabold text-[#08284d]">{Number(course.price)>0?<span dir="ltr">{course.price} SAR</span>:t("common.free")}</div>
+              {Number(course.price)>0&&<RefundPolicyNote/>}
               <button onClick={enroll} disabled={busy} className="academy-btn-primary mt-4 w-full">{enrollment?(lab?(ar?"افتح المختبر":"Open Lab"):(ar?"اذهب إلى دوراتي":"Go to My Courses")):Number(course.price)>0?(lab?(ar?"اشترِ المختبر":"Buy Lab"):(ar?"اشترِ الدورة":"Buy Course")):(ar?"ابدأ مجانًا":"Start Free")}</button>
               {Number(course.price)>0&&!enrollment&&<button onClick={cart} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 font-bold text-orange-700 hover:bg-orange-100">🛒 {ar?"أضف للسلة":"Add to Cart"}</button>}
               <button onClick={wishlist} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-bold hover:bg-slate-50">{wishlisted?<FaHeart className="text-red-500"/>:<FaRegHeart/>}{wishlisted?(ar?"في قائمة الرغبات":"Wishlisted"):(ar?"أضف لقائمة الرغبات":"Add to Wishlist")}</button>
