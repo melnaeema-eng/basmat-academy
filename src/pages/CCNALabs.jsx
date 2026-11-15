@@ -19,7 +19,7 @@ export default function CCNALabs(){
     <h2 className="mt-2 text-xl font-bold text-[#12345b]">{ar?lab.title_ar:lab.title_en}</h2>
     <p className="mt-3 text-slate-600">{ar?lab.summary_ar:lab.summary_en}</p>
     <p className="mt-3 text-sm">{lab.duration_minutes} {ar?"دقيقة":"minutes"}</p>
-    {/^\/ccna-labs\/[a-z0-9-]+\/student\.html$/.test(lab.student_url)&&<a href={lab.student_url} className="academy-btn-primary mt-5 inline-flex">{ar?"افتح المختبر":"Open lab"}</a>}
+    {/^\/ccna-labs\/[a-z0-9-]+\/student\.html$/.test(lab.student_url)&&<a href={`${lab.student_url}?lang=${ar?"ar":"en"}`} className="academy-btn-primary mt-5 inline-flex">{ar?"افتح المختبر":"Open lab"}</a>}
    </article>)}</div>
   </div>
  </section></MainLayout>
