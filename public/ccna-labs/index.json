@@ -1,1 +1,26 @@
-{"version":1,"academy":"Basmat Alnawabigh Academy","labs":[]}
+{
+  "version": 1,
+  "academy": "Basmat Alnawabigh Academy",
+  "labs": [
+    {
+      "id": "ccna-l01-vlsm-static-routing",
+      "number": 1,
+      "date": "2026-11-15",
+      "title_ar": "تقسيم الشبكات VLSM وربط فرعين بالتوجيه الثابت",
+      "title_en": "VLSM and Static Routing Between Two Sites",
+      "summary_ar": "مختبر عملي كامل: تخطيط العنونة، إعداد راوترين وحاسبين، التحقق من الاتصال وتشخيص الأعطال.",
+      "summary_en": "Plan IPv4 addressing, configure two routers and PCs, verify connectivity and troubleshoot faults.",
+      "duration_minutes": 90,
+      "status": "published",
+      "student_url": "/ccna-labs/l01-vlsm-static-routing/student.html",
+      "topic": "IPv4 VLSM and IPv4 static routing",
+      "objectives": [
+        "Design non-overlapping VLSM networks",
+        "Configure router interfaces and host gateways",
+        "Configure and verify bidirectional static routing",
+        "Diagnose interface and routing faults"
+      ],
+      "next_topic": "VLANs and 802.1Q trunks; verify prior practical coverage before selection"
+    }
+  ]
+}
