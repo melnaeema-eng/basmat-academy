@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>مختبر ٢ — VLANs وTrunk | بصمة النوابغ</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18334e;font-family:'Cairo',Tahoma,Arial,sans-serif;font-size:18px;font-weight:500;line-height:2}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #dde4ed;border-radius:18px;padding:24px;margin-bottom:20px}h1{font-size:30px;font-weight:800;line-height:1.7}h2{color:#b94900;font-weight:800;line-height:1.7}h3{font-weight:700}a{color:#a84200}pre{font-family:Consolas,'Courier New',monospace;font-weight:400;direction:ltr;text-align:left;background:#10263d;color:#eef6ff;padding:18px;border-radius:10px;overflow:auto;line-height:1.65;font-size:14px}code{direction:ltr;unicode-bidi:embed}table{border-collapse:collapse;width:100%;font-size:16px}th,td{border:1px solid #d9e1ea;padding:10px;text-align:right}.scroll{overflow-x:auto}.tag{color:#b94900;font-weight:bold}button{background:#e96905;color:white;border:0;padding:12px 20px;border-radius:10px;font:inherit;cursor:pointer}.diagram{width:100%;height:auto;display:block}svg text{font-family:'Cairo',Tahoma,Arial,sans-serif;fill:#12345b}li{margin:8px 0}@media(max-width:600px){main{padding:12px}header,section{padding:16px}h1{font-size:23px}}@media print{body{background:white;font-size:12pt}main{max-width:none;padding:0}button,.back{display:none}section,header{border-radius:0;break-inside:auto}h2,h3{break-after:avoid}pre,tr,svg{break-inside:avoid}pre{white-space:pre-wrap;background:#f0f3f6;color:#111;font-size:11px}}
-</style></head><body><main><header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ | Basmat Alnawabigh Academy</p><h1>مختبر ٢: إنشاء VLANs وربط سويتشين باستخدام 802.1Q Trunk</h1><p>CCNA 200-301 • المهندس مجدي النعيم • ٩٠ دقيقة</p><p>ورقة المتدرب — Cisco Packet Tracer</p><button onclick="window.print()">طباعة المختبر / حفظ PDF</button></header>
+</style><style>[hidden]{display:none!important}.language-bar{max-width:1000px;margin:18px auto 0;padding:0 24px;display:flex;gap:10px;justify-content:flex-end}.language-bar button{background:white;color:#18334e;border:1px solid #c4d1df;padding:8px 16px}.language-bar button[aria-pressed="true"]{background:#12345b;color:white}#lab-en{font-family:'Cairo',Arial,sans-serif}#lab-en th,#lab-en td{text-align:left}#lab-en pre{font-family:Consolas,'Courier New',monospace}@media print{.language-bar{display:none}[hidden]{display:none!important}}</style><script defer src="/ccna-labs/language.js"></script></head><body><nav class="language-bar" aria-label="Language"><button type="button" data-lab-language="ar" lang="ar">العربية</button><button type="button" data-lab-language="en" lang="en">English</button></nav><main><div id="lab-ar" lang="ar" dir="rtl" hidden><header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ | Basmat Alnawabigh Academy</p><h1>مختبر ٢: إنشاء VLANs وربط سويتشين باستخدام 802.1Q Trunk</h1><p>CCNA 200-301 • المهندس مجدي النعيم • ٩٠ دقيقة</p><p>ورقة المتدرب — Cisco Packet Tracer</p><button onclick="window.print()">طباعة المختبر / حفظ PDF</button></header>
 <section><h2>١. أهداف التعلم</h2><ul><li>إنشاء VLAN 10 للمبيعات وVLAN 20 للدعم على سويتشين.</li><li>إسناد منافذ المستخدمين إلى Access VLAN الصحيحة.</li><li>إعداد Trunk ثابت، وتحديد Allowed VLANs وNative VLAN بصورة متطابقة.</li><li>إثبات الاتصال داخل VLAN نفسها عبر السويتشين، وعزل الشبكتين دون جهاز توجيه.</li><li>تشخيص أخطاء عضوية المنافذ وقائمة VLANs وحالة الوصلة.</li></ul><p>المتطلبات: أساسيات Ethernet وIPv4 وCLI. موضوع المنهج: Network Access — VLANs و802.1Q Trunking. هذا مختبر طبقة ثانية مستقل عن مختبر VLSM السابق.</p></section>
 <section><h2>٢. السيناريو والأجهزة</h2><p>تعمل المبيعات والدعم في طابقين. مطلوب أن تتواصل أجهزة القسم نفسه عبر الطابقين، مع فصل القسمين منطقيًا. استخدم سويتشين 2960-24TT وأربعة أجهزة PC. لا تضف راوترًا ولا Multilayer Switch في هذا المختبر.</p>
 <svg class="diagram" viewBox="0 0 800 380" role="img" aria-labelledby="topology"><title id="topology">حاسبان على كل سويتش، وصلة trunk تربط SW1 وSW2</title><g stroke="#7296b5" stroke-width="3"><path d="M135 85L230 200M135 295L230 220M295 210H505M570 200L665 85M570 220L665 295"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="20" y="35" width="170" height="70" rx="10"/><rect x="20" y="270" width="170" height="70" rx="10"/><rect x="200" y="180" width="120" height="65" rx="10"/><rect x="480" y="180" width="120" height="65" rx="10"/><rect x="610" y="35" width="170" height="70" rx="10"/><rect x="610" y="270" width="170" height="70" rx="10"/></g><g text-anchor="middle" font-size="17"><text x="105" y="65">PC-A • VLAN 10</text><text x="105" y="90">192.168.10.11</text><text x="105" y="300">PC-B • VLAN 20</text><text x="105" y="325">192.168.20.11</text><text x="260" y="220">SW1</text><text x="540" y="220">SW2</text><text x="695" y="65">PC-C • VLAN 10</text><text x="695" y="90">192.168.10.12</text><text x="695" y="300">PC-D • VLAN 20</text><text x="695" y="325">192.168.20.12</text><text x="400" y="155">Gi0/1 ↔ Gi0/1</text><text x="400" y="180">802.1Q Trunk</text><text x="400" y="285">Native VLAN: 999</text><text x="400" y="315">Allowed: 10,20,999</text></g></svg>
@@ -88,4 +88,82 @@ show mac address-table dynamic</pre><table><tr><th>الفحص</th><th>النتي
 ping 192.168.20.11</pre><p>من PC-B:</p><pre>ping 192.168.20.12
 ping 192.168.10.12</pre><p>كرّر الاختبارات من PC-C إلى PC-A ومن PC-D إلى PC-B. انتظر اكتمال STP وARP ثم أعد الاختبار عند فقد أول حزمة.</p><table><tr><th>الاختبار</th><th>المتوقع</th></tr><tr><td>A ↔ C</td><td>نجاح: VLAN 10 عبر Trunk</td></tr><tr><td>B ↔ D</td><td>نجاح: VLAN 20 عبر Trunk</td></tr><tr><td>A → B وB → C</td><td>فشل متوقع: شبكتان مختلفتان بلا توجيه</td></tr></table><p>فشل الاتصال بين شبكتين مختلفتين وحده لا يثبت ضبط VLAN بصورة صحيحة؛ يجب أيضًا إثبات عضوية المنافذ وحالة Trunk ونجاح الاتصال داخل كل VLAN.</p></section>
 <section><h2>٦. تمارين الأعطال — ٢٠ دقيقة</h2><p>يطبق المدرب عطلًا واحدًا في كل مرة. قبل أي تغيير، دوّن العرض والدليل والسبب المرجح، ثم الإصلاح ونتيجة إعادة الاختبار.</p><table><tr><th>الحالة</th><th>العرض المتوقع</th><th>أداة البداية</th></tr><tr><td>عضوية Access VLAN خاطئة</td><td>حاسب واحد لا يصل إلى زميله</td><td>show vlan brief</td></tr><tr><td>VLAN مفقودة من Allowed list</td><td>قسم واحد يتوقف عبر الوصلة والآخر يعمل</td><td>show interfaces trunk</td></tr><tr><td>إغلاق منفذ Trunk</td><td>القسمان يفشلان عبر السويتشين</td><td>show interfaces status</td></tr><tr><td>Native VLAN مختلفة بين الطرفين</td><td>قد يظهر تحذير mismatch؛ نجاح بيانات 10 و20 لا ينفي الخطأ</td><td>مقارنة Native VLAN على الطرفين</td></tr></table><p>قد تؤدي اختلافات Native VLAN إلى سلوك STP مختلف حسب النظام والمحاكي؛ لا تفترض عرضًا واحدًا ثابتًا. معيار التشخيص هو مقارنة إعداد الطرفين.</p><table><tr><th>العطل</th><th>الدليل</th><th>الإصلاح</th><th>إعادة الاختبار</th></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr></table></section>
-<section><h2>٧. أسئلة وتسليم — ١٠ دقائق</h2><ol><li>لماذا نجح الاتصال داخل VLAN واحدة عبر سويتشين؟</li><li>ما الفرق بين Access VLAN وNative VLAN وAllowed VLAN list؟</li><li>هل يكفي تغيير Default Gateway لربط VLAN 10 و20؟ فسّر.</li><li>لماذا لا يظهر منفذ Trunk كمنفذ Access تحت VLAN 10 في show vlan brief؟</li><li>كيف تشخّص توقف VLAN 20 مع استمرار VLAN 10؟</li></ol><p>التسليم: ملف CCNA-L02-YourName.pkt، ونتائج أوامر التحقق، ومصفوفة ping، وتشخيص عطلين. التقييم: VLANs وAccess ٢٥، Trunk ٢٥، التحقق والعزل ٢٥، تشخيص الأعطال ٢٥.</p><p>هذه الأسئلة تدريبية في ورقة المختبر وليست اختبارًا إلكترونيًا مرتبطًا بنتيجة الدورة. لم يُنشأ ملف .pkt ولم تُشغّل محاكاة فعلية ضمن هذه الحزمة؛ يُنشئ المتدرب ملفه أثناء التنفيذ.</p><p>المرجع الفني: <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/15-2_2_e/configuration/guide/b_1522e_2960_2960c_2960s_2960sf_2960p_cg/m_1522e_vlan_trunk_2960s_cg.html">Cisco — Configuring VLAN Trunks / Catalyst 2960</a>.</p></section></main></body></html>
+<section><h2>٧. أسئلة وتسليم — ١٠ دقائق</h2><ol><li>لماذا نجح الاتصال داخل VLAN واحدة عبر سويتشين؟</li><li>ما الفرق بين Access VLAN وNative VLAN وAllowed VLAN list؟</li><li>هل يكفي تغيير Default Gateway لربط VLAN 10 و20؟ فسّر.</li><li>لماذا لا يظهر منفذ Trunk كمنفذ Access تحت VLAN 10 في show vlan brief؟</li><li>كيف تشخّص توقف VLAN 20 مع استمرار VLAN 10؟</li></ol><p>التسليم: ملف CCNA-L02-YourName.pkt، ونتائج أوامر التحقق، ومصفوفة ping، وتشخيص عطلين. التقييم: VLANs وAccess ٢٥، Trunk ٢٥، التحقق والعزل ٢٥، تشخيص الأعطال ٢٥.</p><p>هذه الأسئلة تدريبية في ورقة المختبر وليست اختبارًا إلكترونيًا مرتبطًا بنتيجة الدورة. لم يُنشأ ملف .pkt ولم تُشغّل محاكاة فعلية ضمن هذه الحزمة؛ يُنشئ المتدرب ملفه أثناء التنفيذ.</p><p>المرجع الفني: <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/15-2_2_e/configuration/guide/b_1522e_2960_2960c_2960s_2960sf_2960p_cg/m_1522e_vlan_trunk_2960s_cg.html">Cisco — Configuring VLAN Trunks / Catalyst 2960</a>.</p></section></div><div id="lab-en" lang="en" dir="ltr" hidden><header><a class="back" href="/ccna-labs">Back to labs</a><p class="tag">Basmat Alnawabigh Academy</p><h1>Lab 2: VLANs and IEEE 802.1Q Trunking</h1><p>CCNA 200-301 • Instructor: Eng. Magdi Alnaeem • 90 minutes</p><p>Student worksheet — Cisco Packet Tracer</p><button type="button" onclick="window.print()">Print lab / Save PDF</button></header><section><h2>1. Objectives and prerequisites</h2><ul><li>Create VLAN 10 SALES and VLAN 20 SUPPORT on two switches.</li><li>Assign user access ports to the correct VLAN.</li><li>Configure a static trunk, allowed VLANs and matching native VLANs.</li><li>Verify same-VLAN connectivity across switches and troubleshoot segmentation faults.</li></ul><p>Prerequisites: Ethernet, IPv4 and IOS CLI. Network Access topic. Time plan: cabling/PCs 15, switch configuration 25, verification 20, troubleshooting 20 and submission 10 minutes.</p></section><section><h2>2. Scenario and topology</h2><p>Sales and Support occupy two floors. Members of the same department must communicate across floors. There is no router or inter-VLAN routing in this lab.</p><svg class="diagram" viewBox="0 0 800 380" role="img" aria-labelledby="topology-en"><title id="topology-en">Physical lab topology and device connections</title><g stroke="#7296b5" stroke-width="3"><path d="M135 85L230 200M135 295L230 220M295 210H505M570 200L665 85M570 220L665 295"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="20" y="35" width="170" height="70" rx="10"/><rect x="20" y="270" width="170" height="70" rx="10"/><rect x="200" y="180" width="120" height="65" rx="10"/><rect x="480" y="180" width="120" height="65" rx="10"/><rect x="610" y="35" width="170" height="70" rx="10"/><rect x="610" y="270" width="170" height="70" rx="10"/></g><g text-anchor="middle" font-size="17"><text x="105" y="65">PC-A • VLAN 10</text><text x="105" y="90">192.168.10.11</text><text x="105" y="300">PC-B • VLAN 20</text><text x="105" y="325">192.168.20.11</text><text x="260" y="220">SW1</text><text x="540" y="220">SW2</text><text x="695" y="65">PC-C • VLAN 10</text><text x="695" y="90">192.168.10.12</text><text x="695" y="300">PC-D • VLAN 20</text><text x="695" y="325">192.168.20.12</text><text x="400" y="155">Gi0/1 ↔ Gi0/1</text><text x="400" y="180">802.1Q Trunk</text><text x="400" y="285">Native VLAN: 999</text><text x="400" y="315">Allowed: 10,20,999</text></g></svg><p>Use two 2960-24TT switches and four PCs.</p><div class="scroll"><table><thead><tr><th>PC / port</th><th>Switch / port</th><th>Cable</th></tr></thead><tbody><tr><td>PC-A FastEthernet0</td><td>SW1 Fa0/1</td><td>Straight-through</td></tr><tr><td>PC-B FastEthernet0</td><td>SW1 Fa0/2</td><td>Straight-through</td></tr><tr><td>PC-C FastEthernet0</td><td>SW2 Fa0/1</td><td>Straight-through</td></tr><tr><td>PC-D FastEthernet0</td><td>SW2 Fa0/2</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1</td><td>SW2 Gi0/1</td><td>Crossover</td></tr></tbody></table></div></section><section><h2>3. Host addressing</h2><p>Use mask 255.255.255.0 on every PC. Leave default gateways blank. Enter addresses under Desktop → IP Configuration and predict which pairs should communicate.</p><div class="scroll"><table><thead><tr><th>PC</th><th>VLAN</th><th>IPv4</th></tr></thead><tbody><tr><td>PC-A</td><td>10 SALES</td><td>192.168.10.11</td></tr><tr><td>PC-C</td><td>10 SALES</td><td>192.168.10.12</td></tr><tr><td>PC-B</td><td>20 SUPPORT</td><td>192.168.20.11</td></tr><tr><td>PC-D</td><td>20 SUPPORT</td><td>192.168.20.12</td></tr></tbody></table></div></section><section><h2>4. Full switch configuration</h2><p>Decline the initial setup dialog if shown. The 2960 uses 802.1Q; the command switchport trunk encapsulation dot1q is not needed and may be rejected on this model.</p><h3>SW1</h3><pre>enable
+configure terminal
+hostname SW1
+no ip domain-lookup
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+description SALES_PC
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+description SUPPORT_PC
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRUNK_TO_SW2
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>SW2</h3><pre>enable
+configure terminal
+hostname SW2
+no ip domain-lookup
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+description SALES_PC
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+description SUPPORT_PC
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRUNK_TO_SW1
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><p>VLAN 999 is an unused native VLAN and must match at both trunk ends. Do not enable PortFast on the inter-switch link. Press Enter to accept the save filename.</p></section><section><h2>5. Verification</h2><p>Run on both switches:</p><pre>show vlan brief
+show interfaces trunk
+show interfaces fastEthernet 0/1 switchport
+show interfaces fastEthernet 0/2 switchport
+show interfaces gigabitEthernet 0/1 switchport
+show interfaces status
+show mac address-table dynamic</pre><p>VLAN 10 contains Fa0/1 and VLAN 20 contains Fa0/2. Gi0/1 must be trunking, with native VLAN 999 and allowed VLANs 10,20,999. Generate ping traffic before inspecting learned MAC addresses; remote PCs should be learned via Gi0/1 in the correct VLAN.</p><h3>PC-A</h3><pre>ping 192.168.10.12
+ping 192.168.20.11</pre><h3>PC-B</h3><pre>ping 192.168.20.12
+ping 192.168.10.12</pre><div class="scroll"><table><thead><tr><th>Test</th><th>Expected result</th></tr></thead><tbody><tr><td>A ↔ C</td><td>Pass, VLAN 10 across trunk</td></tr><tr><td>B ↔ D</td><td>Pass, VLAN 20 across trunk</td></tr><tr><td>A → B and B → C</td><td>Fail, different IP subnets without routing</td></tr></tbody></table></div><p>Also test from C to A and D to B. Allow STP and ARP to settle. Cross-subnet ping failure alone does not prove VLAN isolation: verify port membership, trunk state and successful same-VLAN traffic too.</p></section><section><h2>6. Troubleshooting</h2><div class="scroll"><table><thead><tr><th>Fault</th><th>Symptom / evidence</th></tr></thead><tbody><tr><td>Wrong access VLAN</td><td>One PC cannot reach its department peer; inspect show vlan brief</td></tr><tr><td>VLAN missing from allowed list</td><td>One department fails across the link while the other works</td></tr><tr><td>Trunk administratively shut</td><td>Both departments fail across switches; inspect interface status</td></tr><tr><td>Native VLAN mismatch</td><td>Compare both trunk ends even if tagged VLAN 10/20 traffic still works</td></tr></tbody></table></div><p>A native mismatch may produce a warning or affect STP depending on the image/simulator. Do not assume one fixed symptom. Introduce one fault at a time and record evidence, repair and retest.</p></section><section><h2>7. Questions, submission and assessment</h2><ol><li>Why can the same VLAN span two switches?</li><li>Distinguish access VLAN, native VLAN and allowed VLAN list.</li><li>Can changing only the default gateway enable inter-VLAN communication?</li><li>Why is the trunk not listed as an access member of VLAN 10 in show vlan brief?</li><li>How do you diagnose VLAN 20 failing while VLAN 10 still works?</li></ol><p>Submit CCNA-L02-YourName.pkt, verification outputs, a ping matrix and two fault reports. Scoring: VLANs/access 25, trunk 25, verification/isolation 25, troubleshooting 25.</p><p>This worksheet has not been run in Packet Tracer. No .pkt file is attached; create it during the exercise. Worksheet questions are practice only; electronic grading and parent-course integration have not been implemented.</p></section></div><noscript>Please enable JavaScript to select the worksheet language. يرجى تفعيل JavaScript لعرض لغة المختبر.</noscript></main></body></html>
