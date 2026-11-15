@@ -7,7 +7,7 @@ export default function Footer(){
  const{i18n}=useTranslation();const ar=i18n.language?.startsWith("ar");
  const cols=[
   [ar?"الأكاديمية":"Academy",[
-   ["/courses",ar?"الدورات":"Courses"],["/ccna-labs",ar?"مختبرات CCNA":"CCNA Labs"],["/paths",ar?"المسارات التعليمية":"Learning Paths"],["/instructors",ar?"المدربون":"Instructors"],["/verify-certificate",ar?"التحقق من الشهادات":"Certificate Verification"]
+   ["/courses",ar?"الدورات":"Courses"],["/ccna-labs",ar?"مختبرات CCNA":"CCNA Labs"],["/ccnp-labs",ar?"مختبرات CCNP":"CCNP Labs"],["/paths",ar?"المسارات التعليمية":"Learning Paths"],["/instructors",ar?"المدربون":"Instructors"],["/verify-certificate",ar?"التحقق من الشهادات":"Certificate Verification"]
   ]],
   [ar?"الدعم والسياسات":"Support & Policies",[
    ["/about",ar?"عن الأكاديمية":"About"],["/contact",ar?"تواصل معنا":"Contact"],["/privacy",ar?"سياسة الخصوصية":"Privacy Policy"],["/terms",ar?"الشروط والأحكام":"Terms & Conditions"],["/refund-policy",ar?"سياسة الاسترداد":"Refund Policy"]
