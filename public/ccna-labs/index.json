@@ -41,6 +41,26 @@
         "Troubleshoot VLAN membership and trunk faults"
       ],
       "next_topic": "Inter-VLAN routing using router-on-a-stick"
+    },
+    {
+      "id": "ccna-l03-router-on-a-stick",
+      "number": 3,
+      "date": "2026-11-15",
+      "title_ar": "التوجيه بين VLANs باستخدام Router-on-a-Stick",
+      "title_en": "Inter-VLAN Routing with Router-on-a-Stick",
+      "summary_ar": "إضافة راوتر إلى مختبر VLANs وإعداد Subinterfaces والبوابات، مع التحقق من الاتصال وتشخيص الأعطال.",
+      "summary_en": "Configure router subinterfaces and default gateways, verify inter-VLAN communication and troubleshoot faults.",
+      "duration_minutes": 90,
+      "status": "published",
+      "student_url": "/ccna-labs/l03-router-on-a-stick/student.html",
+      "topic": "Inter-VLAN routing and 802.1Q router subinterfaces",
+      "objectives": [
+        "Configure 802.1Q subinterfaces",
+        "Configure endpoint gateways",
+        "Verify connected routes and inter-VLAN connectivity",
+        "Troubleshoot gateway, VLAN tag and trunk faults"
+      ],
+      "next_topic": "DHCPv4 services and relay"
     }
   ]
 }
