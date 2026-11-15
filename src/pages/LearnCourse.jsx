@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import {getLabByCourse} from '../services/labService';
 import MainLayout from '../layouts/MainLayout';
 import LearningTools from '../components/LearningTools';
 import ResumeVideo from '../components/ResumeVideo';
@@ -35,6 +36,7 @@ function getYouTubeEmbedUrl(url) {
 
 export default function LearnCourse() {
   const { courseId } = useParams();
+  const [labTarget,setLabTarget]=useState(null);
   const [loading, setLoading] = useState(true);
   const [needsLogin, setNeedsLogin] = useState(false);
   const [notEnrolled, setNotEnrolled] = useState(false);
@@ -55,6 +57,8 @@ export default function LearnCourse() {
           return;
         }
         setUserId(user.id);
+        const lab=await getLabByCourse(courseId);
+        if(lab){setLabTarget(`/labs/${lab.track}/${lab.slug}`);return;}
         setCertified(await hasCourseCertificate(user.id, courseId));
 
         const enrollment = await getEnrollment(courseId, user.id);
@@ -117,6 +121,7 @@ export default function LearnCourse() {
     }
   }
 
+  if(labTarget)return <Navigate to={labTarget} replace/>;
   if (needsLogin) return <Navigate to="/login" replace />;
 
   if (loading) {

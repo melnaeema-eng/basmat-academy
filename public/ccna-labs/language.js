@@ -19,7 +19,7 @@
     button.addEventListener("click", () => apply(button.dataset.labLanguage, true));
   });
   window.addEventListener("storage", event => { if (event.key === "language") apply(event.newValue, false); });
-  window.addEventListener("pageshow", () => apply(saved() || new URLSearchParams(location.search).get("lang"), false));
+  window.addEventListener("pageshow", () => apply(normalize(document.documentElement.dataset.initialLanguage) || saved() || new URLSearchParams(location.search).get("lang"), false));
   window.addEventListener("beforeprint", () => apply(document.documentElement.lang, false));
-  apply(normalize(new URLSearchParams(location.search).get("lang")) || saved() || "ar", true);
+  apply(normalize(document.documentElement.dataset.initialLanguage) || normalize(new URLSearchParams(location.search).get("lang")) || saved() || "ar", true);
 })();
