@@ -2,11 +2,11 @@ import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useNavigate} from 'react-router-dom';
 
-function mixedText(text){
+export function mixedText(text){
  const spaced=text.replace(/([\u0621-\u064A])([A-Za-z0-9])/g,'$1 $2').replace(/([A-Za-z0-9])([\u0621-\u064A])/g,'$1 $2');
  return spaced.split(/([A-Za-z0-9][A-Za-z0-9_+./-]*(?:[ \t]+[A-Za-z0-9][A-Za-z0-9_+./-]*)*)/g).map((part,index)=>/^[A-Za-z0-9]/.test(part)?<bdi key={index} dir="ltr">{part}</bdi>:part);
 }
-function LabCover({track,number}){
+export function LabCover({track,number}){
  return <div className="relative flex h-52 flex-col justify-center overflow-hidden bg-[#10284c] px-7 text-white" dir="ltr">
   <svg aria-hidden="true" className="absolute inset-0 h-full w-full opacity-20" viewBox="0 0 600 300"><path d="M70 210L200 90L390 90L530 210M70 210H530M200 90L300 210L390 90" fill="none" stroke="#9fd47d" strokeWidth="4"/>{[[70,210],[200,90],[390,90],[530,210],[300,210]].map(([cx,cy])=><circle key={cx} cx={cx} cy={cy} r="13" fill="#9fd47d"/>)}</svg>
   <p className="relative text-xs tracking-wider text-white/75">Basmat Alnawabigh Academy</p>
