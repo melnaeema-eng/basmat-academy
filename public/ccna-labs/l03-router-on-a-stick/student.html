@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>مختبر ٣ — Router-on-a-Stick | بصمة النوابغ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18334e;font-family:'Cairo',Tahoma,Arial,sans-serif;font-size:18px;font-weight:500;line-height:2}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #dde4ed;border-radius:18px;padding:24px;margin-bottom:20px}h1{font-size:30px;font-weight:800;line-height:1.7}h2{color:#b94900;font-weight:800;line-height:1.7}h3{font-weight:700}a{color:#a84200}pre{font-family:Consolas,'Courier New',monospace;font-weight:400;direction:ltr;text-align:left;background:#10263d;color:#eef6ff;padding:18px;border-radius:10px;overflow:auto;line-height:1.65;font-size:14px}code{direction:ltr;unicode-bidi:embed}table{border-collapse:collapse;width:100%;font-size:16px}th,td{border:1px solid #d9e1ea;padding:10px;text-align:right}.scroll{overflow-x:auto}.tag{color:#b94900;font-weight:bold}button{background:#e96905;color:white;border:0;padding:12px 20px;border-radius:10px;font:inherit;cursor:pointer}.diagram{width:100%;height:auto;display:block}svg text{font-family:'Cairo',Tahoma,Arial,sans-serif;fill:#12345b}li{margin:8px 0}@media(max-width:600px){main{padding:12px}header,section{padding:16px}h1{font-size:23px}}@media print{body{background:white;font-size:12pt}main{max-width:none;padding:0}button,.back{display:none}section,header{border-radius:0;break-inside:auto}h2,h3{break-after:avoid}pre,tr,svg{break-inside:avoid}pre{white-space:pre-wrap;background:#f0f3f6;color:#111;font-size:11px}}
+</style></head><body><main><header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ | Basmat Alnawabigh Academy</p><h1>مختبر ٣: التوجيه بين VLANs باستخدام Router-on-a-Stick</h1><p>CCNA 200-301 • المهندس مجدي النعيم • المدة: ٩٠ دقيقة</p><p>ورقة المتدرب — Cisco Packet Tracer</p><button onclick="window.print()">طباعة المختبر / حفظ PDF</button></header>
+<section><h2>١. الأهداف والمتطلبات</h2><p>استكمال المختبر الثاني: كانت VLAN 10 و20 منفصلتين بلا توجيه. أضف راوترًا لتفعيل الاتصال بينهما باستخدام واجهة فعلية واحدة وSubinterfaces.</p><ul><li>إعداد 802.1Q Subinterfaces وربط كل واجهة بـVLAN محددة.</li><li>إعداد بوابات الحاسبات ووصلة Trunk إلى الراوتر.</li><li>تمييز الشبكات المتصلة مباشرة عن Static Routes.</li><li>تشخيص خطأ VLAN tag أو البوابة أو قائمة Allowed VLANs.</li></ul><p>المتطلبات السابقة: مختبر VLANs وTrunk، أساسيات IPv4 وCLI. موضوع المنهج: Network Access وIP Connectivity.</p></section>
+<section><h2>٢. الأجهزة ومخطط الشبكة</h2><p>راوتر Cisco 2911 واحد، وسويتشان 2960-24TT، وأربعة حواسب PC. يمكن متابعة ملف المختبر الثاني بعد حفظ نسخة جديدة باسم CCNA-L03-YourName.pkt.</p>
+<svg class="diagram" viewBox="0 0 800 460" role="img" aria-labelledby="topology"><title id="topology">R1 موصول بـSW1، وSW1 موصول بـSW2، حاسبان على كل سويتش</title><g stroke="#7296b5" stroke-width="3"><path d="M400 85V165M350 195L200 285M450 195L600 285M160 335L100 400M240 335L300 400M560 335L500 400M640 335L700 400"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="320" y="20" width="160" height="65" rx="10"/><rect x="320" y="165" width="160" height="60" rx="10"/><rect x="120" y="285" width="160" height="50" rx="10"/><rect x="520" y="285" width="160" height="50" rx="10"/><rect x="30" y="400" width="140" height="45" rx="10"/><rect x="230" y="400" width="140" height="45" rx="10"/><rect x="430" y="400" width="140" height="45" rx="10"/><rect x="630" y="400" width="140" height="45" rx="10"/></g><g text-anchor="middle" font-size="17"><text x="400" y="58">R1 — 2911</text><text x="400" y="201">802.1Q Trunk</text><text x="200" y="318">SW1</text><text x="600" y="318">SW2</text><text x="100" y="429">PC-A / VLAN 10</text><text x="300" y="429">PC-B / VLAN 20</text><text x="500" y="429">PC-C / VLAN 10</text><text x="700" y="429">PC-D / VLAN 20</text><text x="570" y="120">R1 Gi0/0 ↔ SW1 Gi0/2</text><text x="565" y="250">SW1 Gi0/1 ↔ SW2 Gi0/1</text></g></svg>
+<p>خطا الفرعين من صندوق Trunk في الرسم تمثيل منطقي لمسار البيانات؛ التوصيل الفعلي للراوتر إلى SW1 فقط، ثم SW1 إلى SW2 كما في جدول المنافذ.</p>
+<table><tr><th>الوصلة</th><th>الكابل</th></tr><tr><td>R1 Gi0/0 ↔ SW1 Gi0/2</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1 ↔ SW2 Gi0/1</td><td>Crossover</td></tr><tr><td>PC-A ↔ SW1 Fa0/1، PC-B ↔ SW1 Fa0/2</td><td>Straight-through</td></tr><tr><td>PC-C ↔ SW2 Fa0/1، PC-D ↔ SW2 Fa0/2</td><td>Straight-through</td></tr></table></section>
+<section><h2>٣. العنونة والتوصيل — ١٥ دقيقة</h2><p>القناع لكل الحاسبات: 255.255.255.0. أدخل الإعدادات من Desktop → IP Configuration.</p><table><tr><th>الجهاز</th><th>IPv4</th><th>VLAN</th><th>Default Gateway</th></tr><tr><td>PC-A</td><td>192.168.10.11</td><td>10</td><td>192.168.10.1</td></tr><tr><td>PC-C</td><td>192.168.10.12</td><td>10</td><td>192.168.10.1</td></tr><tr><td>PC-B</td><td>192.168.20.11</td><td>20</td><td>192.168.20.1</td></tr><tr><td>PC-D</td><td>192.168.20.12</td><td>20</td><td>192.168.20.1</td></tr></table><p>قبل تشغيل الراوتر: تحقق أن A يصل إلى C وB يصل إلى D، بينما الاتصال بين VLANs لا يعمل. سجّل هذه النتيجة للمقارنة بعد الإعداد.</p></section>
+<section><h2>٤. أوامر الإعداد — ٣٠ دقيقة</h2><h3>SW1 — الإعداد الكامل</h3><pre>enable
+configure terminal
+hostname SW1
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+interface gigabitEthernet 0/2
+description TRUNK_TO_R1
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>SW2 — الإعداد الكامل</h3><pre>enable
+configure terminal
+hostname SW2
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>R1 — الواجهات الفرعية</h3><pre>enable
+configure terminal
+hostname R1
+no ip domain-lookup
+interface gigabitEthernet 0/0
+description TRUNK_TO_SW1
+no ip address
+no shutdown
+exit
+interface gigabitEthernet 0/0.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+end
+copy running-config startup-config</pre><p>الواجهة الفعلية Gi0/0 لا تحمل IP. عنوان كل بوابة على الواجهة الفرعية المقابلة. VLAN 999 هي Native غير مستخدمة للمستخدمين ومتطابقة على طرفي الوصلة. لا يلزم Static Route للشبكتين لأنهما متصلتان مباشرة بالراوتر. اضغط Enter لقبول اسم ملف الحفظ الافتراضي.</p></section>
+<section><h2>٥. التحقق — ٢٠ دقيقة</h2><p>على R1:</p><pre>show ip interface brief
+show ip route
+show interfaces gigabitEthernet 0/0.10
+show interfaces gigabitEthernet 0/0.20
+show running-config</pre><p>المتوقع: Gi0/0 وواجهتا .10 و.20 بحالة up/up. تظهر الشبكتان 192.168.10.0/24 و192.168.20.0/24 بالرمز C، وعناوين البوابات بالرمز L. حالة up/up وحدها لا تثبت صحة VLAN tag؛ قارن encapsulation في الإعداد.</p><p>على السويتشين:</p><pre>show vlan brief
+show interfaces trunk
+show interfaces gigabitEthernet 0/1 switchport</pre><p>وعلى SW1 أيضًا:</p><pre>show interfaces gigabitEthernet 0/2 switchport</pre><p>يجب أن تحمل وصلتا Trunk على SW1 الشبكات 10 و20 و999، وNative VLAN 999.</p><p>من PC-A:</p><pre>ipconfig
+ping 192.168.10.1
+ping 192.168.10.12
+ping 192.168.20.1
+ping 192.168.20.11
+ping 192.168.20.12
+tracert 192.168.20.12</pre><p>كرّر من PC-D إلى 192.168.10.11. قد تفقد أول حزمة بسبب ARP؛ انتظر تقارب STP ثم أعد الاختبار. معيار النجاح: اتصال كل حاسب ببوابته، ونجاح A↔C وB↔D، ثم A↔D وB↔C. يمر الاتصال بين الشبكتين عبر R1؛ لا تعتمد على شكل traceroute وحده لأن عرض المحاكي قد يختلف.</p></section>
+<section><h2>٦. استكشاف الأعطال — ١٥ دقيقة</h2><p>يطبق المدرب عطلًا واحدًا في كل مرة بعد تحقق التشغيل الأساسي. سجّل السبب والدليل قبل الإصلاح.</p><table><tr><th>العَرَض</th><th>نقاط الفحص</th></tr><tr><td>الاتصال داخل VLAN يعمل، وبين VLANs يفشل من حاسب واحد</td><td>Default Gateway وقناع الحاسب</td></tr><tr><td>VLAN 20 لا تصل إلى بوابتها</td><td>encapsulation dot1Q والـIP في .20 وAllowed VLANs</td></tr><tr><td>كل الحواسب لا تصل إلى بواباتها رغم نجاح الاتصال داخل VLAN</td><td>Gi0/0 ووضع منفذ SW1 Gi0/2 والكابل</td></tr><tr><td>الحواسب على SW2 فقط تتأثر</td><td>Trunk بين السويتشين وعضوية منافذ SW2</td></tr></table><table><tr><th>العطل</th><th>الدليل</th><th>الإصلاح</th><th>نتيجة إعادة الاختبار</th></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr></table></section>
+<section><h2>٧. أسئلة وتسليم — ١٠ دقائق</h2><ol><li>لماذا لم نستخدم عنوان IP على Gi0/0 الفعلية؟</li><li>ما وظيفة encapsulation dot1Q 20؟</li><li>لماذا لا نحتاج Static Routes بين هاتين الشبكتين؟</li><li>هل رقم الواجهة الفرعية يجب أن يطابق VLAN ID؟ اشرح الفرق بين التسمية ووسم الإطار.</li><li>لماذا لا يثبت نجاح ping داخل VLAN سلامة البوابة الافتراضية؟</li></ol><p>سلّم ملف CCNA-L03-YourName.pkt، وجدول العنونة، ونتائج التحقق قبل الإعداد وبعده، وتقرير عطلين. التقييم: VLANs وTrunks ٢٥، Subinterfaces والبوابات ٣٠، التحقق ٢٠، التشخيص ٢٥.</p><p>الأسئلة هنا تدريبية؛ ربط التصحيح بنتيجة الدورة لم يُنفذ بعد. ملف Packet Tracer غير مرفق ولم يتم تشغيل المحاكاة؛ ينشئه المتدرب أثناء التنفيذ.</p><p>مرجع: <a href="https://www.cisco.com/c/en/us/support/docs/lan-switching/inter-vlan-routing/14976-50.html">Cisco — Inter-VLAN Routing with an External Router</a>.</p></section></main></body></html>
