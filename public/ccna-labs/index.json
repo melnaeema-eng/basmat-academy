@@ -61,6 +61,26 @@
         "Troubleshoot gateway, VLAN tag and trunk faults"
       ],
       "next_topic": "DHCPv4 services and relay"
+    },
+    {
+      "id": "ccna-l04-dhcpv4",
+      "number": 4,
+      "date": "2026-11-15",
+      "title_ar": "توزيع عناوين IPv4 تلقائيًا باستخدام DHCP عبر VLANs",
+      "title_en": "Automatic IPv4 Addressing with DHCP Across VLANs",
+      "summary_ar": "إعداد DHCP Pools والاستثناءات لكل VLAN، واكتساب العناوين تلقائيًا، والتحقق من DORA والاتصال وتشخيص الأعطال.",
+      "summary_en": "Configure per-VLAN DHCP pools and exclusions, acquire client leases, inspect DORA, verify connectivity and troubleshoot faults.",
+      "duration_minutes": 90,
+      "status": "published",
+      "student_url": "/ccna-labs/l04-dhcpv4/student.html",
+      "topic": "IP Services: DHCPv4 server and clients",
+      "objectives": [
+        "Configure DHCP pools and exclusions",
+        "Verify client addresses, masks and gateways",
+        "Observe DORA and inspect bindings",
+        "Diagnose DHCP service, pool and gateway faults"
+      ],
+      "next_topic": "DHCP relay to a central server"
     }
   ]
 }
