@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>مختبر ١ — VLSM والتوجيه الثابت | بصمة النوابغ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18334e;font-family:Tahoma,Arial,sans-serif;line-height:1.9}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #dde4ed;border-radius:18px;padding:24px;margin-bottom:20px}h1{font-size:28px}h2{color:#b94900}a{color:#a84200}pre{direction:ltr;text-align:left;background:#10263d;color:#eef6ff;padding:18px;border-radius:10px;overflow:auto;line-height:1.65;font-size:14px}code{direction:ltr;unicode-bidi:embed}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid #d9e1ea;padding:10px;text-align:right}.scroll{overflow-x:auto}.tag{color:#b94900;font-weight:bold}button{background:#e96905;color:white;border:0;padding:12px 20px;border-radius:10px;font:inherit;cursor:pointer}.diagram{width:100%;height:auto;display:block}svg text{font-family:Arial,Tahoma,sans-serif;fill:#12345b}li{margin:8px 0}@media(max-width:600px){main{padding:12px}header,section{padding:16px}h1{font-size:23px}}@media print{body{background:white}main{max-width:none;padding:0}button,.back{display:none}section,header{border-radius:0;break-inside:auto}h2,h3{break-after:avoid}pre,tr,svg{break-inside:avoid}pre{white-space:pre-wrap;background:#f0f3f6;color:#111;font-size:11px}}
+</style></head><body><main>
+<header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ | Basmat Alnawabigh Academy</p><h1>مختبر ١: تقسيم الشبكات VLSM وربط فرعين بالتوجيه الثابت</h1><p>CCNA 200-301 • بإشراف المهندس مجدي النعيم • المدة: ٩٠ دقيقة</p><p>ورقة المتدرب — Cisco Packet Tracer</p><button onclick="window.print()">طباعة المختبر / حفظ PDF</button></header>
+<section><h2>١. أهداف التعلم والمتطلبات</h2><ul><li>تقسيم شبكة IPv4 باستخدام VLSM دون تداخل.</li><li>إعداد واجهات الراوتر وعناوين الحاسبين والبوابات الافتراضية.</li><li>إضافة Static Routes والتحقق من مسار الذهاب والعودة.</li><li>تشخيص أعطال العنونة والواجهات والتوجيه بأدلة واضحة.</li></ul><p>المتطلبات السابقة: أساسيات IPv4 وSubnetting وCIDR وأوامر Cisco IOS. هذا تمرين تطبيقي في Network Fundamentals وIP Connectivity.</p></section>
+<section><h2>٢. السيناريو</h2><p>اربط مقرًا يحتاج إلى ٥٠ عنوانًا للأجهزة بالإضافة إلى البوابة بفرع يحتاج إلى ٢٥ عنوانًا للأجهزة بالإضافة إلى البوابة. خصص شبكة مستقلة لوصلة الراوترين ذات عنوانين. الشبكة المتاحة: <code>192.168.10.0/24</code>.</p><p>المطلوب: ابدأ بأكبر شبكة، واحسب الشبكة والقناع وأول وآخر عنوان صالح وعنوان البث. لا تستخدم عنوان الشبكة أو البث لأي واجهة.</p></section>
+<section><h2>٣. مخطط الشبكة والأجهزة</h2>
+<svg class="diagram" viewBox="0 0 760 410" role="img" aria-labelledby="topology-title"><title id="topology-title">PC-A إلى SW1 إلى R1، ثم R2 إلى SW2 إلى PC-B</title>
+<g stroke="#7296b5" stroke-width="3"><path d="M160 60V125M160 175V240M220 265H540M600 240V175M600 125V60"/></g>
+<g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="95" y="15" width="130" height="45" rx="8"/><rect x="95" y="125" width="130" height="50" rx="8"/><rect x="95" y="240" width="130" height="50" rx="8"/><rect x="535" y="240" width="130" height="50" rx="8"/><rect x="535" y="125" width="130" height="50" rx="8"/><rect x="535" y="15" width="130" height="45" rx="8"/></g>
+<g text-anchor="middle" font-size="18"><text x="160" y="44">PC-A</text><text x="160" y="156">SW1 — 2960</text><text x="160" y="272">R1 — 2911</text><text x="600" y="272">R2 — 2911</text><text x="600" y="156">SW2 — 2960</text><text x="600" y="44">PC-B</text><text x="380" y="251">Gi0/1 ↔ Gi0/1</text><text x="255" y="212">Gi0/0</text><text x="505" y="212">Gi0/0</text><text x="160" y="335">HQ LAN — 50 hosts + gateway</text><text x="600" y="335">Branch — 25 hosts + gateway</text><text x="380" y="385">Transit link — 2 addresses</text></g></svg>
+<p>الأجهزة: راوتران Cisco 2911، سويتشان Cisco 2960، وحاسبان PC. السويتشان يعملان بإعداداتهما الافتراضية ضمن VLAN 1؛ لا يلزم عنوان إدارة لهما لهذا التمرين.</p>
+<div class="scroll"><table><thead><tr><th>الطرف الأول</th><th>الطرف الثاني</th><th>الكابل</th></tr></thead><tbody>
+<tr><td>PC-A FastEthernet0</td><td>SW1 Fa0/1</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1</td><td>R1 Gi0/0</td><td>Straight-through</td></tr><tr><td>R1 Gi0/1</td><td>R2 Gi0/1</td><td>Crossover</td></tr><tr><td>R2 Gi0/0</td><td>SW2 Gi0/1</td><td>Straight-through</td></tr><tr><td>SW2 Fa0/1</td><td>PC-B FastEthernet0</td><td>Straight-through</td></tr></tbody></table></div></section>
+<section><h2>٤. التخطيط — ١٥ دقيقة</h2><p>أكمل الجدول قبل الاطلاع على قيم التنفيذ أدناه. استخدم أول عنوان صالح بوابةً لكل LAN، وخصص أصغر شبكة بعد شبكتي LAN للوصلة.</p><div class="scroll"><table><tr><th>الشبكة</th><th>Prefix والقناع</th><th>Network</th><th>أول وآخر عنوان</th><th>Broadcast</th></tr><tr><td>المقر</td><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>الفرع</td><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>الوصلة</td><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr></table></div></section>
+<section><h2>٥. التوصيل والإعداد — ٣٥ دقيقة</h2><p>أنشئ التوصيلات في ١٠ دقائق. من كل PC افتح Desktop → IP Configuration، وأدخل القيم التالية. نفذ إعداد الراوترين خلال ٢٥ دقيقة، ثم احفظ ملف Packet Tracer باسم CCNA-L01-YourName.pkt.</p><div class="scroll"><table><tr><th>الجهاز</th><th>العنوان</th><th>القناع</th><th>البوابة</th></tr><tr><td>PC-A</td><td>192.168.10.10</td><td>255.255.255.192</td><td>192.168.10.1</td></tr><tr><td>PC-B</td><td>192.168.10.70</td><td>255.255.255.224</td><td>192.168.10.65</td></tr></table></div>
+<h3>أوامر R1</h3><pre>enable
+configure terminal
+hostname R1
+no ip domain-lookup
+interface gigabitEthernet 0/0
+description HQ_LAN
+ip address 192.168.10.1 255.255.255.192
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRANSIT_TO_R2
+ip address 192.168.10.97 255.255.255.252
+no shutdown
+exit
+ip route 192.168.10.64 255.255.255.224 192.168.10.98
+end
+copy running-config startup-config</pre>
+<h3>أوامر R2</h3><pre>enable
+configure terminal
+hostname R2
+no ip domain-lookup
+interface gigabitEthernet 0/0
+description BRANCH_LAN
+ip address 192.168.10.65 255.255.255.224
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description TRANSIT_TO_R1
+ip address 192.168.10.98 255.255.255.252
+no shutdown
+exit
+ip route 192.168.10.0 255.255.255.192 192.168.10.97
+end
+copy running-config startup-config</pre><p>عند مطالبة حفظ الإعداد باسم الوجهة، اضغط Enter لقبول الاسم الافتراضي.</p></section>
+<section><h2>٦. التحقق — ١٥ دقيقة</h2><p>على الراوترين:</p><pre>show ip interface brief
+show ip route
+show running-config</pre><p>يجب أن تكون Gi0/0 وGi0/1 بحالة up/up. الرمز C يعني شبكة متصلة مباشرة، وS مسارًا ثابتًا، وL عنوان واجهة محليًا.</p><p>من PC-A:</p><pre>ipconfig
+ping 192.168.10.1
+ping 192.168.10.98
+ping 192.168.10.70
+tracert 192.168.10.70</pre><p>من PC-B:</p><pre>ping 192.168.10.65
+ping 192.168.10.10</pre><p>قد يتأخر أول رد أثناء ARP؛ كرر الاختبار بعد اكتمال التعلم. معيار النجاح: استجابة الحاسبين في الاتجاهين، ووجود مسار ثابت للشبكة البعيدة على كل راوتر. في المسار من PC-A إلى PC-B توقع المرور عبر R1 ثم R2 ثم الوجهة؛ قد تختلف تفاصيل عرض traceroute حسب المحاكاة.</p></section>
+<section><h2>٧. استكشاف الأعطال — ٢٠ دقيقة</h2><p>يطبق المدرب عطلًا واحدًا في كل مرة. لا تغيّر عدة إعدادات معًا؛ سجل الدليل قبل الإصلاح ثم أعد اختبار الاتصال.</p><table><tr><th>العَرَض</th><th>نقطة بداية الفحص</th></tr><tr><td>الراوتر يصل إلى الفرع لكن PC-A لا يصل</td><td>قارن عنوان الحاسب وقناعه وبوابته بالخطة</td></tr><tr><td>الوصلة بين الراوترين لا تعمل</td><td>افحص الكابل والواجهة باستخدام show ip interface brief</td></tr><tr><td>البوابة المحلية تستجيب والوجهة البعيدة لا تستجيب</td><td>افحص جدول التوجيه ومسار العودة</td></tr><tr><td>واجهة LAN تعمل لكن الحاسب لا يصل لبوابته</td><td>افحص منفذ السويتش والعنوان والقناع</td></tr></table><h3>سجل التشخيص</h3><table><tr><th>العَرَض</th><th>أمر التشخيص والدليل</th><th>السبب والإصلاح</th><th>نتيجة إعادة الاختبار</th></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr><tr><td>…………</td><td>…………</td><td>…………</td><td>…………</td></tr></table></section>
+<section><h2>٨. التسليم والتقييم</h2><ul><li>ملف Packet Tracer الذي أنشأه المتدرب.</li><li>جدول VLSM المكتمل ونتائج show ip route وping من الاتجاهين.</li><li>تقرير عن عطلين، مع الدليل والإصلاح والتحقق.</li></ul><p>التقييم من ١٠٠: العنونة ٢٥، الإعداد ٣٠، التحقق ٢٠، التشخيص والتفسير ٢٥.</p><p>هذه ورقة تطبيق جاهزة؛ لا تتضمن ملف .pkt مُنشأ أو ادعاء إجراء محاكاة فعلية. حلول الأعطال الخاصة بالمدرب تسلَّم بصورة منفصلة.</p></section>
+</main></body></html>
