@@ -49,7 +49,7 @@ export function prepareLabDocument(source,language){
 }
 export async function getLabPdfPreview(labId){
  const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_pages,student_pdf_page_stages,student_pdf_page_languages').eq('lab_id',labId).maybeSingle();
- if(error)throw error;return {pages:data?.student_pdf_pages||[],stages:data?.student_pdf_page_stages||[],languages:data?.student_pdf_page_languages||[]};
+ if(error)throw error;const ready=Array.isArray(data?.student_pdf_pages)&&data.student_pdf_page_stages?.length===data.student_pdf_pages.length&&data.student_pdf_page_languages?.length===data.student_pdf_pages.length;return {pages:ready?data.student_pdf_pages:[],stages:data?.student_pdf_page_stages||[],languages:data?.student_pdf_page_languages||[]};
 }
 export async function getLabProgress(lab){
  const {data:{session},error:authError}=await supabase.auth.getSession();if(authError)throw authError;
