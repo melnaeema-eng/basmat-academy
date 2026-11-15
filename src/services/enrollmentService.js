@@ -30,20 +30,14 @@ export async function getEnrollment(courseId, userId) {
   return data;
 }
 
-export async function enrollInCourse(courseId, userId) {
-  const { data, error } = await supabase
-    .from("enrollments")
-    .insert({ course_id: courseId, user_id: userId })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+export async function enrollInCourse(courseId,userId){
+ const {data,error}=await supabase.rpc('enroll_my_free_course',{p_course_id:courseId});if(error)throw error;return data;
 }
 
 export async function getMyEnrollments(userId) {
   const { data, error } = await supabase
     .from("enrollments")
-    .select("id, status, progress, enrolled_at, course_id, courses(*)")
+    .select("id, status, progress, refund_locked_at, enrolled_at, course_id, courses(*)")
     .eq("user_id", userId)
     .or("status.is.null,status.neq.cancelled")
     .order("enrolled_at", { ascending: false });
