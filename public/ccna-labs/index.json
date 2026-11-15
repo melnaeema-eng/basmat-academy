@@ -21,6 +21,26 @@
         "Diagnose interface and routing faults"
       ],
       "next_topic": "VLANs and 802.1Q trunks; verify prior practical coverage before selection"
+    },
+    {
+      "id": "ccna-l02-vlans-trunking",
+      "number": 2,
+      "date": "2026-11-15",
+      "title_ar": "إنشاء VLANs وربط سويتشين باستخدام Trunk",
+      "title_en": "VLANs and 802.1Q Trunking",
+      "summary_ar": "إعداد VLAN 10 و20 ومنافذ Access وTrunk بين سويتشين، والتحقق من الاتصال والعزل وتشخيص الأعطال.",
+      "summary_en": "Configure VLAN 10/20, access ports and an inter-switch trunk; verify connectivity and isolation and troubleshoot faults.",
+      "duration_minutes": 90,
+      "status": "published",
+      "student_url": "/ccna-labs/l02-vlans-trunking/student.html",
+      "topic": "Network Access: VLANs and IEEE 802.1Q trunks",
+      "objectives": [
+        "Configure VLANs and access ports",
+        "Configure and verify allowed and native VLANs on a trunk",
+        "Verify same-VLAN reachability and no inter-VLAN routing",
+        "Troubleshoot VLAN membership and trunk faults"
+      ],
+      "next_topic": "Inter-VLAN routing using router-on-a-stick"
     }
   ]
 }
