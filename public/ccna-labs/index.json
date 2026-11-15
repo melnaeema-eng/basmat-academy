@@ -1,446 +1,342 @@
 {
-  "version": 1,
+  "version": 2,
   "academy": "Basmat Alnawabigh Academy",
   "labs": [
     {
-      "id": "ccna-l01-vlsm-static-routing",
+      "id": "0f084483-be44-412c-a23c-986056505b3d",
       "number": 1,
-      "date": "2026-11-15",
       "title_ar": "تقسيم الشبكات VLSM وربط فرعين بالتوجيه الثابت",
       "title_en": "VLSM and Static Routing Between Two Sites",
       "summary_ar": "مختبر عملي كامل: تخطيط العنونة، إعداد راوترين وحاسبين، التحقق من الاتصال وتشخيص الأعطال.",
       "summary_en": "Plan IPv4 addressing, configure two routers and PCs, verify connectivity and troubleshoot faults.",
       "duration_minutes": 90,
+      "price": 0.0,
+      "currency": "SAR",
+      "course_id": "5e028cf6-3fd0-4324-9c34-1b82d6f54150",
       "status": "published",
-      "student_url": "/ccna-labs/l01-vlsm-static-routing/student.html",
-      "topic": "IPv4 VLSM and IPv4 static routing",
-      "objectives": [
-        "Design non-overlapping VLSM networks",
-        "Configure router interfaces and host gateways",
-        "Configure and verify bidirectional static routing",
-        "Diagnose interface and routing faults"
-      ],
-      "next_topic": "VLANs and 802.1Q trunks; verify prior practical coverage before selection"
+      "student_url": "/labs/ccna/l01-vlsm-static-routing"
     },
     {
-      "id": "ccna-l02-vlans-trunking",
+      "id": "0c71b1c0-daa2-45b7-81b2-d7cf67fa7e51",
       "number": 2,
-      "date": "2026-11-15",
       "title_ar": "إنشاء VLANs وربط سويتشين باستخدام Trunk",
       "title_en": "VLANs and 802.1Q Trunking",
       "summary_ar": "إعداد VLAN 10 و20 ومنافذ Access وTrunk بين سويتشين، والتحقق من الاتصال والعزل وتشخيص الأعطال.",
       "summary_en": "Configure VLAN 10/20, access ports and an inter-switch trunk; verify connectivity and isolation and troubleshoot faults.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "ee28ee50-aa93-43d4-9e34-80cd0d745b4b",
       "status": "published",
-      "student_url": "/ccna-labs/l02-vlans-trunking/student.html",
-      "topic": "Network Access: VLANs and IEEE 802.1Q trunks",
-      "objectives": [
-        "Configure VLANs and access ports",
-        "Configure and verify allowed and native VLANs on a trunk",
-        "Verify same-VLAN reachability and no inter-VLAN routing",
-        "Troubleshoot VLAN membership and trunk faults"
-      ],
-      "next_topic": "Inter-VLAN routing using router-on-a-stick"
+      "student_url": "/labs/ccna/l02-vlans-trunking"
     },
     {
-      "id": "ccna-l03-router-on-a-stick",
+      "id": "11121d3d-c1a7-4d87-939e-5ce1f775095a",
       "number": 3,
-      "date": "2026-11-15",
       "title_ar": "التوجيه بين VLANs باستخدام Router-on-a-Stick",
       "title_en": "Inter-VLAN Routing with Router-on-a-Stick",
       "summary_ar": "إضافة راوتر إلى مختبر VLANs وإعداد Subinterfaces والبوابات، مع التحقق من الاتصال وتشخيص الأعطال.",
       "summary_en": "Configure router subinterfaces and default gateways, verify inter-VLAN communication and troubleshoot faults.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "a2028fd1-24e5-4c11-9508-43c73a2b95aa",
       "status": "published",
-      "student_url": "/ccna-labs/l03-router-on-a-stick/student.html",
-      "topic": "Inter-VLAN routing and 802.1Q router subinterfaces",
-      "objectives": [
-        "Configure 802.1Q subinterfaces",
-        "Configure endpoint gateways",
-        "Verify connected routes and inter-VLAN connectivity",
-        "Troubleshoot gateway, VLAN tag and trunk faults"
-      ],
-      "next_topic": "DHCPv4 services and relay"
+      "student_url": "/labs/ccna/l03-router-on-a-stick"
     },
     {
-      "id": "ccna-l04-dhcpv4",
+      "id": "12514f0e-92b1-4071-8433-d773e72bcd74",
       "number": 4,
-      "date": "2026-11-15",
       "title_ar": "توزيع عناوين IPv4 تلقائيًا باستخدام DHCP عبر VLANs",
       "title_en": "Automatic IPv4 Addressing with DHCP Across VLANs",
       "summary_ar": "إعداد DHCP Pools والاستثناءات لكل VLAN، واكتساب العناوين تلقائيًا، والتحقق من DORA والاتصال وتشخيص الأعطال.",
       "summary_en": "Configure per-VLAN DHCP pools and exclusions, acquire client leases, inspect DORA, verify connectivity and troubleshoot faults.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "ec4b6861-ede1-4052-8d4f-1033f4ed719b",
       "status": "published",
-      "student_url": "/ccna-labs/l04-dhcpv4/student.html",
-      "topic": "IP Services: DHCPv4 server and clients",
-      "objectives": [
-        "Configure DHCP pools and exclusions",
-        "Verify client addresses, masks and gateways",
-        "Observe DORA and inspect bindings",
-        "Diagnose DHCP service, pool and gateway faults"
-      ],
-      "next_topic": "DHCP relay to a central server"
+      "student_url": "/labs/ccna/l04-dhcpv4"
     },
     {
-      "id": "ccna-l05-dhcp-relay",
+      "id": "eb361c2d-86dc-4d41-bc79-cd0d74a6e918",
       "number": 5,
-      "date": "2026-11-15",
       "title_ar": "DHCP Relay وخادم مركزي",
       "title_en": "DHCP Relay to a Central Server",
       "summary_ar": "ضبط ip helper-address على واجهة العملاء.",
       "summary_en": "Configure ip helper-address on the client-facing interface.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "dc10a7ac-2a8f-42ec-8094-c1c66e302202",
       "status": "published",
-      "student_url": "/ccna-labs/l05-dhcp-relay/student.html",
-      "topic": "4.6 DHCP client and relay",
-      "objectives": [
-        "Configure ip helper-address on the client-facing interface.",
-        "Explain pool selection using giaddr and verify the return route."
-      ],
-      "next_topic": "IPv6, SLAAC and Static Routing"
+      "student_url": "/labs/ccna/l05-dhcp-relay"
     },
     {
-      "id": "ccna-l06-ipv6-static-slaac",
+      "id": "f9a10359-8c87-4b58-a9d5-ca10b3df00dc",
       "number": 6,
-      "date": "2026-11-15",
       "title_ar": "IPv6 وSLAAC والتوجيه الثابت",
       "title_en": "IPv6, SLAAC and Static Routing",
       "summary_ar": "ضبط Global وLink-local، وتشغيل SLAAC.",
       "summary_en": "Configure global/link-local addressing and SLAAC.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "a80c2ba0-2231-481e-a216-5a6bb0300686",
       "status": "published",
-      "student_url": "/ccna-labs/l06-ipv6-static-slaac/student.html",
-      "topic": "1.8,1.9,3.3 IPv6 addressing and static routes",
-      "objectives": [
-        "Configure global/link-local addressing and SLAAC.",
-        "Configure IPv6 network, default, host and floating routes."
-      ],
-      "next_topic": "Single-Area OSPFv2, DR/BDR and Point-to-Point"
+      "student_url": "/labs/ccna/l06-ipv6-static-slaac"
     },
     {
-      "id": "ccna-l07-ospfv2-area0",
+      "id": "93930220-3925-4e01-a28b-2604d52a99e0",
       "number": 7,
-      "date": "2026-11-15",
       "title_ar": "OSPFv2 ومنطقة واحدة وDR وBDR",
       "title_en": "Single-Area OSPFv2, DR/BDR and Point-to-Point",
       "summary_ar": "تكوين Area 0 وRouter IDs ومراقبة الجيران.",
       "summary_en": "Configure Area 0/router IDs and inspect neighbors.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "52a4b4e5-7f88-4b6d-8010-1149d7a42faf",
       "status": "published",
-      "student_url": "/ccna-labs/l07-ospfv2-area0/student.html",
-      "topic": "3.4 OSPFv2",
-      "objectives": [
-        "Configure Area 0/router IDs and inspect neighbors.",
-        "Interpret DR/BDR and compare broadcast with point-to-point operation."
-      ],
-      "next_topic": "Route Selection, Default and Floating Static Failover"
+      "student_url": "/labs/ccna/l07-ospfv2-area0"
     },
     {
-      "id": "ccna-l08-route-selection-failover",
+      "id": "c1af6af5-f77b-40d5-a76e-60d8cda24d22",
       "number": 8,
-      "date": "2026-11-15",
       "title_ar": "اختيار المسار والافتراضي والاحتياطي",
       "title_en": "Route Selection, Default and Floating Static Failover",
       "summary_ar": "تمييز Longest Prefix Match عن AD وMetric.",
       "summary_en": "Distinguish longest-prefix match from AD and metric.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "f83b4feb-0030-4a00-a339-ae8e6dbc86cc",
       "status": "published",
-      "student_url": "/ccna-labs/l08-route-selection-failover/student.html",
-      "topic": "3.1–3.3 route selection and IPv4 static routing",
-      "objectives": [
-        "Distinguish longest-prefix match from AD and metric.",
-        "Demonstrate a floating route after link failure."
-      ],
-      "next_topic": "Rapid PVST+ and Loop Prevention"
+      "student_url": "/labs/ccna/l08-route-selection-failover"
     },
     {
-      "id": "ccna-l09-rapid-pvst",
+      "id": "8068537b-b111-4bfd-b0ba-80ce3276df64",
       "number": 9,
-      "date": "2026-11-15",
       "title_ar": "Rapid PVST+ ومنع الحلقات",
       "title_en": "Rapid PVST+ and Loop Prevention",
       "summary_ar": "تعيين Root أساسي واحتياطي وتفسير الأدوار.",
       "summary_en": "Set primary/secondary roots and interpret port roles.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "36833ecd-8d94-4330-898e-8deba5e524b1",
       "status": "published",
-      "student_url": "/ccna-labs/l09-rapid-pvst/student.html",
-      "topic": "2.5 Rapid PVST+, root/port roles and guards",
-      "objectives": [
-        "Set primary/secondary roots and interpret port roles.",
-        "Test STP convergence and distinguish PortFast, BPDU Guard, Root Guard and Loop Guard."
-      ],
-      "next_topic": "LACP EtherChannel and Link Bundling"
+      "student_url": "/labs/ccna/l09-rapid-pvst"
     },
     {
-      "id": "ccna-l10-lacp-etherchannel",
+      "id": "752bab8e-e22e-4123-88d4-d6138d17117c",
       "number": 10,
-      "date": "2026-11-15",
       "title_ar": "LACP EtherChannel وتجميع الوصلات",
       "title_en": "LACP EtherChannel and Link Bundling",
       "summary_ar": "إنشاء Port-channel وإثبات تجميع منفذين.",
       "summary_en": "Create a port-channel and verify two bundled members.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "d20f3ab8-c186-4f6f-b960-ae0ccd9f972f",
       "status": "published",
-      "student_url": "/ccna-labs/l10-lacp-etherchannel/student.html",
-      "topic": "2.4 Layer 2 EtherChannel (LACP)",
-      "objectives": [
-        "Create a port-channel and verify two bundled members.",
-        "Verify connectivity when one member fails."
-      ],
-      "next_topic": "Access-Port Security"
+      "student_url": "/labs/ccna/l10-lacp-etherchannel"
     },
     {
-      "id": "ccna-l11-port-security",
+      "id": "2344cdd2-3d20-41eb-89b3-0af3c298539f",
       "number": 11,
-      "date": "2026-11-15",
       "title_ar": "Port Security وتأمين منافذ المستخدمين",
       "title_en": "Access-Port Security",
       "summary_ar": "تعلّم Sticky MAC وتقييد عدد الأجهزة على المنفذ.",
       "summary_en": "Learn sticky MACs and limit devices per port.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "54f3cf44-18d9-4148-bcee-c49f4f1fa8d5",
       "status": "published",
-      "student_url": "/ccna-labs/l11-port-security/student.html",
-      "topic": "5.7 Port security",
-      "objectives": [
-        "Learn sticky MACs and limit devices per port.",
-        "Diagnose violations and compare shutdown/restrict/protect."
-      ],
-      "next_topic": "DHCP Snooping and Dynamic ARP Inspection"
+      "student_url": "/labs/ccna/l11-port-security"
     },
     {
-      "id": "ccna-l12-dhcp-snooping-dai",
+      "id": "fce987bb-464e-47f4-b60b-55118e7a7605",
       "number": 12,
-      "date": "2026-11-15",
       "title_ar": "DHCP Snooping وDynamic ARP Inspection",
       "title_en": "DHCP Snooping and Dynamic ARP Inspection",
       "summary_ar": "تمييز Trusted uplink عن منافذ العملاء.",
       "summary_en": "Distinguish trusted uplinks from client ports.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "efb0c44a-008f-4ab0-bf74-456b5bc19349",
       "status": "published",
-      "student_url": "/ccna-labs/l12-dhcp-snooping-dai/student.html",
-      "topic": "5.7 Layer 2 security",
-      "objectives": [
-        "Distinguish trusted uplinks from client ports.",
-        "Build a snooping binding table and validate ARP against it."
-      ],
-      "next_topic": "Standard and Extended IPv4 ACLs"
+      "student_url": "/labs/ccna/l12-dhcp-snooping-dai"
     },
     {
-      "id": "ccna-l13-ipv4-acls",
+      "id": "a5887687-6b59-4871-8ca4-e364e027f80a",
       "number": 13,
-      "date": "2026-11-15",
       "title_ar": "قوائم الوصول Standard وExtended ACL",
       "title_en": "Standard and Extended IPv4 ACLs",
       "summary_ar": "تطبيق قواعد مرتبة واختبار السماح والمنع.",
       "summary_en": "Apply ordered rules and test permitted and denied traffic.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "b003c6e9-2eba-46f1-9d67-e77149ced37e",
       "status": "published",
-      "student_url": "/ccna-labs/l13-ipv4-acls/student.html",
-      "topic": "5.6 ACL configuration and verification",
-      "objectives": [
-        "Apply ordered rules and test permitted and denied traffic.",
-        "Distinguish source-only standard ACLs from extended service/destination rules."
-      ],
-      "next_topic": "Static NAT, Dynamic NAT Pools and PAT"
+      "student_url": "/labs/ccna/l13-ipv4-acls"
     },
     {
-      "id": "ccna-l14-nat-pat",
+      "id": "742c6e85-76e8-4735-b546-4bac1678dd0d",
       "number": 14,
-      "date": "2026-11-15",
       "title_ar": "Static NAT وDynamic NAT وPAT",
       "title_en": "Static NAT, Dynamic NAT Pools and PAT",
       "summary_ar": "تحديد inside/outside وقراءة الترجمات.",
       "summary_en": "Identify inside/outside and interpret translations.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "962e3c0a-f049-43ff-b12a-c5e1ea973f13",
       "status": "published",
-      "student_url": "/ccna-labs/l14-nat-pat/student.html",
-      "topic": "4.1 Inside-source NAT",
-      "objectives": [
-        "Identify inside/outside and interpret translations.",
-        "Compare static NAT, dynamic pools and overload."
-      ],
-      "next_topic": "SSH, CDP/LLDP Discovery and Configuration Backup"
+      "student_url": "/labs/ccna/l14-nat-pat"
     },
     {
-      "id": "ccna-l15-ssh-discovery-backup",
+      "id": "3131fe7c-196a-4e91-bc0e-2d3eeb2105e8",
       "number": 15,
-      "date": "2026-11-15",
       "title_ar": "SSH وCDP وLLDP ونسخ الإعداد",
       "title_en": "SSH, CDP/LLDP Discovery and Configuration Backup",
       "summary_ar": "تشغيل SSH محلي وتأمين VTY.",
       "summary_en": "Enable local SSH authentication and restrict VTY transport.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "38ca8b62-0010-4f4d-8352-7f41eb3373e5",
       "status": "published",
-      "student_url": "/ccna-labs/l15-ssh-discovery-backup/student.html",
-      "topic": "2.3,2.8,4.8,4.9,5.3 Management and SSH",
-      "objectives": [
-        "Enable local SSH authentication and restrict VTY transport.",
-        "Document discovery neighbors and back up configuration via lab TFTP."
-      ],
-      "next_topic": "NTP, Syslog and SNMP Monitoring"
+      "student_url": "/labs/ccna/l15-ssh-discovery-backup"
     },
     {
-      "id": "ccna-l16-ntp-syslog-snmp",
+      "id": "4bdf173c-1346-4921-9677-dd367e52d768",
       "number": 16,
-      "date": "2026-11-15",
       "title_ar": "NTP وSyslog وSNMP للمراقبة",
       "title_en": "NTP, Syslog and SNMP Monitoring",
       "summary_ar": "ضبط خادم وعميل NTP وفهم التزامن.",
       "summary_en": "Configure an NTP server/client and interpret synchronization.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "7c9b6021-ec6d-4eef-9b39-f23db88c8f86",
       "status": "published",
-      "student_url": "/ccna-labs/l16-ntp-syslog-snmp/student.html",
-      "topic": "4.2,4.4,4.5 Time and monitoring",
-      "objectives": [
-        "Configure an NTP server/client and interpret synchronization.",
-        "Send syslog and interpret SNMP and severity levels."
-      ],
-      "next_topic": "DNS, HTTP and TCP/UDP Observation"
+      "student_url": "/labs/ccna/l16-ntp-syslog-snmp"
     },
     {
-      "id": "ccna-l17-dns-tcp-udp",
+      "id": "33603d01-9aad-439c-945b-5500aaaecb0a",
       "number": 17,
-      "date": "2026-11-15",
       "title_ar": "DNS وHTTP ومقارنة TCP وUDP",
       "title_en": "DNS, HTTP and TCP/UDP Observation",
       "summary_ar": "تمييز فشل DNS عن فشل الاتصال أو HTTP.",
       "summary_en": "Distinguish DNS failure from connectivity or HTTP failure.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "f3c16098-c735-4d56-b527-66cf09006e07",
       "status": "published",
-      "student_url": "/ccna-labs/l17-dns-tcp-udp/student.html",
-      "topic": "1.5,1.10,4.3,4.9 Application services and host settings",
-      "objectives": [
-        "Distinguish DNS failure from connectivity or HTTP failure.",
-        "Trace DNS, TCP handshake and HTTP traffic."
-      ],
-      "next_topic": "WLC WLAN Configuration with WPA2-PSK"
+      "student_url": "/labs/ccna/l17-dns-tcp-udp"
     },
     {
-      "id": "ccna-l18-wireless-wlc-wpa2",
+      "id": "f7ebdbad-0208-48eb-a2ab-d4f944a195bf",
       "number": 18,
-      "date": "2026-11-15",
       "title_ar": "WLC وشبكة لاسلكية WPA2-PSK",
       "title_en": "WLC WLAN Configuration with WPA2-PSK",
       "summary_ar": "ربط WLC وLightweight AP وتكوين WLAN للمستخدمين.",
       "summary_en": "Connect a WLC/lightweight AP and configure a user WLAN.",
       "duration_minutes": 120,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "f4d5e188-5491-4727-9f4b-2e11f42b3484",
       "status": "published",
-      "student_url": "/ccna-labs/l18-wireless-wlc-wpa2/student.html",
-      "topic": "1.11,2.6–2.9,5.9–5.10 Wireless GUI",
-      "objectives": [
-        "Connect a WLC/lightweight AP and configure a user WLAN.",
-        "Configure SSID and WPA2/AES and verify DHCP/connectivity."
-      ],
-      "next_topic": "HSRP and First-Hop Gateway Redundancy"
+      "student_url": "/labs/ccna/l18-wireless-wlc-wpa2"
     },
     {
-      "id": "ccna-l19-hsrp-fhrp",
+      "id": "a1dac323-ba4b-429c-9447-933ce5a7f9f4",
       "number": 19,
-      "date": "2026-11-15",
       "title_ar": "HSRP وتكرار البوابة الافتراضية",
       "title_en": "HSRP and First-Hop Gateway Redundancy",
       "summary_ar": "تمييز العنوان الافتراضي عن عنوان الراوتر الفعلي.",
       "summary_en": "Distinguish a virtual gateway from physical router addresses.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "2a7f367b-a161-45f5-b036-a92e928533fa",
       "status": "published",
-      "student_url": "/ccna-labs/l19-hsrp-fhrp/student.html",
-      "topic": "3.5 First-hop redundancy concepts",
-      "objectives": [
-        "Distinguish a virtual gateway from physical router addresses.",
-        "Test active/standby roles and preemption."
-      ],
-      "next_topic": "QoS, WAN/VPN and Network Design Workshop"
+      "student_url": "/labs/ccna/l19-hsrp-fhrp"
     },
     {
-      "id": "ccna-l20-qos-wan-cloud-design",
+      "id": "8897d299-27db-4fa3-92d8-f0a970284ca8",
       "number": 20,
-      "date": "2026-11-15",
       "title_ar": "QoS وWAN وVPN وتصميم الشبكة",
       "title_en": "QoS, WAN/VPN and Network Design Workshop",
       "summary_ar": "تصنيف الحركة وتفسير marking/queueing/policing/shaping.",
       "summary_en": "Classify traffic and distinguish marking, queuing, policing and shaping.",
       "duration_minutes": 120,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "5db1e28b-bac3-4b2b-85c3-7d0751c2d2d6",
       "status": "published",
-      "student_url": "/ccna-labs/l20-qos-wan-cloud-design/student.html",
-      "topic": "1.1–1.4,1.12,4.7,5.1–5.5 Design and QoS",
-      "objectives": [
-        "Classify traffic and distinguish marking, queuing, policing and shaping.",
-        "Select WAN/VPN and cabling and distinguish forwarding/control and failure domains."
-      ],
-      "next_topic": "REST APIs, JSON and Local Automation"
+      "student_url": "/labs/ccna/l20-qos-wan-cloud-design"
     },
     {
-      "id": "ccna-l21-rest-json-automation",
+      "id": "8bc792ce-9b87-4ced-a1da-2603b937c955",
       "number": 21,
-      "date": "2026-11-15",
       "title_ar": "REST APIs وJSON والأتمتة المحلية",
       "title_en": "REST APIs, JSON and Local Automation",
       "summary_ar": "ربط HTTP verbs بـCRUD وقراءة status codes.",
       "summary_en": "Map HTTP verbs to CRUD and interpret status codes.",
       "duration_minutes": 90,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "a2061403-bab9-42ea-a6c7-618a9cd75164",
       "status": "published",
-      "student_url": "/ccna-labs/l21-rest-json-automation/student.html",
-      "topic": "6.1,6.5,6.7 REST/CRUD/JSON",
-      "objectives": [
-        "Map HTTP verbs to CRUD and interpret status codes.",
-        "Distinguish JSON booleans/strings/objects and test authentication."
-      ],
-      "next_topic": "Ansible, Terraform, SDN and AI Output Review"
+      "student_url": "/labs/ccna/l21-rest-json-automation"
     },
     {
-      "id": "ccna-l22-ansible-terraform-ai-sdn",
+      "id": "9acc9f8e-2cbe-4229-8295-9ee93a99a3ea",
       "number": 22,
-      "date": "2026-11-15",
       "title_ar": "Ansible وTerraform وSDN ومراجعة مخرجات AI",
       "title_en": "Ansible, Terraform, SDN and AI Output Review",
       "summary_ar": "تمييز desired state وidempotency وplan/diff.",
       "summary_en": "Recognize desired state, idempotency and plan/diff.",
       "duration_minutes": 120,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "6e125d0b-4f6d-4fcc-a2d4-ee4331106936",
       "status": "published",
-      "student_url": "/ccna-labs/l22-ansible-terraform-ai-sdn/student.html",
-      "topic": "6.1–6.4,6.6 Automation/controller/AI/configuration tools",
-      "objectives": [
-        "Recognize desired state, idempotency and plan/diff.",
-        "Compare control/data planes and northbound/southbound APIs and review AI advice."
-      ],
-      "next_topic": "Integrated Capstone: VLAN, DHCP, OSPF, NAT and ACL"
+      "student_url": "/labs/ccna/l22-ansible-terraform-ai-sdn"
     },
     {
-      "id": "ccna-l23-integrated-capstone",
+      "id": "217349ce-f3c2-455a-8a23-ad1373599acf",
       "number": 23,
-      "date": "2026-11-15",
       "title_ar": "مشروع متكامل: VLAN وDHCP وOSPF وNAT وACL",
       "title_en": "Integrated Capstone: VLAN, DHCP, OSPF, NAT and ACL",
       "summary_ar": "بناء شبكة متعددة الخدمات والتحقق طبقة بطبقة.",
       "summary_en": "Build a multi-service topology and verify it layer by layer.",
       "duration_minutes": 180,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "f2f77f05-6030-49ad-bb26-50c6965911e6",
       "status": "published",
-      "student_url": "/ccna-labs/l23-integrated-capstone/student.html",
-      "topic": "Integrated domains 1–5",
-      "objectives": [
-        "Build a multi-service topology and verify it layer by layer.",
-        "Connect addressing, routing, translation and access policy without conflating them."
-      ],
-      "next_topic": "Final Practical Troubleshooting Assessment"
+      "student_url": "/labs/ccna/l23-integrated-capstone"
     },
     {
-      "id": "ccna-l24-final-troubleshooting-assessment",
+      "id": "a4f5f14b-cd24-447d-aeac-0f1e23b5d955",
       "number": 24,
-      "date": "2026-11-15",
       "title_ar": "التقييم الختامي العملي واستكشاف الأعطال",
       "title_en": "Final Practical Troubleshooting Assessment",
       "summary_ar": "تشخيص أعطال مستقلة بالأدلة دون إعادة بناء عشوائية.",
       "summary_en": "Diagnose independent faults with evidence instead of random rebuilds.",
       "duration_minutes": 120,
+      "price": 100.0,
+      "currency": "SAR",
+      "course_id": "557e1d50-20f8-4f47-b997-ebca4b1fb491",
       "status": "published",
-      "student_url": "/ccna-labs/l24-final-troubleshooting-assessment/student.html",
-      "topic": "Final integrated practical assessment",
-      "objectives": [
-        "Diagnose independent faults with evidence instead of random rebuilds.",
-        "Deliver root-cause, minimal repair and regression evidence."
-      ],
-      "next_topic": "Series complete; use a new evidence-led revision scenario, do not duplicate these labs"
+      "student_url": "/labs/ccna/l24-final-troubleshooting-assessment"
     }
   ]
 }
