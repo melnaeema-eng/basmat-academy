@@ -48,7 +48,10 @@ export async function getMyEnrollments(userId) {
     .or("status.is.null,status.neq.cancelled")
     .order("enrolled_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  const {data:labs,error:labError}=await supabase.from('academy_lab_catalog').select('course_id,track,lab_number,title_ar,title_en').eq('is_published',true);
+  if(labError)throw labError;
+  const map=new Map((labs||[]).map(lab=>[lab.course_id,lab]));
+  return (data??[]).map(item=>{const lab=map.get(item.course_id);return lab&&item.courses?{...item,courses:{...item.courses,title_ar:lab.title_ar,title_en:lab.title_en,lab_track:lab.track,lab_number:lab.lab_number}}:item});
 }
 
 export async function cancelMyFreeEnrollment(courseId) {
