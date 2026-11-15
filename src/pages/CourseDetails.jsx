@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
 import { enrollInCourse, getCurrentUser, getEnrollment } from "../services/enrollmentService";
 import { getCourseReviews, getMyReview, isCourseWishlisted, saveMyReview, toggleWishlist } from "../services/marketplaceService";
+import {getLabByCourse,hasLabAccess} from "../services/labService";
 import { addToCart } from "../services/commerceService";
 
 export default function CourseDetails() {
@@ -13,6 +14,7 @@ export default function CourseDetails() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const ar = i18n.language?.startsWith("ar");
+  const [lab,setLab]=useState(null);
   const [course,setCourse]=useState(null),[lessons,setLessons]=useState([]),[reviews,setReviews]=useState([]);
   const [enrollment,setEnrollment]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState("");
   const [wishlisted,setWishlisted]=useState(false),[busy,setBusy]=useState(false),[preview,setPreview]=useState(null);
@@ -21,31 +23,34 @@ export default function CourseDetails() {
   async function load(){
     try{
       setLoading(true);setError("");
-      const [{data:c,error:ce},{data:l,error:le},reviewRows] = await Promise.all([
+      const [{data:c,error:ce},{data:l,error:le},reviewRows,labRow] = await Promise.all([
         supabase.from("courses").select("*").eq("id",id).single(),
         supabase.rpc("get_course_curriculum_public",{p_course_id:id}),
         getCourseReviews(id),
+        getLabByCourse(id),
       ]);
       if(ce)throw ce;if(le)throw le;
-      setCourse(c);setLessons(l||[]);setReviews(reviewRows);
+      setLab(labRow);setCourse(c);setLessons(l||[]);setReviews(reviewRows);
       const user=await getCurrentUser();
       if(user){
         const [en,w,mr]=await Promise.all([getEnrollment(id,user.id),isCourseWishlisted(id),getMyReview(id)]);
-        setEnrollment(en);setWishlisted(w);setMyReview(mr);
+        setEnrollment(labRow ? ((await hasLabAccess(labRow.id)) ? (en||{labAccess:true}) : null) : en);setWishlisted(w);setMyReview(mr);
         if(mr){setRating(mr.rating);setReviewText(mr.review_text||"")}
       }
     }catch(e){setError(e.message||"Could not load course")}finally{setLoading(false)}
   }
   useEffect(()=>{load()},[id]);
 
-  const title=useMemo(()=>course?((ar?course.title_ar:course.title_en)||course.title||t("course.untitled")):"",[course,ar,t]);
-  const description=useMemo(()=>course?((ar?course.description_ar:course.description_en)||course.description||""):"",[course,ar]);
+  const title=useMemo(()=>course?((ar?lab?.title_ar:lab?.title_en)||(ar?course.title_ar:course.title_en)||course.title||t("course.untitled")):"",[course,lab,ar,t]);
+  const description=useMemo(()=>course?((ar?lab?.summary_ar:lab?.summary_en)||(ar?course.description_ar:course.description_en)||course.description||""):"",[course,lab,ar]);
   const average=reviews.length?reviews.reduce((s,r)=>s+Number(r.rating||0),0)/reviews.length:0;
   const totalMinutes=lessons.reduce((s,l)=>s+(Number.parseInt(l.duration)||0),0);
 
   async function enroll(){
     try{
-      setBusy(true);const user=await getCurrentUser();
+      setBusy(true);
+      if(lab&&(Number(lab.price)===0||enrollment)){navigate(`/labs/${lab.track}/${lab.slug}`);return}
+      const user=await getCurrentUser();
       if(!user){navigate("/login",{state:{from:`/courses/${id}`}});return}
       if(enrollment){navigate("/my-courses");return}
       if(Number(course?.price||0)>0){navigate(`/checkout/${id}`);return}
@@ -85,14 +90,14 @@ export default function CourseDetails() {
             <img src={course.image||"https://placehold.co/800x450?text=Course"} alt={title} className="aspect-video w-full object-cover"/>
             <div className="p-5">
               <div className="text-3xl font-extrabold text-[#08284d]">{Number(course.price)>0?<span dir="ltr">{course.price} SAR</span>:t("common.free")}</div>
-              <button onClick={enroll} disabled={busy} className="academy-btn-primary mt-4 w-full">{enrollment?(ar?"اذهب إلى دوراتي":"Go to My Courses"):Number(course.price)>0?(ar?"اشترِ الدورة":"Buy Course"):(ar?"سجل مجانًا":"Enroll for Free")}</button>
+              <button onClick={enroll} disabled={busy} className="academy-btn-primary mt-4 w-full">{enrollment?(lab?(ar?"افتح المختبر":"Open Lab"):(ar?"اذهب إلى دوراتي":"Go to My Courses")):Number(course.price)>0?(lab?(ar?"اشترِ المختبر":"Buy Lab"):(ar?"اشترِ الدورة":"Buy Course")):(ar?"ابدأ مجانًا":"Start Free")}</button>
               {Number(course.price)>0&&!enrollment&&<button onClick={cart} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 font-bold text-orange-700 hover:bg-orange-100">🛒 {ar?"أضف للسلة":"Add to Cart"}</button>}
               <button onClick={wishlist} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-bold hover:bg-slate-50">{wishlisted?<FaHeart className="text-red-500"/>:<FaRegHeart/>}{wishlisted?(ar?"في قائمة الرغبات":"Wishlisted"):(ar?"أضف لقائمة الرغبات":"Add to Wishlist")}</button>
               <div className="mt-5 space-y-3 border-t pt-5 text-sm text-slate-600">
-                <div className="flex items-center gap-2"><FaPlayCircle className="text-[#f97316]"/>{lessons.length} {ar?"درس":"lessons"}</div>
+                <div className="flex items-center gap-2"><FaPlayCircle className="text-[#f97316]"/>{lessons.length} {lab?(ar?"مختبر عملي":"practical lab"):(ar?"درس":"lessons")}</div>
                 {totalMinutes>0&&<div className="flex items-center gap-2"><FaClock className="text-[#f97316]"/>{totalMinutes} {ar?"دقيقة تقريبًا":"minutes approx."}</div>}
                 <div className="flex items-center gap-2"><FaCheckCircle className="text-emerald-600"/>{ar?"وصول من الجوال والكمبيوتر":"Access on mobile and desktop"}</div>
-                <div className="flex items-center gap-2"><FaCheckCircle className="text-emerald-600"/>{ar?"شهادة عند استيفاء المتطلبات":"Certificate when requirements are met"}</div>
+                <div className="flex items-center gap-2"><FaCheckCircle className="text-emerald-600"/>{lab?(ar?"أوامر إعداد وخطوات تحقق وتمارين أعطال":"Configuration, verification and troubleshooting exercises"):(ar?"شهادة عند استيفاء المتطلبات":"Certificate when requirements are met")}</div>
               </div>
             </div>
           </div>
@@ -111,7 +116,7 @@ export default function CourseDetails() {
 
         <section className="academy-card overflow-hidden">
           <div className="border-b p-5"><h2 className="academy-title text-2xl">{ar?"محتوى الدورة":"Course content"}</h2><p className="mt-1 text-sm text-slate-500">{lessons.length} {ar?"درس":"lessons"}</p></div>
-          <div className="divide-y">{lessons.map((l,i)=><div key={l.id} className="flex items-center justify-between gap-4 p-4"><div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><div className="min-w-0"><div className="truncate font-bold text-[#08284d]">{l.title}</div>{l.description&&<div className="mt-1 line-clamp-1 text-xs text-slate-500">{l.description}</div>}</div></div><div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">{l.is_preview&&<button onClick={()=>setPreview(l)} className="rounded-full bg-orange-50 px-2 py-1 font-bold text-orange-700 hover:bg-orange-100">{ar?"معاينة":"Preview"}</button>}{l.duration&&<span dir="ltr">{l.duration}</span>}</div></div>)}
+          <div className="divide-y">{lessons.map((l,i)=><div key={l.id} className="flex items-center justify-between gap-4 p-4"><div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold">{i+1}</span><div className="min-w-0"><div className="truncate font-bold text-[#08284d]">{lab&&l.id===lab.lesson_id?(ar?lab.title_ar:lab.title_en):l.title}</div>{l.description&&<div className="mt-1 line-clamp-1 text-xs text-slate-500">{lab&&l.id===lab.lesson_id?(ar?lab.summary_ar:lab.summary_en):l.description}</div>}</div></div><div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">{l.is_preview&&<button onClick={()=>setPreview(l)} className="rounded-full bg-orange-50 px-2 py-1 font-bold text-orange-700 hover:bg-orange-100">{ar?"معاينة":"Preview"}</button>}{l.duration&&<span dir="ltr">{l.duration}</span>}</div></div>)}
             {!lessons.length&&<div className="p-8 text-center text-slate-500">{ar?"سيتم إضافة محتوى الدورة قريبًا.":"Course content will be added soon."}</div>}
           </div>
         </section>
