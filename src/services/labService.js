@@ -18,3 +18,21 @@ export async function getLabPage(track,slug){
  const {data,error:ce}=await supabase.from('academy_lab_content').select('student_html').eq('lab_id',lab.id).maybeSingle();
  if(ce)throw ce;return {lab,html:data?.student_html||null};
 }
+export async function getLabPdf(labId){
+ const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_base64').eq('lab_id',labId).maybeSingle();
+ if(error)throw error;return data?.student_pdf_base64||null;
+}
+export function prepareLabDocument(source,language){
+ if(!source)return '';
+ const lang=language==='en'?'en':'ar';
+ let html=source.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'')
+  .replace(/<html\b[^>]*>/i,`<html lang="${lang}" dir="${lang==='ar'?'rtl':'ltr'}">`)
+  .replace(/<a class="back"[^>]*>[\s\S]*?<\/a>/g,'')
+  .replace(/<button[^>]*onclick="window\.print\(\)"[^>]*>[\s\S]*?<\/button>/g,'');
+ // Initial content must be visible even when a script cannot run in srcdoc.
+ html=html.replace(new RegExp('(<div\\b[^>]*id="lab-'+lang+'"[^>]*)(\\s+hidden)([^>]*>)','i'),'$1$3');
+ const style='<style>html[lang="ar"] #lab-ar,html[lang="en"] #lab-en{display:block!important}html[lang="ar"] #lab-en,html[lang="en"] #lab-ar{display:none!important}</style>';
+ const script=`<script>(()=>{const root=document.documentElement;function apply(lang){lang=lang==='en'?'en':'ar';root.lang=lang;root.dir=lang==='ar'?'rtl':'ltr';['ar','en'].forEach(code=>{const block=document.getElementById('lab-'+code);if(block)block.hidden=code!==lang});document.querySelectorAll('[data-lab-language]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.labLanguage===lang)))}document.querySelectorAll('[data-lab-language]').forEach(button=>button.addEventListener('click',()=>apply(button.dataset.labLanguage)));apply(root.lang)})();</script>`;
+ html=html.replace('</head>',style+'</head>').replace('</body>',script+'</body>');
+ return html;
+}
