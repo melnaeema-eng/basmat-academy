@@ -28,6 +28,7 @@ export function prepareLabDocument(source,language){
  let html=source.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'')
   .replace(/<html\b[^>]*>/i,`<html lang="${lang}" dir="${lang==='ar'?'rtl':'ltr'}">`)
   .replace(/<a class="back"[^>]*>[\s\S]*?<\/a>/g,'')
+  .replace(/<a\b([^>]*href="https?:\/\/[^>]+)>/gi,(_,attrs)=>'<a '+attrs.replace(/\s+(target|rel)="[^"]*"/gi,'')+' target="_blank" rel="noopener noreferrer">')
   .replace(/<button[^>]*onclick="window\.print\(\)"[^>]*>[\s\S]*?<\/button>/g,'');
  // Initial content must be visible even when a script cannot run in srcdoc.
  html=html.replace(new RegExp('(<div\\b[^>]*id="lab-'+lang+'"[^>]*)(\\s+hidden)([^>]*>)','i'),'$1$3');
@@ -49,4 +50,22 @@ export function prepareLabDocument(source,language){
    .replace(/(&[a-zA-Z0-9#]+;|[A-Za-z0-9][A-Za-z0-9_+./-]*(?:[ \t]+[A-Za-z0-9][A-Za-z0-9_+./-]*)*)/g,part=>part.startsWith('&')?part:'<bdi dir="ltr">'+part+'</bdi>');
  }).join('');
  return html;
+}
+export async function getLabPdfPreview(labId){
+ const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_pages').eq('lab_id',labId).maybeSingle();
+ if(error)throw error;return data?.student_pdf_pages||[];
+}
+export async function getLabProgress(lab){
+ const {data:{session},error:authError}=await supabase.auth.getSession();if(authError)throw authError;
+ if(!session?.user)return {canRecord:false,loginRequired:true,completed_stages:[],progress:0};
+ const [{data:enrollment,error:ee},{data:stages,error:se}]=await Promise.all([
+  supabase.from('enrollments').select('id,status').eq('course_id',lab.course_id).eq('user_id',session.user.id).maybeSingle(),
+  supabase.from('academy_lab_stage_progress').select('stage,completed').eq('lab_id',lab.id).eq('user_id',session.user.id)
+ ]);
+ if(ee||se)throw ee||se;const completed=(stages||[]).filter(x=>x.completed).map(x=>x.stage);
+ return {canRecord:!!enrollment&&enrollment.status!=='cancelled',loginRequired:false,completed_stages:completed,progress:Math.round(completed.length*100/8)};
+}
+export async function saveLabStage(labId,stage,completed){
+ const {data,error}=await supabase.rpc('set_academy_lab_stage',{p_lab_id:labId,p_stage:stage,p_completed:completed});
+ if(error)throw error;return data;
 }
