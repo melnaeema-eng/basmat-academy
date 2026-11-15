@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>مختبر ٤ — DHCPv4 | بصمة النوابغ</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18334e;font-family:'Cairo',Tahoma,Arial,sans-serif;font-size:18px;font-weight:500;line-height:2}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #dde4ed;border-radius:18px;padding:24px;margin-bottom:20px}h1{font-size:30px;font-weight:800;line-height:1.7}h2{color:#b94900;font-weight:800;line-height:1.7}h3{font-weight:700}a{color:#a84200}pre{font-family:Consolas,'Courier New',monospace;font-weight:400;direction:ltr;text-align:left;background:#10263d;color:#eef6ff;padding:18px;border-radius:10px;overflow:auto;line-height:1.65;font-size:14px}code{direction:ltr;unicode-bidi:embed}table{border-collapse:collapse;width:100%;font-size:16px}th,td{border:1px solid #d9e1ea;padding:10px;text-align:right}.scroll{overflow-x:auto}.tag{color:#b94900;font-weight:bold}button{background:#e96905;color:white;border:0;padding:12px 20px;border-radius:10px;font:inherit;cursor:pointer}.diagram{width:100%;height:auto;display:block}svg text{font-family:'Cairo',Tahoma,Arial,sans-serif;fill:#12345b}li{margin:8px 0}@media(max-width:600px){main{padding:12px}header,section{padding:16px}h1{font-size:23px}}@media print{body{background:white;font-size:12pt}main{max-width:none;padding:0}button,.back{display:none}section,header{border-radius:0;break-inside:auto}h2,h3{break-after:avoid}pre,tr,svg{break-inside:avoid}pre{white-space:pre-wrap;background:#f0f3f6;color:#111;font-size:11px}}
+</style><style>[hidden]{display:none!important}.language-bar{max-width:1000px;margin:18px auto 0;padding:0 24px;display:flex;gap:10px;justify-content:flex-end}.language-bar button{background:white;color:#18334e;border:1px solid #c4d1df;padding:8px 16px}.language-bar button[aria-pressed="true"]{background:#12345b;color:white}#lab-en{font-family:'Cairo',Arial,sans-serif}#lab-en th,#lab-en td{text-align:left}#lab-en pre{font-family:Consolas,'Courier New',monospace}@media print{.language-bar{display:none}[hidden]{display:none!important}}</style><script defer src="/ccna-labs/language.js"></script></head><body><nav class="language-bar" aria-label="Language"><button type="button" data-lab-language="ar" lang="ar">العربية</button><button type="button" data-lab-language="en" lang="en">English</button></nav><main><div id="lab-ar" lang="ar" dir="rtl" hidden><header><a class="back" href="/ccna-labs">العودة إلى المختبرات</a><p class="tag">أكاديمية بصمة النوابغ</p><h1>مختبر ٤: توزيع IPv4 تلقائيًا باستخدام DHCP عبر VLANs</h1><p>CCNA 200-301 • المهندس مجدي النعيم • ٩٠ دقيقة</p><button type="button" onclick="window.print()">طباعة المختبر / حفظ PDF</button></header><section><h2>١. الأهداف والمتطلبات</h2><ul><li>إعداد DHCP Pool مستقلة لكل VLAN.</li><li>استثناء البوابات والعناوين المحجوزة من التوزيع.</li><li>تحويل الحاسبات من Static إلى DHCP والتحقق من العنوان والقناع والبوابة.</li><li>تتبع DORA وتشخيص فشل الحصول على عنوان أو بوابة صحيحة.</li></ul><p>المتطلبات السابقة: المختبر الثالث بحالة تشغيل سليمة. موضوع المنهج: IP Services. توزيع الوقت: ١٥ دقيقة تجهيز، ٢٠ إعداد DHCP، ٢٠ تحقق، ٢٠ أعطال، ١٥ أسئلة وتسليم.</p></section><section><h2>٢. السيناريو والأجهزة</h2><p>استكمل Router-on-a-Stick من المختبر الثالث. سيتولى R1 توزيع العناوين لشبكتي المبيعات والدعم بدل إدخالها يدويًا. استخدم Cisco 2911 واحدًا، وسويتشين 2960-24TT وأربعة PCs.</p><svg class="diagram" viewBox="0 0 800 460" role="img" aria-labelledby="topology"><title id="topology">R1 DHCP server, SW1 and SW2 trunks, four VLAN clients</title><g stroke="#7296b5" stroke-width="3"><path d="M220 85V185M300 215H500M180 245L100 375M260 245L300 375M540 245L500 375M620 245L700 375"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="140" y="20" width="160" height="65" rx="10"/><rect x="140" y="185" width="160" height="60" rx="10"/><rect x="500" y="185" width="160" height="60" rx="10"/><rect x="30" y="375" width="140" height="55" rx="10"/><rect x="230" y="375" width="140" height="55" rx="10"/><rect x="430" y="375" width="140" height="55" rx="10"/><rect x="630" y="375" width="140" height="55" rx="10"/></g><g text-anchor="middle" font-size="16"><text x="220" y="60">R1 — 2911</text><text x="220" y="222">SW1</text><text x="580" y="222">SW2</text><text x="100" y="407">PC-A / VLAN 10</text><text x="300" y="407">PC-B / VLAN 20</text><text x="500" y="407">PC-C / VLAN 10</text><text x="700" y="407">PC-D / VLAN 20</text><text x="430" y="135">R1 Gi0/0 ↔ SW1 Gi0/2</text><text x="400" y="195">Gi0/1 ↔ Gi0/1</text><text x="400" y="245">802.1Q Trunk</text></g></svg><div class="scroll"><table><tr><th>الوصلة</th><th>الكابل</th></tr><tr><td>R1 Gi0/0 ↔ SW1 Gi0/2</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1 ↔ SW2 Gi0/1</td><td>Crossover</td></tr><tr><td>PC-A ↔ SW1 Fa0/1; PC-B ↔ SW1 Fa0/2</td><td>Straight-through</td></tr><tr><td>PC-C ↔ SW2 Fa0/1; PC-D ↔ SW2 Fa0/2</td><td>Straight-through</td></tr></table></div></section><section><h2>٣. خطة العناوين والتجهيز</h2><div class="scroll"><table><tr><th>VLAN</th><th>الشبكة والقناع</th><th>البوابة</th><th>المستثنى</th><th>النطاق المتاح</th></tr><tr><td>10 SALES</td><td>192.168.10.0/24</td><td>192.168.10.1</td><td>.1 إلى .20</td><td>.21 إلى .254</td></tr><tr><td>20 SUPPORT</td><td>192.168.20.0/24</td><td>192.168.20.1</td><td>.1 إلى .20</td><td>.21 إلى .254</td></tr></table></div><p>القناع: 255.255.255.0. يحتفظ R1 بعنواني البوابة الثابتين. استخدم إعدادات الحاسبات الثابتة من المختبر الثالث أولًا لإثبات سلامة الاتصال، ثم حوّلها إلى DHCP بعد إعداد الخادم. لا تفترض حصول PC معين على عنوان ثابت من النطاق.</p><p>الخادم هو الراوتر المتصل مباشرة بالـVLANs؛ لا نستخدم ip helper-address هنا. لم نضف DNS أو إنترنت لهذا التمرين؛ نجاح ping بالعناوين لا يختبر DNS.</p></section><section><h2>٤. إعداد الأجهزة من البداية</h2><p>إذا تابعت المختبر الثالث فتأكد من الإعدادات التالية؛ إذا بدأت من ملف فارغ فنفذها كاملة. لا تطبق إعداد المختبر على شبكة إنتاج.</p><h3>SW1</h3><pre>enable
+configure terminal
+hostname SW1
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+interface gigabitEthernet 0/2
+description TRUNK_TO_R1
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>SW2</h3><pre>enable
+configure terminal
+hostname SW2
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>R1 — الواجهات</h3><pre>enable
+configure terminal
+hostname R1
+no ip domain-lookup
+interface gigabitEthernet 0/0
+description TRUNK_TO_SW1
+no ip address
+no shutdown
+exit
+interface gigabitEthernet 0/0.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+end
+copy running-config startup-config</pre><h3>R1 — DHCP</h3><pre>enable
+configure terminal
+service dhcp
+ip dhcp excluded-address 192.168.10.1 192.168.10.20
+ip dhcp excluded-address 192.168.20.1 192.168.20.20
+ip dhcp pool SALES
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+exit
+ip dhcp pool SUPPORT
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+exit
+end
+copy running-config startup-config</pre><p>اضغط Enter لقبول اسم ملف الحفظ. إذا كان الملف من مختبر سابق يتضمن DHCP فتأكد من عدم وجود Pools أو استثناءات متعارضة قبل البدء.</p></section><section><h2>٥. تحويل الحاسبات والتحقق</h2><ol><li>افتح Desktop → IP Configuration على الحاسبات الأربعة واضغط DHCP.</li><li>تحقق من اكتمال الطلب ثم سجل عنوان كل حاسب وقناعه وبوابته.</li><li>يجب أن يحصل A وC على عنوان من 192.168.10.21–254، ويحصل B وD على عنوان من 192.168.20.21–254، مع بوابة الشبكة الصحيحة.</li><li>في Simulation Mode فعّل مرشح DHCP، ثم أعد طلب عنوان من أحد الحاسبات بمفتاح Static ثم DHCP لملاحظة الرسائل. في عملية اكتساب جديدة راقب Discover → Offer → Request → ACK؛ إعادة التجديد قد لا تعيد التسلسل كاملًا.</li></ol><p>على R1:</p><pre>show ip dhcp pool
+show ip dhcp binding
+show ip dhcp conflict
+show ip interface brief
+show ip route
+show running-config</pre><p>توقع Pool لكل شبكة، وBinding لكل عميل حصل على Lease. في ملف نظيف وبعد نجاح الحاسبات الأربعة يجب وجود أربع عمليات ربط فعالة. قد تظهر سجلات قديمة إن أُعيد استخدام الملف؛ لا تساوِ عدد السجلات التاريخية بعدد الحاسبات الحالية.</p><p>على كل PC:</p><pre>ipconfig</pre><p>من PC-A نفذ ping إلى 192.168.10.1 ثم 192.168.20.1، ثم إلى عنوان PC-C وعنوان PC-D اللذين سجلتهما فعليًا. اختبر العودة من PC-D إلى PC-A. لا تنسخ عنوانًا افتراضيًا للحاسبات؛ عنوان DHCP قد يتغير.</p><p>افحص Trunks بـshow interfaces trunk وعضوية Access بـshow vlan brief عند فشل طلبات أحد الأقسام. قد تحتاج إعادة ping بعد ARP.</p></section><section><h2>٦. تمارين الأعطال</h2><div class="scroll"><table><tr><th>العَرَض</th><th>ما يفحصه المتدرب</th></tr><tr><td>كل الحاسبات تفشل في اكتساب Lease جديدة</td><td>service dhcp وحالة الواجهة والـTrunks</td></tr><tr><td>VLAN واحدة فقط لا تحصل على عنوان</td><td>network والقناع في Pool وAllowed VLANs</td></tr><tr><td>العنوان والقناع صحيحان، الاتصال المحلي يعمل، لكن الشبكة الأخرى لا تعمل</td><td>default-router في Pool والبوابة الفعلية عند العميل</td></tr><tr><td>حاسب واحد فقط يحتفظ بعنوانه القديم</td><td>هل اختير DHCP فعلًا؟ وهل اكتمل طلب جديد؟</td></tr></table></div><p>يطبق المدرب عطلًا واحدًا ثم يطلب اكتساب Lease جديدة لإظهار أثره؛ العملاء أصحاب Leases سابقة قد يستمرون مؤقتًا. سجل العطل والدليل والإصلاح وأعد اختبار عميل متأثر. لا تحذف جميع Bindings لمجرد التشخيص.</p></section><section><h2>٧. الأسئلة والتسليم</h2><ol><li>لماذا استثنينا .1–.20؟</li><li>ما الفرق بين network وdefault-router داخل Pool؟</li><li>لماذا لا نحتاج DHCP Relay هنا؟</li><li>هل وجود Binding وحده يثبت صحة البوابة؟</li><li>لماذا قد يستمر حاسب بالعمل بعد تعطيل خدمة DHCP؟</li></ol><p>سلّم CCNA-L04-YourName.pkt، وجدول العناوين المكتسبة، ومخرجات Pool وBinding، ودليل DORA ونتائج ping، وتقرير عطلين. التقييم: الاستثناءات وPools ٣٠، صحة بيانات العملاء ٢٥، التحقق وDORA ٢٠، تشخيص الأعطال ٢٥.</p><p>لا يوجد ملف .pkt جاهز أو تشغيل فعلي للمحاكاة ضمن الحزمة. أسئلة الورقة تدريبية، وربط درجاتها بالدورة لم يُنفذ بعد. حلول المدرب منفصلة.</p><p>المرجع: <a href="https://www.cisco.com/en/US/docs/ios/12_4t/ip_addr/configuration/guide/htdhcpsv.html">Cisco — Configuring the IOS DHCP Server</a>.</p></section></div><div id="lab-en" lang="en" dir="ltr" hidden><header><a class="back" href="/ccna-labs">Back to labs</a><p class="tag">Basmat Alnawabigh Academy</p><h1>Lab 4: Automatic IPv4 Addressing with DHCP Across VLANs</h1><p>CCNA 200-301 • Eng. Magdi Alnaeem • 90 minutes</p><button type="button" onclick="window.print()">Print lab / Save PDF</button></header><section><h2>1. Objectives and prerequisites</h2><ul><li>Create a DHCP pool for each VLAN.</li><li>Exclude gateway and reserved infrastructure addresses.</li><li>Replace static PC addressing with DHCP and verify the address, mask and gateway.</li><li>Observe DORA and diagnose lease acquisition and gateway faults.</li></ul><p>Prerequisite: a working Lab 3 topology. Topic: IP Services. Time plan: preparation 15, DHCP setup 20, verification 20, troubleshooting 20, questions/submission 15 minutes.</p></section><section><h2>2. Scenario and equipment</h2><p>Extend the previous router-on-a-stick lab. R1 now allocates addresses for Sales and Support. Use one Cisco 2911, two 2960-24TT switches and four PCs.</p><svg class="diagram" viewBox="0 0 800 460" role="img" aria-labelledby="topology-en"><title id="topology-en">R1 DHCP server, SW1 and SW2 trunks, four VLAN clients</title><g stroke="#7296b5" stroke-width="3"><path d="M220 85V185M300 215H500M180 245L100 375M260 245L300 375M540 245L500 375M620 245L700 375"/></g><g fill="#f0f7ff" stroke="#12345b" stroke-width="2"><rect x="140" y="20" width="160" height="65" rx="10"/><rect x="140" y="185" width="160" height="60" rx="10"/><rect x="500" y="185" width="160" height="60" rx="10"/><rect x="30" y="375" width="140" height="55" rx="10"/><rect x="230" y="375" width="140" height="55" rx="10"/><rect x="430" y="375" width="140" height="55" rx="10"/><rect x="630" y="375" width="140" height="55" rx="10"/></g><g text-anchor="middle" font-size="16"><text x="220" y="60">R1 — 2911</text><text x="220" y="222">SW1</text><text x="580" y="222">SW2</text><text x="100" y="407">PC-A / VLAN 10</text><text x="300" y="407">PC-B / VLAN 20</text><text x="500" y="407">PC-C / VLAN 10</text><text x="700" y="407">PC-D / VLAN 20</text><text x="430" y="135">R1 Gi0/0 ↔ SW1 Gi0/2</text><text x="400" y="195">Gi0/1 ↔ Gi0/1</text><text x="400" y="245">802.1Q Trunk</text></g></svg><div class="scroll"><table><tr><th>Connection</th><th>Cable</th></tr><tr><td>R1 Gi0/0 ↔ SW1 Gi0/2</td><td>Straight-through</td></tr><tr><td>SW1 Gi0/1 ↔ SW2 Gi0/1</td><td>Crossover</td></tr><tr><td>PC-A ↔ SW1 Fa0/1; PC-B ↔ SW1 Fa0/2</td><td>Straight-through</td></tr><tr><td>PC-C ↔ SW2 Fa0/1; PC-D ↔ SW2 Fa0/2</td><td>Straight-through</td></tr></table></div></section><section><h2>3. Address plan and preparation</h2><div class="scroll"><table><tr><th>VLAN</th><th>Subnet</th><th>Gateway</th><th>Excluded</th><th>Available</th></tr><tr><td>10 SALES</td><td>192.168.10.0/24</td><td>192.168.10.1</td><td>.1–.20</td><td>.21–.254</td></tr><tr><td>20 SUPPORT</td><td>192.168.20.0/24</td><td>192.168.20.1</td><td>.1–.20</td><td>.21–.254</td></tr></table></div><p>The mask is 255.255.255.0. Keep the router gateway addresses static. First verify connectivity with the Lab 3 static PC settings, then switch clients to DHCP after configuring the server. Never assume a particular client will always receive a specific address.</p><p>R1 is directly attached to both VLANs, so no ip helper-address is required. This topology provides no DNS server or Internet service; IP ping does not test DNS.</p></section><section><h2>4. Complete device setup</h2><p>If continuing Lab 3, verify these settings. If starting with a blank topology, enter all configuration below. Do not run this lab configuration on a production network.</p><h3>SW1</h3><pre>enable
+configure terminal
+hostname SW1
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+interface gigabitEthernet 0/2
+description TRUNK_TO_R1
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>SW2</h3><pre>enable
+configure terminal
+hostname SW2
+vlan 10
+name SALES
+exit
+vlan 20
+name SUPPORT
+exit
+vlan 999
+name NATIVE_UNUSED
+exit
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no shutdown
+exit
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+spanning-tree portfast
+no shutdown
+exit
+interface gigabitEthernet 0/1
+description INTER_SWITCH_TRUNK
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 10,20,999
+no shutdown
+exit
+end
+copy running-config startup-config</pre><h3>R1 — interfaces</h3><pre>enable
+configure terminal
+hostname R1
+no ip domain-lookup
+interface gigabitEthernet 0/0
+description TRUNK_TO_SW1
+no ip address
+no shutdown
+exit
+interface gigabitEthernet 0/0.10
+encapsulation dot1Q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.20
+encapsulation dot1Q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+interface gigabitEthernet 0/0.999
+encapsulation dot1Q 999 native
+no ip address
+exit
+end
+copy running-config startup-config</pre><h3>R1 — DHCP</h3><pre>enable
+configure terminal
+service dhcp
+ip dhcp excluded-address 192.168.10.1 192.168.10.20
+ip dhcp excluded-address 192.168.20.1 192.168.20.20
+ip dhcp pool SALES
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+exit
+ip dhcp pool SUPPORT
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+exit
+end
+copy running-config startup-config</pre><p>Accept the default save filename. If reusing a file with existing DHCP configuration, check for conflicting pools and exclusions before starting.</p></section><section><h2>5. Enable DHCP and verify</h2><ol><li>On each PC, open Desktop → IP Configuration and select DHCP.</li><li>Wait for acquisition and record each address, mask and gateway.</li><li>A/C must receive 192.168.10.21–254 with gateway 192.168.10.1; B/D must receive 192.168.20.21–254 with gateway 192.168.20.1.</li><li>Use Simulation Mode with the DHCP filter. Toggle one PC to Static and back to DHCP to request an address. For a fresh acquisition observe Discover → Offer → Request → ACK. A renewal may not repeat all four messages.</li></ol><p>On R1:</p><pre>show ip dhcp pool
+show ip dhcp binding
+show ip dhcp conflict
+show ip interface brief
+show ip route
+show running-config</pre><p>Expect one pool per subnet and a binding for each client with an allocated lease. A clean topology with four successful clients should have four active bindings. Reused files may retain old records; historical record counts need not equal current client counts.</p><p>On every PC:</p><pre>ipconfig</pre><p>From PC-A, ping 192.168.10.1, then 192.168.20.1, then the actual recorded addresses of PC-C and PC-D. Verify the reverse path from PC-D to PC-A. Use recorded leases rather than guessed addresses. Repeat an initial ping after ARP learning if needed.</p><p>For a department-specific failure, inspect show interfaces trunk and show vlan brief before changing the DHCP configuration.</p></section><section><h2>6. Troubleshooting exercises</h2><div class="scroll"><table><tr><th>Symptom</th><th>Investigate</th></tr><tr><td>All PCs fail to acquire new leases</td><td>DHCP service state, parent interface and trunks</td></tr><tr><td>Only one VLAN fails to obtain an address</td><td>Pool network/mask and trunk allowed list</td></tr><tr><td>Correct address and local traffic, but remote VLAN fails</td><td>Pool default-router and the actual client gateway</td></tr><tr><td>One PC retains an old static address</td><td>Whether DHCP was selected and a new request completed</td></tr></table></div><p>Introduce one fault at a time and request a fresh lease to expose its effect. Clients with existing leases may continue working temporarily. Record evidence, correction and a client retest. Do not clear all bindings merely to troubleshoot.</p></section><section><h2>7. Questions and submission</h2><ol><li>Why exclude .1–.20?</li><li>Distinguish network and default-router pool options.</li><li>Why is DHCP relay unnecessary here?</li><li>Does a binding alone prove the gateway is correct?</li><li>Why might a client keep working after DHCP service is disabled?</li></ol><p>Submit CCNA-L04-YourName.pkt, the acquired addressing table, pool/binding outputs, DORA evidence, ping results and two fault reports. Scoring: pools/exclusions 30, client settings 25, verification/DORA 20, troubleshooting 25.</p><p>No ready-made .pkt file or executed simulation is included. Worksheet questions are practice; parent-course grading is not implemented. The instructor key is separate.</p><p>Reference: <a href="https://www.cisco.com/en/US/docs/ios/12_4t/ip_addr/configuration/guide/htdhcpsv.html">Cisco — Configuring the IOS DHCP Server</a>.</p></section></div><noscript>Please enable JavaScript to select the worksheet language. يرجى تفعيل JavaScript لعرض لغة المختبر.</noscript></main></body></html>
