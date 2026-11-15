@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import CCNALabs from "../pages/CCNALabs";
+
 // Website
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -139,6 +141,7 @@ export default function AppRouter() {
         <Route path="/school/access-denied" element={<SchoolAccessDenied />} />
         <Route path="/register" element={<Register />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/ccna-labs" element={<CCNALabs />} />
         <Route path="/search" element={<Search />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/purchases" element={<PurchaseHistory />} />
