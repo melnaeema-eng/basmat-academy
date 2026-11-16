@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node ../scripts/build-academy-from-nested.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
