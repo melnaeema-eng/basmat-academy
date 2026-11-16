@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {getLessonsByCourse} from '../services/lessonService';
-import ResumeVideo from './ResumeVideo';
+import TrackedLabLesson from './TrackedLabLesson';
 export function youtubeEmbed(value){
  try{const u=new URL(value);let id;if(['youtu.be','www.youtu.be'].includes(u.hostname))id=u.pathname.slice(1);else if(['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname))id=u.pathname.startsWith('/embed/')?u.pathname.split('/')[2]:u.searchParams.get('v');return /^[\w-]{11}$/.test(id||'')?`https://www.youtube.com/embed/${id}`:null}catch{return null}
 }
@@ -16,6 +16,6 @@ export default function LabLessons({lab}){
  return <section className="academy-card mt-5 min-w-0 p-4" aria-label={ar?'دروس المختبر':'Lab lessons'}>
   <h2 className="text-xl font-bold">{ar?'دروس المختبر':'Lab lessons'}</h2>
   <div className="mt-3 flex flex-wrap gap-2"><button className={!selected?'academy-btn-primary':'academy-btn-dark'} onClick={()=>setSelected(null)}>{ar?'ورقة المختبر':'Lab worksheet'}</button>{lessons.map((x,i)=><button key={x.id} aria-pressed={selected===x.id} onClick={()=>setSelected(x.id)} className={selected===x.id?'academy-btn-primary':'academy-btn-dark'}>{i+1}. {x.title}</button>)}</div>
-  {item&&<article className="mt-5 min-w-0 space-y-4"><h3 className="text-lg font-bold">{item.title}</h3><p>{item.description}</p>{item.lesson_type==='video'&&video&&(embed?<iframe className="aspect-video w-full rounded-xl" src={embed} title={item.title} allowFullScreen/>:<ResumeVideo className="aspect-video w-full rounded-xl bg-black" src={video} courseId={lab.course_id} lessonId={item.id}/>)}{item.lesson_type==='text'&&<div className="whitespace-pre-wrap break-words leading-8">{item.content}</div>}{file&&<a href={file} target="_blank" rel="noopener noreferrer" className="inline-block font-bold text-orange-600">{ar?'فتح المرفق':'Open attachment'}</a>}</article>}
+  {item&&<article className="mt-5 min-w-0 space-y-4"><h3 className="text-lg font-bold">{item.title}</h3><p>{item.description}</p><TrackedLabLesson key={item.id} lesson={item} embed={embed} src={video}/>{file&&<a href={file} target="_blank" rel="noopener noreferrer" className="inline-block font-bold text-orange-600">{ar?'فتح المرفق':'Open attachment'}</a>}</article>}
  </section>;
 }

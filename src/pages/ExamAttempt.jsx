@@ -10,14 +10,14 @@ import {supabase} from "../services/supabase";
 export default function ExamAttempt(){
  const{examId}=useParams();
  const[exam,setExam]=useState(null),[answers,setAnswers]=useState({}),[loading,setLoading]=useState(true),[submitting,setSubmitting]=useState(false),[result,setResult]=useState(null),[review,setReview]=useState(null),[settings,setSettings]=useState({}),[secondsLeft,setSecondsLeft]=useState(null),[login,setLogin]=useState(false),[certifiedCourseId,setCertifiedCourseId]=useState(null),[error,setError]=useState("");
- useEffect(()=>{(async()=>{try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user){setLogin(true);return}const[loaded,st]=await Promise.all([getExamForStudent(examId),getExamSettings(examId)]);if(loaded?.course_id&&await hasCourseCertificate(session.user.id,loaded.course_id)){setCertifiedCourseId(loaded.course_id);return}const questions=[...(loaded?.questions||[])];if(st?.randomize_questions)questions.sort(()=>Math.random()-.5);setExam({...loaded,questions});setSettings(st||{});if(st?.duration_minutes)setSecondsLeft(Number(st.duration_minutes)*60)}catch(e){setError(e.message||"تعذر تحميل الاختبار")}finally{setLoading(false)}})()},[examId]);
+ useEffect(()=>{(async()=>{try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user){setLogin(true);return}const[loaded,st]=await Promise.all([getExamForStudent(examId),getExamSettings(examId)]);if(loaded?.course_id&&await hasCourseCertificate(session.user.id,loaded.course_id)){setCertifiedCourseId(loaded.course_id);return}const questions=[...(loaded?.questions||[])];if(!questions.length)throw new Error("الاختبار لا يحتوي أسئلة بعد؛ لم تُحتسب محاولة. / This exam has no questions; no attempt was used.");if(st?.randomize_questions)questions.sort(()=>Math.random()-.5);setExam({...loaded,questions});setSettings(st||{});if(st?.duration_minutes)setSecondsLeft(Number(st.duration_minutes)*60)}catch(e){setError(e.message||"تعذر تحميل الاختبار")}finally{setLoading(false)}})()},[examId]);
 
  useEffect(()=>{if(secondsLeft==null||result||submitting)return;if(secondsLeft<=0){finish(true);return}const t=setTimeout(()=>setSecondsLeft(v=>v-1),1000);return()=>clearTimeout(t)},[secondsLeft,result,submitting]);
 
  const answered=useMemo(()=>Object.keys(answers).length,[answers]);
 
  async function finish(force=false){
-  if(!exam||submitting||result)return;
+  if(!exam||!exam.questions?.length||submitting||result)return;
   if(!force&&answered<exam.questions.length&&!confirm("لم تجب على كل الأسئلة. هل تريد التسليم؟"))return;
   try{
    setSubmitting(true);setError("");
