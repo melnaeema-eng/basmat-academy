@@ -337,6 +337,20 @@
       "course_id": "557e1d50-20f8-4f47-b997-ebca4b1fb491",
       "status": "published",
       "student_url": "/labs/ccna/l24-final-troubleshooting-assessment"
+    },
+    {
+      "id": "d8af8fc9-2151-4543-8adf-31264fe551d4",
+      "number": 25,
+      "title_ar": "دمج فرعين بعناوين متداخلة وإعادة العنونة مع خطة تراجع",
+      "title_en": "Overlapping Branch Networks: Staged Renumbering and Rollback",
+      "summary_ar": "مراجعة تشغيلية: اكتشاف تداخل العناوين، نقل فرع على مرحلتين، تحديث DHCP والتوجيه وتأمين SSH مع تحقق وخطة رجوع.",
+      "summary_en": "An operational review: diagnose overlapping addressing, migrate a branch in two waves, update DHCP and routing, secure SSH, and verify rollback.",
+      "duration_minutes": 150,
+      "price": 100,
+      "currency": "SAR",
+      "course_id": "c2fd42c0-5597-4d02-a008-d0a39d4a3926",
+      "status": "published",
+      "student_url": "/labs/ccna/l25-overlap-renumbering-change-control"
     }
   ]
 }
