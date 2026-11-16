@@ -19,23 +19,23 @@ export default function CertificateView(){
       <img src={logo} alt="Basmat Alnawabigh" className="mx-auto h-24 w-auto object-contain"/>
       <div className="mt-2 text-sm font-bold tracking-[.25em] text-slate-700">BASMAT ALNAWABIGH ACADEMY</div>
       <div className="mx-auto mt-5 h-px w-56 bg-amber-500"/>
-      <h1 className="mt-6 text-5xl font-serif font-bold text-slate-900">شهادة إتمام وتميّز</h1>
-      <p className="mt-5 text-lg text-slate-500">تتشرف أكاديمية بصمة النوابغ بمنح هذه الشهادة إلى</p>
-      <div className="mt-4 text-4xl font-bold text-amber-600">{c.profiles?.full_name||'الطالب'}</div>
-      <p className="mt-5 text-lg text-slate-500">تقديرًا لإتمامه بنجاح متطلبات الدورة التدريبية</p>
-      <div className="mt-3 text-3xl font-bold text-slate-900">{c.courses?.title}</div>
-      {c.courses?.instructor&&<p className="mt-3 text-base text-slate-600">المدرب: <b>{c.courses.instructor}</b></p>}
+      <h1 className="mt-6 text-3xl md:text-4xl font-bold text-slate-900">شهادة إتمام</h1><p dir="ltr" className="mt-2 text-2xl font-bold">Certificate of Completion</p>
+      <p className="mt-3 text-base text-slate-500">تتشرف أكاديمية بصمة النوابغ بمنح هذه الشهادة إلى<br/><span dir="ltr">Basmat Alnawabigh Academy awards this certificate to</span></p>
+      <div className="mt-3 text-2xl md:text-3xl font-bold text-amber-600">{c.profiles?.full_name||'الطالب'}</div>
+      <p className="mt-3 text-base text-slate-500">تقديرًا لإتمام متطلبات الدورة التدريبية بنجاح<br/><span dir="ltr">For successfully completing the requirements of</span></p>
+      <div className="mt-3 text-xl md:text-2xl font-bold text-slate-900">{c.courses?.title}</div>
+      {c.courses?.instructor&&<p className="mt-3 text-base text-slate-600">المدرب / Instructor: <b>{c.courses.instructor}</b></p>}
      </div>
      <div className="grid w-full grid-cols-3 items-end gap-8">
       <div className="text-right text-sm leading-7 text-slate-600">
-       <div>تاريخ الإصدار</div><b>{new Date(c.issued_at).toLocaleDateString('ar-SA')}</b>
-       <div className="mt-2">رقم الشهادة</div><b className="font-mono">{c.certificate_number}</b>
-       <div className={`mt-2 font-bold ${active?'text-green-700':'text-red-700'}`}>{active?'شهادة سارية':'شهادة ملغاة'}</div>
+       <div>تاريخ الإصدار / Issue date</div><b>{new Date(c.issued_at).toLocaleDateString('en-GB')}</b>
+       <div className="mt-2">رقم الشهادة / Certificate no.</div><b className="font-mono">{c.certificate_number}</b>
+       <div className={`mt-2 font-bold ${active?'text-green-700':'text-red-700'}`}>{active?'سارية / Valid':'ملغاة / Revoked'}</div>
       </div>
-      <div className="text-center"><div className="mx-auto h-px w-44 bg-slate-500"/><div className="mt-2 font-bold">إدارة الأكاديمية</div><div className="text-xs text-slate-500">Basmat Alnawabigh Academy</div></div>
+      <div className="text-center"><div className="mx-auto h-px w-44 bg-slate-500"/><div className="mt-2 font-bold">إدارة الأكاديمية / Academy Administration</div><div className="text-xs text-slate-500">Basmat Alnawabigh Academy</div></div>
       <div className="flex flex-col items-center">
        {qr&&<img src={qr} alt="QR verification" className="h-32 w-32"/>}
-       <div className="mt-1 text-xs font-bold">امسح للتحقق من الشهادة</div>
+       <div className="mt-1 text-xs font-bold">امسح للتحقق / Scan to verify</div>
        <div className="max-w-40 break-all text-[10px] text-slate-500">{c.verification_token||c.verification_code}</div>
       </div>
      </div>

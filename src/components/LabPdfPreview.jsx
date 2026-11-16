@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next';
 import {getLabPdfPreview} from '../services/labService';
 export default function LabPdfPreview({lab,onReadingPage}){
  const {i18n}=useTranslation(),ar=i18n.language?.startsWith('ar');
- const [state,setState]=useState({loading:true,pages:[],stages:[],languages:[],error:false}),[page,setPage]=useState(0);
+ const [state,setState]=useState({loading:true,pages:[],stages:[],languages:[],error:false}),[page,setPage]=useState(0),[zoom,setZoom]=useState(100);
  const canvas=useRef(null),viewer=useRef(null);
  const indices=state.pages.map((_,i)=>i).filter(i=>!state.languages.length||state.languages[i]===(ar?'ar':'en'));
  const actual=indices[Math.min(page,Math.max(0,indices.length-1))];
@@ -14,6 +14,6 @@ export default function LabPdfPreview({lab,onReadingPage}){
  if(state.error)return <p role="alert" className="mt-5">{ar?'تعذر عرض الصفحات. افتح المحتوى العملي أو أعد المحاولة.':'Unable to display the pages. Open the practical content or retry.'}</p>;
  return <section ref={viewer} tabIndex={0} onPointerDown={()=>viewer.current?.focus({preventScroll:true})} onContextMenu={e=>e.preventDefault()} onKeyDown={e=>{if((e.ctrlKey||e.metaKey)&&['s','p'].includes(e.key.toLowerCase()))e.preventDefault()}} className="mt-5 rounded-2xl border bg-slate-100 p-3 focus:outline-orange-500" aria-label={ar?'عرض صفحات المختبر':'Lab page viewer'}>
   <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><button className="academy-btn-dark disabled:opacity-40" disabled={page===0} onClick={()=>setPage(p=>p-1)}>{ar?'السابق':'Previous'}</button><span>{ar?'الصفحة':'Page'} <bdi>{page+1} / {indices.length}</bdi></span><button className="academy-btn-dark disabled:opacity-40" disabled={page===indices.length-1} onClick={()=>setPage(p=>p+1)}>{ar?'التالي':'Next'}</button></div>
-  <canvas ref={canvas} role="img" aria-label={(ar?'صفحة المختبر ':'Lab page ')+(page+1)} className="mx-auto h-auto w-full max-w-4xl bg-white"/>
+  <div className="mb-3 flex flex-wrap items-center justify-center gap-3"><button type="button" className="academy-btn-dark" disabled={zoom<=100} onClick={()=>setZoom(z=>Math.max(100,z-25))} aria-label={ar?'تصغير':'Zoom out'}>−</button><span dir="ltr">{zoom}%</span><button type="button" className="academy-btn-dark" disabled={zoom>=300} onClick={()=>setZoom(z=>Math.min(300,z+25))} aria-label={ar?'تكبير':'Zoom in'}>+</button><button type="button" className="academy-btn-dark" onClick={()=>setZoom(100)}>{ar?'ملاءمة العرض':'Fit width'}</button></div><div className="overflow-auto" style={{maxHeight:'80vh',touchAction:'pan-x pan-y pinch-zoom'}}><div style={{width:`${zoom}%`,minWidth:'100%'}}><canvas ref={canvas} role="img" aria-label={(ar?'صفحة المختبر ':'Lab page ')+(page+1)} className="mx-auto h-auto w-full bg-white"/></div></div>
  </section>;
 }
