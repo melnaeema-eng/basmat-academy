@@ -3,11 +3,10 @@ import { supabase } from "./supabase";
 export async function uploadCourseImage(file) {
   if (!file) return null;
 
-  const fileExt = file.name.split(".").pop();
-
-  const fileName = `${Date.now()}.${fileExt}`;
-
-  const filePath = `courses/${fileName}`;
+  const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+  if(!types[file.type])throw new Error('اختر صورة JPG أو PNG أو WebP / Choose JPG, PNG or WebP');
+  if(file.size>5*1024*1024)throw new Error('الحد الأقصى 5MB / Maximum 5MB');
+  const filePath = `courses/${crypto.randomUUID()}.${types[file.type]}`;
 
   const { error } = await supabase.storage
     .from("course-images")
