@@ -1,3 +1,4 @@
+import LessonFile from '../components/LessonFile';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import {getLabByCourse} from '../services/labService';
@@ -211,11 +212,12 @@ export default function LearnCourse() {
                     <div className="mt-6 whitespace-pre-wrap rounded-xl bg-gray-50 p-5 leading-8">{selectedLesson.content || 'لا يوجد محتوى نصي.'}</div>
                   )}
 
-                  {selectedLesson.lesson_type === 'file' && selectedLesson.file_url && (
+                  {selectedLesson.file_url?.startsWith('academy-file:')&&<LessonFile pointer={selectedLesson.file_url}/>}
+                  {selectedLesson.lesson_type === 'file' && selectedLesson.file_url && !selectedLesson.file_url.startsWith('academy-file:') && (
                     <a className="mt-6 inline-block rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white" href={selectedLesson.file_url} target="_blank" rel="noreferrer">فتح ملف الدرس</a>
                   )}
 
-                  {selectedLesson.file_url && selectedLesson.lesson_type !== 'file' && <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="font-bold text-[#08284d]">مرفقات الدرس</div><a href={selectedLesson.file_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-bold text-[#f97316]">فتح / تحميل الملف</a></div>}
+                  {selectedLesson.file_url && !selectedLesson.file_url.startsWith('academy-file:') && selectedLesson.lesson_type !== 'file' && <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="font-bold text-[#08284d]">مرفقات الدرس</div><a href={selectedLesson.file_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-bold text-[#f97316]">فتح / تحميل الملف</a></div>}
                   <div className="mt-6 flex items-center justify-between gap-3 border-t pt-5"><button disabled={selectedIndex<=0} onClick={()=>selectLesson(lessons[selectedIndex-1]?.id)} className="rounded-xl border px-4 py-2 font-bold disabled:opacity-30">السابق</button><span className="text-sm text-slate-500">{selectedIndex+1} / {lessons.length}</span><button disabled={selectedIndex<0||selectedIndex>=lessons.length-1} onClick={()=>selectLesson(lessons[selectedIndex+1]?.id)} className="rounded-xl bg-[#071d49] px-4 py-2 font-bold text-white disabled:opacity-30">التالي</button></div>
                   <LearningTools courseId={courseId} lessonId={selectedLesson.id}/>
                   <div className="mt-8 border-t pt-5">

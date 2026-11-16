@@ -1,3 +1,4 @@
+import {uploadLessonFile,lessonFileAccept} from '../../services/lessonFileService';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from 'react-router-dom';
@@ -27,6 +28,8 @@ export default function Lessons() {
   const [loading, setLoading] = useState(true);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [attachmentFile,setAttachmentFile]=useState(null),[saving,setSaving]=useState(false),[uploadProgress,setUploadProgress]=useState('');
+  const ar=i18n.language?.startsWith('ar');
 
   async function load() {
     try {
@@ -52,6 +55,7 @@ export default function Lessons() {
   }
 
   function edit(lesson) {
+    setAttachmentFile(null);
     setEditingId(lesson.id);
     setForm({
       title: lesson.title || '',
@@ -71,6 +75,7 @@ export default function Lessons() {
   function reset() {
     setEditingId(null);
     setVideoFile(null);
+    setAttachmentFile(null);setUploadProgress('');
     setForm({ ...emptyLesson, order_number: lessons.length + 1 });
   }
 
@@ -95,14 +100,18 @@ export default function Lessons() {
       course_id: courseId,
       order_number: Number(form.order_number) || 1,
     };
+    if(form.lesson_type==='file'&&!attachmentFile&&!form.file_url)return alert(ar?'اختر ملف الدرس من جهازك':'Choose a lesson file from your device');
+    setSaving(true);setUploadProgress('');let id=editingId;
     try {
-      if (editingId) await updateLesson(editingId, payload);
+      if(attachmentFile){
+        if(!id){const draft=await createLesson({...payload,is_published:false});id=draft.id;setEditingId(id)}
+        payload.file_url=await uploadLessonFile({courseId,lessonId:id,file:attachmentFile,onProgress:(page,total)=>setUploadProgress(`${page} / ${total}`)});
+      }
+      if (id) await updateLesson(id, payload);
       else await createLesson(payload);
-      await load();
-      reset();
-    } catch (err) {
-      alert(err.message);
-    }
+      await load();reset();
+    } catch (err) { alert((id&&!editingId?(ar?'حُفظت مسودة الدرس. أعد محاولة رفع الملف: ':'Lesson draft saved. Retry the file upload: '):'')+err.message); }
+    finally{setSaving(false);setUploadProgress('')}
   }
 
   async function remove(id) {
@@ -128,7 +137,7 @@ export default function Lessons() {
         <Link to="/admin/courses" className="rounded-lg bg-gray-700 px-4 py-2 text-white">العودة للدورات</Link>
       </div>
 
-      <form onSubmit={submit} className="academy-card p-6 space-y-4">
+      <form onSubmit={submit} className="academy-card p-6"><fieldset disabled={saving||uploadingVideo} className="space-y-4">
         <h2 className="text-xl font-bold">{editingId ? 'تعديل الدرس' : 'إضافة درس جديد'}</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <input name="title" value={form.title} onChange={change} required placeholder="عنوان الدرس" className="rounded-lg border p-3" />
@@ -153,16 +162,16 @@ export default function Lessons() {
           </div>
         )}
         {form.lesson_type === 'text' && <textarea name="content" value={form.content} onChange={change} placeholder="محتوى الدرس النصي" className="h-44 w-full rounded-lg border p-3" />}
-        {form.lesson_type === 'file' && <input name="file_url" value={form.file_url} onChange={change} placeholder="رابط ملف الدرس" className="w-full rounded-lg border p-3" />}
+        <section className="space-y-2 rounded-xl border bg-slate-50 p-4"><label className="block font-bold">{ar?(form.lesson_type==='file'?'رفع ملف الدرس من الجهاز':'إرفاق ملف بالدرس (اختياري)'):(form.lesson_type==='file'?'Upload lesson file from your device':'Attach a lesson file (optional)')}<input key={`${editingId||'new'}-${attachmentFile?'selected':'empty'}`} type="file" accept={lessonFileAccept} disabled={saving} onChange={e=>setAttachmentFile(e.target.files?.[0]||null)} className="mt-2 w-full rounded-lg border bg-white p-3"/></label>{attachmentFile&&<p className="break-all">{attachmentFile.name}</p>}{form.file_url&&!attachmentFile&&<p className="text-sm text-slate-600">{ar?'المرفق الحالي محفوظ. اختر ملفًا جديدًا لاستبداله عند الحفظ.':'The current attachment is saved. Choose a new file to replace it when saving.'}</p>}<p className="text-xs text-slate-500">{ar?'حتى 50MB. PDF حتى 100 صفحة للعرض فقط؛ بقية الملفات المسموحة تُفتح بعد السماح بالمحتوى.':'Up to 50MB. PDF: up to 100 pages for page viewing only; other allowed files open after course authorization.'}</p>{saving&&<p role="status">{ar?'جارٍ الرفع وحفظ الدرس…':'Uploading and saving the lesson…'} {uploadProgress}</p>}</section>
         <div className="flex flex-wrap gap-6">
           <label className="flex items-center gap-2"><input type="checkbox" name="is_preview" checked={form.is_preview} onChange={change} /> معاينة مجانية</label>
           <label className="flex items-center gap-2"><input type="checkbox" name="is_published" checked={form.is_published} onChange={change} /> منشور</label>
         </div>
         <div className="flex gap-3">
-          <button className="rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white">{editingId ? 'حفظ التعديل' : 'إضافة الدرس'}</button>
-          {editingId && <button type="button" onClick={reset} className="rounded-lg bg-gray-200 px-6 py-3">إلغاء</button>}
+          <button disabled={saving||uploadingVideo} className="disabled:opacity-40 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white">{editingId ? 'حفظ التعديل' : 'إضافة الدرس'}</button>
+          {editingId && <button type="button" disabled={saving} onClick={reset} className="rounded-lg bg-gray-200 px-6 py-3">إلغاء</button>}
         </div>
-      </form>
+      </fieldset></form>
 
       <div className="overflow-hidden rounded-xl bg-white shadow">
         <table className="w-full text-center">
