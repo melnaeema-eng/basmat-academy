@@ -15,8 +15,8 @@ export async function hasLabAccess(labId){
 export async function getLabPage(track,slug){
  const {data:lab,error}=await supabase.from('academy_lab_catalog').select(fields).eq('track',track).eq('slug',slug).eq('is_published',true).maybeSingle();
  if(error)throw error;if(!lab)return {lab:null,html:null};
- const {data,error:ce}=await supabase.from('academy_lab_content').select('student_html').eq('lab_id',lab.id).maybeSingle();
- if(ce)throw ce;return {lab,html:data?.student_html||null};
+ const {data,error:ce}=await supabase.from('academy_lab_content').select('student_html,student_pdf_page_stages,student_pdf_page_languages').eq('lab_id',lab.id).maybeSingle();
+ if(ce)throw ce;return {lab,html:data?.student_html||null,hasPdfPreview:completePreviewMap(data?.student_pdf_page_stages,data?.student_pdf_page_languages)};
 }
 export function prepareLabDocument(source,language){
  if(!source)return '';
@@ -47,9 +47,14 @@ export function prepareLabDocument(source,language){
  }).join('');
  return html;
 }
+export function completePreviewMap(stages,languages){
+ if(!Array.isArray(stages)||!Array.isArray(languages)||!stages.length||stages.length!==languages.length)return false;
+ if(stages.some(s=>!Array.isArray(s)||!s.length||s.some(n=>!Number.isInteger(n)||n<1||n>8))||languages.some(l=>!['ar','en'].includes(l)))return false;
+ return ['ar','en'].every(lang=>new Set(stages.flatMap((s,i)=>languages[i]===lang?s:[])).size===8);
+}
 export async function getLabPdfPreview(labId){
  const {data,error}=await supabase.from('academy_lab_content').select('student_pdf_pages,student_pdf_page_stages,student_pdf_page_languages').eq('lab_id',labId).maybeSingle();
- if(error)throw error;const ready=Array.isArray(data?.student_pdf_pages)&&data.student_pdf_page_stages?.length===data.student_pdf_pages.length&&data.student_pdf_page_languages?.length===data.student_pdf_pages.length;return {pages:ready?data.student_pdf_pages:[],stages:data?.student_pdf_page_stages||[],languages:data?.student_pdf_page_languages||[]};
+ if(error)throw error;const ready=Array.isArray(data?.student_pdf_pages)&&data.student_pdf_page_stages?.length===data.student_pdf_pages.length&&completePreviewMap(data.student_pdf_page_stages,data.student_pdf_page_languages);return {pages:ready?data.student_pdf_pages:[],stages:data?.student_pdf_page_stages||[],languages:data?.student_pdf_page_languages||[]};
 }
 export async function getLabProgress(lab){
  const {data:{session},error:authError}=await supabase.auth.getSession();if(authError)throw authError;
