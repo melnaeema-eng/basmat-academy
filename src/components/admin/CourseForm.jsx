@@ -132,8 +132,8 @@ export default function CourseForm({initialData,onSubmit,submitText}){
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_300px]">
         <div>
-          <Field label={t("courseForm.image")}>
-            <input id="course-image" type="file" accept="image/*" onChange={upload} className="academy-input bg-white"/>
+          <Field label={ar?"اختيار صورة الدورة من الجهاز":"Choose course image from device"}>
+            <input id="course-image" type="file" accept="image/jpeg,image/png,image/webp" onChange={upload} className="academy-input bg-white"/><p className="mt-1 text-xs text-slate-500">JPG / PNG / WebP · 5MB</p>
           </Field>
           {uploading&&<p className="mt-2 text-sm text-blue-600">{t("courseForm.uploading")}</p>}
           <label className="mt-5 flex items-center gap-3 font-semibold">
@@ -150,7 +150,7 @@ export default function CourseForm({initialData,onSubmit,submitText}){
       </div>
 
       <div className="mt-7 flex justify-end">
-        <button className="academy-btn-primary">{submitText||t("courseForm.save")}</button>
+        <button disabled={uploading} className="academy-btn-primary disabled:opacity-40">{submitText||t("courseForm.save")}</button>
       </div>
     </form>
   </div>
