@@ -1,0 +1,23 @@
+{
+  "name": "Basmat Alnawabigh Academy",
+  "short_name": "Basmat Academy",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#08284d",
+  "icons": [
+    {
+      "src": "/academy-icons/academy-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/academy-icons/academy-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
